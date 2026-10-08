@@ -1,4 +1,4 @@
-import { app } from './server'
+import { app } from './app'
 import https from 'node:https'
 import fs from 'node:fs'
 

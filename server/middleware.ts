@@ -3,7 +3,7 @@ import { type NextFunction, type Request, type Response } from 'express'
 export const setCSP = (_req: Request, res: Response, next: NextFunction) => {
   res.set({
     'Content-Security-Policy':
-      "default-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
+      "default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
     'X-Content-Type-Options': 'nosniff',
     'Referrer-Policy': 'no-referrer',
     // Off by default: browsers remember HSTS per host, and localhost is shared with your other projects.
