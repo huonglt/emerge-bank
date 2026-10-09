@@ -29,7 +29,7 @@ function App() {
         <p>Loading…</p>
       </main>
     )
-  return <main>{me.data ? <Dashboard /> : <Login />}</main>
+  return <main>{me.data ? <Dashboard me={me.data} /> : <Login />}</main>
   return (
     <>
       <section id="center">
