@@ -1,15 +1,9 @@
 import express, { type Express } from 'express'
 import cookieParser from 'cookie-parser'
-
+import bodyParser from 'body-parser'
 //import helmet from 'helmet'
-import {
-  setCSP,
-  errorHandler,
-  noCacheControl,
-  csrfDefence,
-  auth,
-} from './middleware'
-import { me } from './api'
+import { setCSP, errorHandler, noCacheControl, csrfDefence } from './middleware'
+import { me, auth, login } from './api'
 export const app: Express = express()
 
 app.disable('x-powered-by')
@@ -17,12 +11,14 @@ app.use(setCSP)
 //app.use(helmet())
 app.use(express.json({ limit: '10kb' }))
 app.use(cookieParser())
+// parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded())
 
 app.use('/api', noCacheControl)
-app.use('/api', csrfDefence)
+//app.use('/api', csrfDefence)
 app.use(errorHandler)
 app.get('/', (req, res) => {
   res.send('Hello World')
 })
-
+app.post('/api/login', login)
 app.get('/api/me', auth, me)
