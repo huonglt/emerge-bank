@@ -1,6 +1,5 @@
 import { type Request, type Response, NextFunction } from 'express'
 import { users } from './users'
-const SID = '__Host-sid' // __Host- prefix: Secure, Path=/, no Domain, so it cannot be set by sibling hosts
 
 import { z } from 'zod'
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
@@ -12,7 +11,7 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Enter your password').max(128),
 })
 
-const sessions = new Map<string, Session>()
+export const sessions = new Map<string, Session>()
 const IDLE_MS = 15 * 60000
 const ABSOLUTE_MS = 8 * 60 * 60000
 
