@@ -1,7 +1,7 @@
 import { randomBytes, scryptSync } from 'node:crypto'
 
 type User = {
-  userID: string
+  userId: string
   userName: string
   salt: Buffer
   hashedPassword: Buffer
@@ -9,18 +9,11 @@ type User = {
   accountBalance: number
   card: { name: string | null; pin: PinRecord | null }
 }
-type Session = {
-  userID: string
-  csrf: string
-  created: number
-  last: number
-  pinNonce?: { value: string; exp: number }
-}
 export type PinRecord = { salt: string; mac: string }
 
 // Demo users. Production: a database, Argon2id hashes, and real account data.
 function seed(
-  userID: string,
+  userId: string,
   userName: string,
   password: string,
   maskedAccountNumber: string,
@@ -29,7 +22,7 @@ function seed(
 ): User {
   const salt = randomBytes(16)
   return {
-    userID,
+    userId,
     userName,
     salt,
     hashedPassword: scryptSync(password, salt, 32),
