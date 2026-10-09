@@ -4,7 +4,7 @@ import { users } from '../users'
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
 
 import { toDisplayUser } from '../util'
-import { sessions } from '../api'
+import { sessions } from '../sessions'
 import { Session } from '../types'
 import { cookieOpts } from './config'
 // One schema, used by the form (UX) AND the server (the real check).

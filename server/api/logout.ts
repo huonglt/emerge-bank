@@ -1,5 +1,5 @@
 import { type Request, type Response } from 'express'
-import { sessions } from '../api'
+import { sessions } from '../sessions'
 import { cookieOpts } from './config'
 
 export const logout = (_req: Request, res: Response) => {

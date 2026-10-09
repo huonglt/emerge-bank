@@ -1,5 +1,5 @@
 import { type Request, type Response, NextFunction } from 'express'
-import { sessions } from '../api'
+import { sessions } from '../sessions'
 import { ABSOLUTE_MS, IDLE_MS } from './config'
 import { users } from '../users'
 
