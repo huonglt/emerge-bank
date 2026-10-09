@@ -18,15 +18,15 @@ export const Login = () => {
       api<Me>('/login', { method: 'POST', body: v }),
     onSuccess: (m) => {
       setCsrf(m.csrfToken)
-      qc.setQueryData(['me'], m)
+      qc.setQueryData(['me'], m.user)
     },
   })
   const { errors } = form.formState
 
   return (
     <form onSubmit={form.handleSubmit((v) => login.mutate(v))} noValidate>
-      <h1>Sign in</h1>
-      <p className="hint">Demo account: demo / Demo#1234</p>
+      <h1>Login</h1>
+
       <label>
         Username
         <input autoComplete="username" {...form.register('userName')} />
