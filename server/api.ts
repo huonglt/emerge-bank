@@ -43,19 +43,23 @@ const toDisplayUser = (user: User): DisplayUser => {
     },
   }
 }
+
+const authFail = (res: Response) =>
+  res.status(401).json({ error: 'Please sign in again' })
+
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const sid = req.cookies['sid'] as string | undefined
   const s = sid ? sessions.get(sid) : undefined
   const now = Date.now()
   if (!sid || !s || now - s.last > IDLE_MS || now - s.created > ABSOLUTE_MS) {
     if (sid) sessions.delete(sid)
-    return res.status(401).json({ error: 'Please sign in again' })
+    return authFail(res)
   }
 
   const user = users.get(s.user.userName)
   if (!user) {
     // could not find user
-    return res.status(401).json({ error: 'Please sign in again' })
+    return authFail(res)
   }
 
   s.last = now
