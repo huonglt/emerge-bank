@@ -1,4 +1,4 @@
-export type DisplayUser = {
+export type User = {
   userName: string
   accountBalance: number
   maskedAccountNumber: string
@@ -7,4 +7,7 @@ export type DisplayUser = {
     isPINSet: boolean
   }
 }
-export type Me = { user: DisplayUser; csrfToken: string }
+export type Me = {
+  user: User
+  csrfToken: string
+}
