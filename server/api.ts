@@ -18,12 +18,21 @@ export type Session = {
   last: number
   pinNonce?: { value: string; exp: number }
 }
+type DisplayUser = {
+  userName: string
+  accountBalance: number
+  maskedAccountNumber: string
+  card: {
+    name: string | null
+    isPINSet: boolean
+  }
+}
 const sessions = new Map<string, Session>()
 const IDLE_MS = 15 * 60_000
 const ABSOLUTE_MS = 8 * 60 * 60_000
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
-  const sid = req.cookies[SID] as string | undefined
+  const sid = req.cookies['sid'] as string | undefined
   const s = sid ? sessions.get(sid) : undefined
   const now = Date.now()
   if (!sid || !s || now - s.last > IDLE_MS || now - s.created > ABSOLUTE_MS) {
@@ -34,7 +43,22 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   s.last = now
   res.locals.sid = sid
   res.locals.session = s
-  res.locals.user = users.get(s.userName)
+  const user = users.get(s.userName)
+  if (!user) {
+    // could not find user
+    return res.status(401).json({ error: 'Please sign in again' })
+  }
+
+  // user to display on FE. remove all sensitive data
+  res.locals.user = {
+    userName: user.userName,
+    accountBalance: user.accountBalance,
+    maskedAccountNumber: user.maskedAccountNumber,
+    card: {
+      name: user.card?.name,
+      isPinSet: user.card?.pin !== null,
+    },
+  }
 
   next()
 }
