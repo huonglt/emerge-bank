@@ -1,10 +1,10 @@
 import { type Request, type Response, NextFunction } from 'express'
-import { User, users } from './users'
+import { users } from './users'
 const SID = '__Host-sid' // __Host- prefix: Secure, Path=/, no Domain, so it cannot be set by sibling hosts
 
 import { z } from 'zod'
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
-import { DisplayUser, Session } from './types'
+import { DisplayUser, Session, User } from './types'
 
 // One schema, used by the form (UX) AND the server (the real check).
 export const loginSchema = z.object({
