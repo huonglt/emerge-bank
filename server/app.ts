@@ -1,6 +1,7 @@
 import express, { type Express } from 'express'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
+import cors from 'cors'
 //import helmet from 'helmet'
 import {
   setCSP,
@@ -12,6 +13,13 @@ import {
 import { me, auth, login, logout } from './api'
 export const app: Express = express()
 
+// Configure CORS to trust your Vite frontend origin
+app.use(
+  cors({
+    origin: 'https://localhost:5173',
+    credentials: true, // Required if your frontend sends cookies, authorization headers, or credentials
+  })
+)
 app.disable('x-powered-by')
 app.use(setCSP)
 //app.use(helmet())
