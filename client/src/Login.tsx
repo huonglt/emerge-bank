@@ -18,7 +18,7 @@ export const Login = () => {
       api<Me>('/login', { method: 'POST', body: v }),
     onSuccess: (m) => {
       setCsrf(m.csrfToken)
-      qc.setQueryData(['me'], m.user)
+      qc.setQueryData(['me'], m)
     },
   })
   const { errors } = form.formState

@@ -1,7 +1,7 @@
 import './App.css'
 import { useQuery } from '@tanstack/react-query'
 import { api, ApiError, setCsrf } from './api'
-import type { Me } from './types'
+import type { Me, User } from './types'
 import { Dashboard } from './Dashboard'
 import { Login } from './Login'
 
@@ -12,6 +12,7 @@ function App() {
     queryFn: async () => {
       try {
         const m = await api<Me>('/me')
+
         setCsrf(m.csrfToken) // restore CSRF token after a page reload
         return m
       } catch (e) {
@@ -28,6 +29,7 @@ function App() {
       </main>
     )
 
+  console.log(`me = ${JSON.stringify(me)}`)
   return (
     <>
       <section className="mt-8 mb-8">
