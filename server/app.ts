@@ -3,7 +3,7 @@ import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 //import helmet from 'helmet'
 import { setCSP, errorHandler, noCacheControl, csrfDefence } from './middleware'
-import { me, auth, login } from './api'
+import { me, auth, login, csrf, logout } from './api'
 export const app: Express = express()
 
 app.disable('x-powered-by')
@@ -21,4 +21,5 @@ app.get('/', (req, res) => {
   res.send('Hello World')
 })
 app.post('/api/login', login)
+app.post('/api/logout', auth, csrf, logout)
 app.get('/api/me', auth, me)

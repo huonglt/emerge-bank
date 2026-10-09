@@ -1,5 +1,5 @@
 import { type Request, type Response, NextFunction } from 'express'
-import { users } from './users'
+import { User, users } from './users'
 const SID = '__Host-sid' // __Host- prefix: Secure, Path=/, no Domain, so it cannot be set by sibling hosts
 
 import { z } from 'zod'
@@ -28,9 +28,21 @@ type DisplayUser = {
   }
 }
 const sessions = new Map<string, Session>()
-const IDLE_MS = 15 * 60_000
-const ABSOLUTE_MS = 8 * 60 * 60_000
+const IDLE_MS = 15 * 60000
+const ABSOLUTE_MS = 8 * 60 * 60000
 
+const toDisplayUser = (user: User): DisplayUser => {
+  const { userName, accountBalance, maskedAccountNumber, card } = user
+  return {
+    userName,
+    accountBalance,
+    maskedAccountNumber,
+    card: {
+      name: card?.name,
+      isPINSet: card?.pin !== null,
+    },
+  }
+}
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const sid = req.cookies['sid'] as string | undefined
   const s = sid ? sessions.get(sid) : undefined
@@ -50,15 +62,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   }
 
   // user to display on FE. remove all sensitive data
-  res.locals.user = {
-    userName: user.userName,
-    accountBalance: user.accountBalance,
-    maskedAccountNumber: user.maskedAccountNumber,
-    card: {
-      name: user.card?.name,
-      isPinSet: user.card?.pin !== null,
-    },
-  }
+  res.locals.user = toDisplayUser(user)
 
   next()
 }
@@ -107,4 +111,19 @@ export const login = (req: Request, res: Response) => {
 export const me = (_req: Request, res: Response) => {
   const s = res.locals.session as Session
   res.json({ user: res.locals.user, csrfToken: s.csrf })
+}
+
+export const csrf = (req: Request, res: Response, next: NextFunction) => {
+  const given = Buffer.from(req.body['x-csrf-token'] ?? '')
+  const expected = Buffer.from((res.locals.session as Session).csrf)
+  if (given.length !== expected.length || !timingSafeEqual(given, expected))
+    return res.status(403).json({ error: 'Request blocked' })
+  next()
+}
+
+export const logout = (_req: Request, res: Response) => {
+  sessions.delete(res.locals.sid)
+  res
+    .clearCookie('sid', { ...cookieOpts, maxAge: undefined })
+    .json({ ok: true })
 }

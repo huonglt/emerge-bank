@@ -1,6 +1,6 @@
 import { randomBytes, scryptSync } from 'node:crypto'
 
-type User = {
+export type User = {
   userName: string // uniquely identify an user
   salt: Buffer
   hashedPassword: Buffer
