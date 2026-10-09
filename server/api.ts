@@ -12,7 +12,7 @@ export const loginSchema = z.object({
 })
 
 export type Session = {
-  userName: string
+  user: DisplayUser
   csrf: string
   created: number
   last: number
@@ -52,17 +52,15 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
     return res.status(401).json({ error: 'Please sign in again' })
   }
 
-  s.last = now
-  res.locals.sid = sid
-  res.locals.session = s
-  const user = users.get(s.userName)
+  const user = users.get(s.user.userName)
   if (!user) {
     // could not find user
     return res.status(401).json({ error: 'Please sign in again' })
   }
 
-  // user to display on FE. remove all sensitive data
-  res.locals.user = toDisplayUser(user)
+  s.last = now
+  res.locals.sid = sid
+  res.locals.session = s
 
   next()
 }
@@ -97,7 +95,7 @@ export const login = (req: Request, res: Response) => {
   const now = Date.now()
 
   const session: Session = {
-    userName: user.userName,
+    user: toDisplayUser(user),
     csrf: randomBytes(32).toString('base64url'),
     created: now,
     last: now,
@@ -105,12 +103,12 @@ export const login = (req: Request, res: Response) => {
   sessions.set(sid, session)
   res
     .cookie('sid', sid, cookieOpts)
-    .json({ userName: session.userName, csrfToken: session.csrf })
+    .json({ user: session.user, csrfToken: session.csrf })
 }
 
 export const me = (_req: Request, res: Response) => {
   const s = res.locals.session as Session
-  res.json({ user: res.locals.user, csrfToken: s.csrf })
+  res.json({ user: s.user, csrfToken: s.csrf })
 }
 
 export const csrf = (req: Request, res: Response, next: NextFunction) => {
