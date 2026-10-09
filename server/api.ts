@@ -4,6 +4,7 @@ const SID = '__Host-sid' // __Host- prefix: Secure, Path=/, no Domain, so it can
 
 import { z } from 'zod'
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
+import { DisplayUser, Session } from './types'
 
 // One schema, used by the form (UX) AND the server (the real check).
 export const loginSchema = z.object({
@@ -11,22 +12,6 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Enter your password').max(128),
 })
 
-export type Session = {
-  user: DisplayUser
-  csrf: string
-  created: number
-  last: number
-  pinNonce?: { value: string; exp: number }
-}
-type DisplayUser = {
-  userName: string
-  accountBalance: number
-  maskedAccountNumber: string
-  card: {
-    name: string | null
-    isPINSet: boolean
-  }
-}
 const sessions = new Map<string, Session>()
 const IDLE_MS = 15 * 60000
 const ABSOLUTE_MS = 8 * 60 * 60000
@@ -113,14 +98,6 @@ export const login = (req: Request, res: Response) => {
 export const me = (_req: Request, res: Response) => {
   const s = res.locals.session as Session
   res.json({ user: s.user, csrfToken: s.csrf })
-}
-
-export const csrf = (req: Request, res: Response, next: NextFunction) => {
-  const given = Buffer.from(req.body['x-csrf-token'] ?? '')
-  const expected = Buffer.from((res.locals.session as Session).csrf)
-  if (given.length !== expected.length || !timingSafeEqual(given, expected))
-    return res.status(403).json({ error: 'Request blocked' })
-  next()
 }
 
 export const logout = (_req: Request, res: Response) => {

@@ -1,5 +1,7 @@
 import { type NextFunction, type Request, type Response } from 'express'
-import { users } from './users'
+import { Session } from './types'
+import { timingSafeEqual } from 'node:crypto'
+
 export const setCSP = (_req: Request, res: Response, next: NextFunction) => {
   res.set({
     'Content-Security-Policy':
@@ -64,32 +66,10 @@ export const csrfDefence = (
   res.status(403).json({ error: 'Request blocked' })
 }
 
-const SID = '__Host-sid' // __Host- prefix: Secure, Path=/, no Domain, so it cannot be set by sibling hosts
-
-export type Session = {
-  userId: string
-  csrf: string
-  created: number
-  last: number
-  pinNonce?: { value: string; exp: number }
-}
-const sessions = new Map<string, Session>()
-const IDLE_MS = 15 * 60_000
-const ABSOLUTE_MS = 8 * 60 * 60_000
-
-export const auth = (req: Request, res: Response, next: NextFunction) => {
-  const sid = req.cookies[SID] as string | undefined
-  const s = sid ? sessions.get(sid) : undefined
-  const now = Date.now()
-  if (!sid || !s || now - s.last > IDLE_MS || now - s.created > ABSOLUTE_MS) {
-    if (sid) sessions.delete(sid)
-    return res.status(401).json({ error: 'Please sign in again' })
-  }
-
-  s.last = now
-  res.locals.sid = sid
-  res.locals.session = s
-  res.locals.user = users.get(s.userId)
-
+export const csrf = (req: Request, res: Response, next: NextFunction) => {
+  const given = Buffer.from(req.body['x-csrf-token'] ?? '')
+  const expected = Buffer.from((res.locals.session as Session).csrf)
+  if (given.length !== expected.length || !timingSafeEqual(given, expected))
+    return res.status(403).json({ error: 'Request blocked' })
   next()
 }

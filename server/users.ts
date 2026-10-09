@@ -1,14 +1,5 @@
 import { randomBytes, scryptSync } from 'node:crypto'
-
-export type User = {
-  userName: string // uniquely identify an user
-  salt: Buffer
-  hashedPassword: Buffer
-  maskedAccountNumber: string
-  accountBalance: number
-  card: { name: string | null; pin: PinRecord | null }
-}
-export type PinRecord = { salt: string; mac: string }
+import { User } from './types'
 
 // Demo users. Production: a database, Argon2id hashes, and real account data.
 function seed(

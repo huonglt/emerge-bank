@@ -2,8 +2,14 @@ import express, { type Express } from 'express'
 import cookieParser from 'cookie-parser'
 import bodyParser from 'body-parser'
 //import helmet from 'helmet'
-import { setCSP, errorHandler, noCacheControl, csrfDefence } from './middleware'
-import { me, auth, login, csrf, logout } from './api'
+import {
+  setCSP,
+  errorHandler,
+  noCacheControl,
+  csrfDefence,
+  csrf,
+} from './middleware'
+import { me, auth, login, logout } from './api'
 export const app: Express = express()
 
 app.disable('x-powered-by')
