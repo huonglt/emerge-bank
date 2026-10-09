@@ -13,12 +13,13 @@ export class ApiError extends Error {
   }
 }
 
+const serverPath = 'https://localhost:3001'
 export async function api<T>(
   path: string,
   init: { method?: string; body?: unknown } = {}
 ): Promise<T> {
   const method = init.method ?? 'GET'
-  const res = await fetch(`/api${path}`, {
+  const res = await fetch(`${serverPath}/api${path}`, {
     method,
     credentials: 'same-origin',
     headers: {
