@@ -1,29 +1,24 @@
 import { type Request, type Response, NextFunction } from 'express'
-import { sessions } from '../sessions'
-import { ABSOLUTE_MS, IDLE_MS } from './config'
-import { users } from '../users'
+//import { sessions } from '../sessions'
+import { JWT_SECRET } from '../config'
+
+import jwt, { VerifyErrors } from 'jsonwebtoken'
 
 const authFail = (res: Response) =>
   res.status(401).json({ error: 'Please sign in again' })
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
-  const sid = req.cookies['sid'] as string | undefined
-  const s = sid ? sessions.get(sid) : undefined
-  const now = Date.now()
-  if (!sid || !s || now - s.last > IDLE_MS || now - s.created > ABSOLUTE_MS) {
-    if (sid) sessions.delete(sid)
-    return authFail(res)
-  }
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
 
-  const user = users.get(s.user.userName)
-  // could not find user
-  if (!user) {
-    return authFail(res)
-  }
+  if (!token) return res.status(401).json({ error: 'Access token required.' })
 
-  s.last = now
-  res.locals.sid = sid
-  res.locals.session = s
+  jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: any) => {
+    if (err) {
+      return res.status(403).json({ error: 'Token expired or invalid.' })
+    }
 
-  next()
+    req.session.userId = decoded.sub
+    next()
+  })
 }

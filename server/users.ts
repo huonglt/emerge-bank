@@ -3,7 +3,8 @@ import { User } from './types'
 
 // Demo users. Production: a database, Argon2id hashes, and real account data.
 function seed(
-  userName: string,
+  id: string,
+  name: string,
   password: string,
   maskedAccountNumber: string,
   accountBalance: number,
@@ -11,7 +12,8 @@ function seed(
 ): User {
   const salt = randomBytes(16)
   return {
-    userName,
+    id,
+    name,
     salt,
     hashedPassword: scryptSync(password, salt, 32),
     maskedAccountNumber,
@@ -19,6 +21,36 @@ function seed(
     card: { name: cardName, pin: null },
   }
 }
-export const users = new Map<string, User>()
-users.set('hle', seed('hle', 'helen123', '***.***.***.123', 100, null))
-users.set('jan', seed('jan', 'jan123', '***.***.***.134', 200, 'Jane Doe'))
+const user1: User = seed(
+  crypto.randomUUID(),
+  'helen',
+  'helen123',
+  '***.***.***.123',
+  100,
+  null
+)
+const user2: User = seed(
+  crypto.randomUUID(),
+  'jan',
+  'jan123',
+  '***.***.***.134',
+  200,
+  'Jane Doe'
+)
+
+class UsersDB {
+  users: User[]
+  constructor(users: User[]) {
+    this.users = users
+  }
+  getByName(name: string) {
+    const user = this.users.find((u) => u.name === name)
+    return user
+  }
+  getById(id: string) {
+    const user = this.users.find((u) => u.id === id)
+    return user
+  }
+}
+
+export const usersDB = new UsersDB([user1, user2])

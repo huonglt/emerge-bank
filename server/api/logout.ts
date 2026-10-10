@@ -1,10 +1,6 @@
 import { type Request, type Response } from 'express'
-import { sessions } from '../sessions'
-import { cookieOpts } from './config'
 
-export const logout = (_req: Request, res: Response) => {
-  sessions.delete(res.locals.sid)
-  res
-    .clearCookie('sid', { ...cookieOpts, maxAge: undefined })
-    .json({ ok: true })
+export const logout = (req: Request, res: Response) => {
+  req.session.destroy(() => {})
+  res.json({ ok: true })
 }

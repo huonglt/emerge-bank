@@ -11,6 +11,9 @@ import {
   csrf,
 } from './middleware'
 import { me, auth, login, logout } from './api'
+import session from 'express-session'
+import { cookieOpts } from './config'
+import { SESSION_SECRET } from './config'
 export const app: Express = express()
 
 // Configure CORS to trust your Vite frontend origin
@@ -23,17 +26,25 @@ app.use(
 app.disable('x-powered-by')
 app.use(setCSP)
 //app.use(helmet())
+// Parse JSON request bodies
 app.use(express.json({ limit: '10kb' }))
+// Enable cookie parsing middleware
+// This parses the Cookie header and populates req.cookies
 app.use(cookieParser())
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded())
+app.use(
+  session({
+    secret: SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    cookie: cookieOpts,
+  })
+)
 
 app.use('/api', noCacheControl)
 //app.use('/api', csrfDefence)
 app.use(errorHandler)
-app.get('/', (req, res) => {
-  res.send('Hello World')
-})
 app.post('/api/login', login)
-app.post('/api/logout', auth, csrf, logout)
+app.post('/api/logout', auth, logout)
 app.get('/api/me', auth, me)

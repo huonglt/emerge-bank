@@ -1,12 +1,16 @@
+declare module 'express-session' {
+  interface SessionData {
+    userId: string
+  }
+}
 export type Session = {
-  user: DisplayUser
-  csrf: string
+  userId: string
   created: number
-  last: number
   pinNonce?: { value: string; exp: number }
 }
 export type DisplayUser = {
-  userName: string
+  id: string
+  name: string
   accountBalance: number
   maskedAccountNumber: string
   card: {
@@ -15,8 +19,12 @@ export type DisplayUser = {
   }
 }
 
+/**
+ * user can be uniquely identified by either id or name
+ */
 export type User = {
-  userName: string // uniquely identify an user
+  id: string // an v4 uuid
+  name: string
   salt: Buffer
   hashedPassword: Buffer
   maskedAccountNumber: string

@@ -17,7 +17,7 @@ export const setCSP = (_req: Request, res: Response, next: NextFunction) => {
 }
 
 export const noCacheControl = (
-  _req: Request,
+  req: Request,
   res: Response,
   next: NextFunction
 ) => {
@@ -27,9 +27,9 @@ export const noCacheControl = (
 
 export const errorHandler = (
   err: Error & { status?: number },
-  _req: Request,
+  req: Request,
   res: Response,
-  _next: NextFunction
+  next: NextFunction
 ) => {
   const status = err.status && err.status < 500 ? 400 : 500
   if (status === 500) {
