@@ -15,10 +15,12 @@ import { useMeQuery } from '@/hooks/useMeQuery'
 
 export function ProfileMenu() {
   const me = useMeQuery()
-  if (!me.data) {
+  const userName = me.data?.name
+
+  if (!userName) {
     return null
   }
-  const userName = me.data?.name
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger

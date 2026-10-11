@@ -10,13 +10,13 @@ import {
 } from '@/components/ui/item'
 import { BankCard } from './BankCard'
 import type { User } from '../types'
+
 type Props = {
   user: User
 }
 
 export const Account = (props: Props) => {
   const user = props.user
-
   const { name, accountBalance, maskedAccountNumber } = user
 
   return (

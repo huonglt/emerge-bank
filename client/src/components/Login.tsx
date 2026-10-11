@@ -11,16 +11,12 @@ import { Label } from '@/components/ui/label'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { api, setAccessToken, setCsrf } from '@/lib/api'
-
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
+
 import type { Me } from '@/types'
+import { loginSchema } from '@/schema/schema'
 
 type LoginInput = { userName: string; password: string }
-export const loginSchema = z.object({
-  userName: z.string().trim().min(4, 'Enter your user name').max(64),
-  password: z.string().min(4, 'Enter your password').max(128),
-})
 
 export const LogIn = () => {
   const qc = useQueryClient()
@@ -46,12 +42,7 @@ export const LogIn = () => {
           <div className="flex flex-col gap-2">
             <div className="grid gap-2">
               <Label htmlFor="userName">Name</Label>
-              <Input
-                type="text"
-                required
-                value="helen"
-                {...form.register('userName')}
-              />
+              <Input type="text" required {...form.register('userName')} />
             </div>
             <div className="gid pb-2 text-left">
               {errors.userName && (
@@ -63,12 +54,7 @@ export const LogIn = () => {
             <div className="grid gap-2 pb-2">
               <Label htmlFor="password">Password</Label>
 
-              <Input
-                type="password"
-                required
-                value={'helen123'}
-                {...form.register('password')}
-              />
+              <Input type="password" required {...form.register('password')} />
               {errors.password && (
                 <div className="gid pb-2 text-left">
                   <span role="alert" className="text-red-700 ">

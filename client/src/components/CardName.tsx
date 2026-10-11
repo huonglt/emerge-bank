@@ -1,9 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
-import type { User } from '../types'
-import { api } from '../lib/api'
+import type { User } from '@/types'
+import { api } from '@/lib/api'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
@@ -17,15 +16,9 @@ import {
   ItemTitle,
 } from '@/components/ui/item'
 import { BankCard } from './BankCard'
+import { cardNameSchema } from '@/schema/schema'
 
 type CardName = { name: string }
-export const cardNameSchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(6, 'Card name should be more than 6 characters')
-    .max(26, 'Card name should be no more than 6 characters'),
-})
 
 export const CardName = () => {
   const form = useForm<CardName>({ resolver: zodResolver(cardNameSchema) })

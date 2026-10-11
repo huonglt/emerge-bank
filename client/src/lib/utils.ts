@@ -40,3 +40,11 @@ export const getInitials = function (name: string) {
   }
   return initials
 }
+
+/**
+ * a weak PIN is when it is 4 consecutive numbers
+ * For a 4-digit PIN that means 0123, 1234, 2345, 3456, 4567, 5678 and 6789.
+ * Or 9876, 8765, 7654, 6543, 5432, 4321 and 3210
+ */
+export const isWeakPin = (p: string) =>
+  /^(\d)\1{3}$/.test(p) || '0123456789'.includes(p) || '9876543210'.includes(p)

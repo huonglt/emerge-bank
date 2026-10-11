@@ -16,6 +16,7 @@ export class ApiError extends Error {
 }
 
 const serverPath = 'https://localhost:3001'
+
 export async function api<T>(
   path: string,
   init: { method?: string; body?: unknown } = {}
@@ -34,7 +35,8 @@ export async function api<T>(
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
   })
   const data = await res.json().catch(() => ({}))
-  if (!res.ok)
+  if (!res.ok) {
     throw new ApiError(res.status, data.error ?? 'Something went wrong')
+  }
   return data as T
 }

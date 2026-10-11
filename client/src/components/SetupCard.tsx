@@ -1,5 +1,5 @@
 import { CardName } from './CardName'
-import type { User } from './types'
+import type { User } from '../types'
 import { CardPIN } from './CardPIN'
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 export const SetupCard = (props: Props) => {
   const user = props.user
   const needCardName = !user.card?.name
-  const needPIN = user.card?.name && !user.card.isPINSet
+  const needPIN = !needCardName && !user.card?.isPINSet
 
   return (
     <div className="content">
