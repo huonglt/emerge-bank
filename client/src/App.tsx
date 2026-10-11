@@ -1,25 +1,25 @@
-import './App.css'
-import { useQuery } from '@tanstack/react-query'
-import { api, ApiError, setCsrf } from './api'
-import type { Me, User } from './types'
+import { api, ApiError } from './api'
 import { Dashboard } from './Dashboard'
-import { Login } from './Login'
+import { Footer } from './Footer'
+import { Header } from './Header'
+import { LogIn } from './Login'
+import type { Me } from './types'
+import { useQuery } from '@tanstack/react-query'
+const queryMe = async () => {
+  try {
+    const m = await api<Me>('/me')
+    return m.user
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 401) return null
+    throw e
+  }
+}
 
-function App() {
+export const App = () => {
   const me = useQuery({
-    queryKey: ['me'],
-    staleTime: 60_000,
-    queryFn: async () => {
-      try {
-        const m = await api<Me>('/me')
-
-        setCsrf(m.csrfToken) // restore CSRF token after a page reload
-        return m
-      } catch (e) {
-        if (e instanceof ApiError && e.status === 401) return null
-        throw e
-      }
-    },
+    queryKey: ['user'],
+    staleTime: 60 * 1000, // 1m
+    queryFn: queryMe,
   })
 
   if (me.isPending)
@@ -31,20 +31,14 @@ function App() {
 
   console.log(`me = ${JSON.stringify(me)}`)
   return (
-    <>
-      <section className="mt-8 mb-8">
-        <h2>Mini Virtual Bank</h2>
-      </section>
-
-      <section>
-        <div className="w-full flex items-center">
-          <main className="w-full flex">
-            {me.data ? <Dashboard user={me.data.user} /> : <Login />}
-          </main>
+    <div className="app">
+      <Header />
+      <div className="main">
+        <div className="content">
+          {me.data ? <Dashboard user={me.data} /> : <LogIn />}
         </div>
-      </section>
-    </>
+      </div>
+      <Footer />
+    </div>
   )
 }
-
-export default App

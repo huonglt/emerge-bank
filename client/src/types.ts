@@ -1,5 +1,5 @@
 export type User = {
-  userName: string
+  id: string
   accountBalance: number
   maskedAccountNumber: string
   card: {
@@ -10,4 +10,5 @@ export type User = {
 export type Me = {
   user: User
   csrfToken: string
+  accessToken: string
 }
