@@ -6,12 +6,14 @@ import { randomBytes } from 'node:crypto'
 import { NONCE_MS } from '../config'
 import { createPinRecord, decryptPinPayload, publicKeyJwk } from '../lib/pin'
 import { z } from 'zod'
+import { sessions } from './sessions'
 
 export const setCardName = (req: Request, res: Response) => {
   const parsed = cardNameSchema.safeParse(req.body)
   if (!parsed.success) {
     return res.status(400).json({ ok: false, error: 'Card name invalid' })
   }
+
   const { name } = parsed.data
   const userId = req.session.userId!
   const user = usersDB.getById(userId)
@@ -52,7 +54,13 @@ export const pinNonce = (req: Request, res: Response) => {
     value: randomBytes(16).toString('base64url'),
     exp: Date.now() + NONCE_MS,
   }
-  user.nonce = req.session.pinNonce
+
+  const userSessionData = sessions.get(user.id)
+  if (!userSessionData) {
+    return res.status(401).json({ error: 'User session not found' })
+  }
+  userSessionData.nonce = req.session.pinNonce
+
   res.json({ publicKey: publicKeyJwk, nonce: req.session.pinNonce.value })
 }
 
@@ -75,9 +83,17 @@ export const setCardPIN = (req: Request, res: Response) => {
   }
   const body = z.object({ encrypted: z.string().max(1024) }).safeParse(req.body)
 
-  // take and clear the nonce
-  const nonce = user.nonce
-  user.nonce = undefined
+  /**
+   * take and clear the nonce from session
+   */
+  const userSessionData = sessions.get(user.id)
+  if (!userSessionData) {
+    return res
+      .status(401)
+      .json({ ok: false, status: 409, error: 'User session not found' })
+  }
+  const nonce = userSessionData.nonce
+  userSessionData.nonce = undefined
 
   const payload = body.success ? decryptPinPayload(body.data.encrypted) : null
 

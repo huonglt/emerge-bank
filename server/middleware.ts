@@ -1,21 +1,14 @@
 import { type NextFunction, type Request, type Response } from 'express'
-import { Session } from './types'
+
 import { timingSafeEqual } from 'node:crypto'
+import { sessions } from './api/sessions'
 
-export const setCSP = (_req: Request, res: Response, next: NextFunction) => {
-  res.set({
-    'Content-Security-Policy':
-      "default-src 'self'; connect-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'",
-    'X-Content-Type-Options': 'nosniff',
-    'Referrer-Policy': 'no-referrer',
-    // Off by default: browsers remember HSTS per host, and localhost is shared with your other projects.
-    ...(process.env.HSTS === '1' && {
-      'Strict-Transport-Security': 'max-age=63072000',
-    }),
-  })
-  next()
-}
+import jwt, { VerifyErrors } from 'jsonwebtoken'
+import { JWT_SECRET } from './config'
 
+/**
+ * Browsers, and proxy dont cache any part of the request or response
+ */
 export const noCacheControl = (
   req: Request,
   res: Response,
@@ -40,36 +33,47 @@ export const errorHandler = (
     .json({ error: status === 400 ? 'Bad request' : 'Something went wrong' })
 }
 
-/**
- *
- * Blocks state-changing requests (POST, PUT, DELETE and so on) unless they come from your own site.
- * Read-only ("safe") methods skip the check. They shouldn't change anything, so a forged cross-site request can't do harm
- * @param req
- * @param res
- * @param next
- * @returns
- */
-export const csrfDefence = (
+export const csrf = (req: Request, res: Response, next: NextFunction) => {
+  const reqCSRFToken = Buffer.from(req.headers['x-csrf-token'] as string)
+  const userId = req.session.userId
+
+  const userSesssion = sessions.get(userId!)
+  const serverCSRFToken = Buffer.from(userSesssion?.csrfToken || '')
+
+  if (
+    reqCSRFToken.length !== serverCSRFToken.length ||
+    !timingSafeEqual(reqCSRFToken, serverCSRFToken)
+  ) {
+    return res.status(403).json({ error: 'Request blocked' })
+  }
+  next()
+}
+
+export const auth = (req: Request, res: Response, next: NextFunction) => {
+  const authHeader = req.headers['authorization']
+  const token = authHeader && authHeader.split(' ')[1]
+
+  if (!token) return res.status(401).json({ error: 'Access token required.' })
+
+  jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: any) => {
+    if (err) {
+      return res.status(403).json({ error: 'Token expired or invalid.' })
+    }
+
+    req.session.userId = decoded.sub
+    next()
+  })
+}
+
+export const sessionCheck = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
-    return next()
+  const userId = req.session.userId
+  const userSession = sessions.get(userId!)
+  if (!userSession) {
+    return res.status(403).json({ error: 'Session user not found' })
   }
-  try {
-    const o = req.get('origin')
-    if (o && new URL(o).host === req.get('host')) {
-      return next()
-    }
-  } catch {}
-  res.status(403).json({ error: 'Request blocked' })
-}
-
-export const csrf = (req: Request, res: Response, next: NextFunction) => {
-  const given = Buffer.from(req.body['x-csrf-token'] ?? '')
-  const expected = Buffer.from((res.locals.session as Session).csrf)
-  if (given.length !== expected.length || !timingSafeEqual(given, expected))
-    return res.status(403).json({ error: 'Request blocked' })
   next()
 }

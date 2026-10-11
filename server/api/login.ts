@@ -3,6 +3,7 @@ import { usersDB } from '../users'
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
 import { generateJWT, toDisplayUser } from '../lib/util'
 import { loginSchema } from '../schema'
+import { sessions } from './sessions'
 
 const loginFail = (res: Response) =>
   res.status(401).json({ error: 'Username or password is incorrect' })
@@ -24,6 +25,8 @@ export const login = (req: Request, res: Response) => {
 
   const accessToken = generateJWT(user)
   const csrfToken = randomBytes(32).toString('base64url')
+  sessions.set(user.id, { accessToken, csrfToken, nonce: undefined })
+  console.log(`login: setting session data for userid ${user.id}`)
   req.session.userId = user.id
   return res
     .status(200)
