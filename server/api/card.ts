@@ -19,7 +19,7 @@ export const setCardName = (req: Request, res: Response) => {
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
-    return res.status(400).json({ error: 'Could not find user' })
+    return res.status(404).json({ error: 'Could not find user' })
   }
   if (user.card.name) {
     return res
@@ -42,7 +42,7 @@ export const pinNonce = (req: Request, res: Response) => {
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
-    return res.status(401).json({ error: 'Could not find user' })
+    return res.status(404).json({ error: 'Could not find user' })
   }
   if (!user.card.name || user.card.pin) {
     return res.status(409).json({ error: 'PIN cannot be set right now' })
@@ -57,7 +57,7 @@ export const pinNonce = (req: Request, res: Response) => {
 
   const userSessionData = sessions.get(user.id)
   if (!userSessionData) {
-    return res.status(400).json({ error: 'User session not found' })
+    return res.status(404).json({ error: 'User session not found' })
   }
   userSessionData.nonce = req.session.pinNonce
 
@@ -69,7 +69,7 @@ export const setCardPIN = (req: Request, res: Response) => {
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
-    return res.status(400).json({ error: 'Could not find user' })
+    return res.status(404).json({ error: 'Could not find user' })
   }
   if (!user.card.name) {
     return res.status(409).json({ ok: false, error: 'Name your card first' })
