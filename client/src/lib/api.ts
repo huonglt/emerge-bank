@@ -19,9 +19,9 @@ const serverPath = 'https://localhost:3001'
 
 export const api = async <T>(
   path: string,
-  init: { method?: string; body?: unknown } = {}
+  options: { method?: string; body?: unknown } = {}
 ): Promise<T> => {
-  const method = init.method ?? 'GET'
+  const method = options.method ?? 'GET'
   const res = await fetch(`${serverPath}/api${path}`, {
     method,
     credentials: 'same-origin',
@@ -32,7 +32,7 @@ export const api = async <T>(
         'X-CSRF-Token': csrfToken,
       }),
     },
-    body: init.body === undefined ? undefined : JSON.stringify(init.body),
+    body: options.body === undefined ? undefined : JSON.stringify(options.body),
   })
   const data = await res.json().catch(() => ({}))
   if (!res.ok) {
