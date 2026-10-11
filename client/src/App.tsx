@@ -37,7 +37,9 @@ export const App = () => {
     <div className="app">
       <Header />
       <div className="main">
-        <div className="content">{user ? <Dashboard /> : <LogIn />}</div>
+        <div className="content">
+          {user ? <Dashboard user={user} /> : <LogIn />}
+        </div>
       </div>
       <Footer />
     </div>

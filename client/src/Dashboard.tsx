@@ -7,7 +7,7 @@ type Props = {
 export const Dashboard = (props: Props) => {
   const user = props.user
   const needCardName = !user.card?.name
-  const needSetPIN = !needCardName && !user.card.isPINSet
+  const needSetPIN = !needCardName && !user.card?.isPINSet
 
   if (needCardName || needSetPIN) {
     return <SetupCard user={user} />

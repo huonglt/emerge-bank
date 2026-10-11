@@ -15,7 +15,13 @@ import { api } from './api'
 import { BankCard } from './BankCard'
 import { useRef, useState } from 'react'
 import { encryptPin } from './lib/utils'
+import { PIN } from './PIN'
 
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from '@/components/ui/input-otp'
 type CardPIN = { pin: string }
 
 /**
@@ -38,6 +44,7 @@ export const CardPIN = () => {
   // a form library, the URL or storage. It is read at submit time and cleared straight away.
   const pinRef = useRef<HTMLInputElement>(null)
   const confirmRef = useRef<HTMLInputElement>(null)
+
   const [error, setError] = useState<string | null>(null)
   const setCardPIN = useMutation({
     mutationFn: async (v: { pin: string; confirm: string }) =>
@@ -61,6 +68,7 @@ export const CardPIN = () => {
     confirmRef.current!.value = ''
   }
   const errMessage = error ?? setCardPIN.error?.message
+
   return (
     <Card className="w-full max-w-sm">
       <form onSubmit={handleFormSubmit} noValidate>
@@ -79,29 +87,15 @@ export const CardPIN = () => {
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="pin">PIN</Label>
-              <Input
-                ref={pinRef}
-                type="password"
-                inputMode="numeric"
-                autoComplete="off"
-                maxLength={4}
-                required
-              />
+              <PIN ref={pinRef} />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="confirmedPin">Confirmed PIN</Label>
-              <Input
-                ref={confirmRef}
-                type="password"
-                inputMode="numeric"
-                autoComplete="off"
-                maxLength={4}
-                required
-              />
+              <PIN ref={confirmRef} />
             </div>
           </div>
-          <div className="gid pb-2 pt-2     text-left">
+          <div className="gid pb-2 pt-2 text-left">
             {errMessage && (
               <span role="alert" className="text-red-700 ">
                 {errMessage}
