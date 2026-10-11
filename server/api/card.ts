@@ -19,11 +19,11 @@ export const setCardName = (req: Request, res: Response) => {
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
-    return res.status(401).json({ error: 'Could not find user' })
+    return res.status(400).json({ error: 'Could not find user' })
   }
   if (user.card.name) {
     return res
-      .status(409)
+      .status(400)
       .json({ ok: false, error: 'Card name is already set' })
   }
   user.card.name = name
@@ -57,7 +57,7 @@ export const pinNonce = (req: Request, res: Response) => {
 
   const userSessionData = sessions.get(user.id)
   if (!userSessionData) {
-    return res.status(401).json({ error: 'User session not found' })
+    return res.status(400).json({ error: 'User session not found' })
   }
   userSessionData.nonce = req.session.pinNonce
 
@@ -69,17 +69,13 @@ export const setCardPIN = (req: Request, res: Response) => {
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
-    return res.status(401).json({ error: 'Could not find user' })
+    return res.status(400).json({ error: 'Could not find user' })
   }
   if (!user.card.name) {
-    return res
-      .status(401)
-      .json({ ok: false, status: 409, error: 'Name your card first' })
+    return res.status(409).json({ ok: false, error: 'Name your card first' })
   }
   if (user.card.pin) {
-    return res
-      .status(401)
-      .json({ ok: false, status: 409, error: 'PIN is already set' })
+    return res.status(409).json({ ok: false, error: 'PIN is already set' })
   }
   const body = z.object({ encrypted: z.string().max(1024) }).safeParse(req.body)
 
@@ -88,9 +84,7 @@ export const setCardPIN = (req: Request, res: Response) => {
    */
   const userSessionData = sessions.get(user.id)
   if (!userSessionData) {
-    return res
-      .status(401)
-      .json({ ok: false, status: 409, error: 'User session not found' })
+    return res.status(404).json({ ok: false, error: 'User session not found' })
   }
   const nonce = userSessionData.nonce
   userSessionData.nonce = undefined
@@ -109,11 +103,11 @@ export const setCardPIN = (req: Request, res: Response) => {
   }
   // pin & confirmPin is re-checked on the server
   if (!isEqual(payload.pin, payload.confirmPin)) {
-    return res.status(400).json({ error: 'PINs do not match' })
+    return res.status(409).json({ error: 'PINs do not match' })
   }
   if (!pinSchema.safeParse(payload.pin).success) {
     return res
-      .status(400)
+      .status(409)
       .json({ error: 'Choose a PIN that is harder to guess' })
   }
 

@@ -44,7 +44,7 @@ export const csrf = (req: Request, res: Response, next: NextFunction) => {
     reqCSRFToken.length !== serverCSRFToken.length ||
     !timingSafeEqual(reqCSRFToken, serverCSRFToken)
   ) {
-    return res.status(403).json({ error: 'Request blocked' })
+    return res.status(401).json({ error: 'Request blocked' })
   }
   next()
 }
@@ -57,7 +57,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
 
   jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: any) => {
     if (err) {
-      return res.status(403).json({ error: 'Token expired or invalid.' })
+      return res.status(401).json({ error: 'Token expired or invalid.' })
     }
 
     req.session.userId = decoded.sub
@@ -73,7 +73,7 @@ export const sessionCheck = (
   const userId = req.session.userId
   const userSession = sessions.get(userId!)
   if (!userSession) {
-    return res.status(403).json({ error: 'Session user not found' })
+    return res.status(404).json({ error: 'Session user not found' })
   }
   next()
 }

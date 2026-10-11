@@ -7,7 +7,7 @@ export const me = (req: Request, res: Response) => {
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
-    return res.status(401).json({ error: 'Could not find user' })
+    return res.status(404).json({ error: 'Could not find user' })
   }
 
   return res.status(200).json({ user: toDisplayUser(user) })
