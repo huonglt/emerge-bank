@@ -1,7 +1,6 @@
 import { type Request, type Response, NextFunction } from 'express'
 import { JWT_SECRET } from '../config'
 import jwt, { VerifyErrors } from 'jsonwebtoken'
-import { usersDB } from '../users'
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization']

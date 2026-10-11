@@ -8,7 +8,6 @@ const loginFail = (res: Response) =>
   res.status(401).json({ error: 'Username or password is incorrect' })
 
 export const login = (req: Request, res: Response) => {
-  console.log(`login running`)
   const parsed = loginSchema.safeParse(req.body)
   if (!parsed.success) {
     return loginFail(res)

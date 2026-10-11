@@ -12,15 +12,31 @@ import {
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getInitials } from '../lib/utils'
 import { useMeQuery } from '@/hooks/useMeQuery'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api, setAccessToken, setCsrf } from '@/lib/api'
 
 export function ProfileMenu() {
   const me = useMeQuery()
   const userName = me.data?.name
 
+  const qc = useQueryClient()
+
+  const logout = useMutation({
+    mutationFn: () => api('/logout', { method: 'POST' }),
+    onSuccess: () => {
+      // wipe all user data
+      setAccessToken('')
+      setCsrf('')
+      qc.setQueryData(['user'], null)
+      qc.clear()
+    },
+  })
+
+  const logoutHandler = () => logout.mutate()
+
   if (!userName) {
     return null
   }
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -39,7 +55,7 @@ export function ProfileMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>Log out</DropdownMenuItem>
+          <DropdownMenuItem onClick={logoutHandler}>Log out</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
