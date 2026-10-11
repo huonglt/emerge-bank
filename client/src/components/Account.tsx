@@ -17,7 +17,7 @@ type Props = {
 
 export const Account = (props: Props) => {
   const user = props.user
-  const { name, accountBalance, maskedAccountNumber } = user
+  const { name, accountBalance, accountNumber } = user
 
   return (
     <Item variant={'outline'}>
@@ -25,8 +25,8 @@ export const Account = (props: Props) => {
       <BankCard />
       <ItemContent>
         <ItemTitle>{name}</ItemTitle>
-        <ItemDescription>{maskedAccountNumber}</ItemDescription>
-        <ItemDescription>{accountBalance}</ItemDescription>
+        <ItemDescription>{accountNumber}</ItemDescription>
+        <ItemDescription>NZD {accountBalance}$</ItemDescription>
       </ItemContent>
       <ItemActions>
         <Button variant="outline">Add money</Button>

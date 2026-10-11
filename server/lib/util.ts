@@ -4,15 +4,16 @@ import { User, DisplayUser } from '../types'
 import jwt from 'jsonwebtoken'
 
 export const toDisplayUser = (user: User): DisplayUser => {
-  const { id, name, accountBalance, maskedAccountNumber, card } = user
+  const { id, name, accountBalance, accountNumber, card } = user
   return {
     id,
     name,
     accountBalance,
-    maskedAccountNumber,
+    accountNumber,
     card: {
       name: card?.name,
       isPINSet: card?.pin !== null,
+      maskedAccountNumber: card.maskedCardNumber,
     },
   }
 }

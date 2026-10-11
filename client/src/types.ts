@@ -2,10 +2,11 @@ export type User = {
   id: string
   name: string
   accountBalance: number
-  maskedAccountNumber: string
+  accountNumber: string
   card: {
     name: string | null
     isPINSet: boolean
+    maskedAccountNumber: string
   }
 }
 export type Me = {

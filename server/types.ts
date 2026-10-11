@@ -13,10 +13,11 @@ export type DisplayUser = {
   id: string
   name: string
   accountBalance: number
-  maskedAccountNumber: string
+  accountNumber: string
   card: {
     name: string | null
     isPINSet: boolean
+    maskedAccountNumber: string
   }
 }
 
@@ -28,9 +29,9 @@ export type User = {
   name: string
   salt: Buffer
   hashedPassword: Buffer
-  maskedAccountNumber: string
+  accountNumber: string
   accountBalance: number
-  card: { name: string | null; pin: PinRecord | null }
+  card: { name: string | null; pin: PinRecord | null; maskedCardNumber: string }
   nonce?: Nonce
 }
 export type PinRecord = { salt: string; mac: string }

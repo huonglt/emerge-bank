@@ -6,7 +6,8 @@ function seed(
   id: string,
   name: string,
   password: string,
-  maskedAccountNumber: string,
+  accountNumber: string,
+  maskedCardNumber: string,
   accountBalance: number,
   cardName: string | null
 ): User {
@@ -16,15 +17,16 @@ function seed(
     name,
     salt,
     hashedPassword: scryptSync(password, salt, 32),
-    maskedAccountNumber,
+    accountNumber,
     accountBalance,
-    card: { name: cardName, pin: null },
+    card: { name: cardName, pin: null, maskedCardNumber },
   }
 }
 const user1: User = seed(
   crypto.randomUUID(),
   'helen',
   'helen123',
+  '01-1238-1335678-132', // BB-BBBB-AAAAAAA-SSS
   '***.***.***.123',
   100,
   null
@@ -33,6 +35,7 @@ const user2: User = seed(
   crypto.randomUUID(),
   'jan',
   'jan123',
+  '02-2338-2435670-134',
   '***.***.***.134',
   200,
   'Jane Doe'
