@@ -15,7 +15,7 @@ import {
   ItemDescription,
   ItemTitle,
 } from '@/components/ui/item'
-import { BankCard } from './BankCard'
+import { CardMedia } from './CardMedia'
 import { cardNameSchema } from '@/schema/schema'
 
 type CardName = { name: string }
@@ -40,7 +40,7 @@ export const CardName = () => {
       >
         <CardHeader>
           <Item className="pr-0 pl-0">
-            <BankCard />
+            <CardMedia />
             <ItemContent>
               <ItemTitle>Setting up virtual bank card</ItemTitle>
               <ItemDescription>

@@ -8,7 +8,7 @@ import {
   ItemHeader,
   ItemActions,
 } from '@/components/ui/item'
-import { BankCard } from './BankCard'
+import { CardMedia } from './CardMedia'
 import type { User } from '../types'
 
 type Props = {
@@ -22,7 +22,7 @@ export const Account = (props: Props) => {
   return (
     <Item variant={'outline'}>
       <ItemHeader>Your account</ItemHeader>
-      <BankCard />
+      <CardMedia />
       <ItemContent>
         <ItemTitle>{name}</ItemTitle>
         <ItemDescription>{accountNumber}</ItemDescription>

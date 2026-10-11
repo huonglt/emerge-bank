@@ -12,7 +12,7 @@ import {
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
-import { BankCard } from './BankCard'
+import { CardMedia } from './CardMedia'
 import { useRef, useState } from 'react'
 import { encryptPin } from '@/lib/utils'
 import { Input } from './ui/input'
@@ -56,7 +56,7 @@ export const CardPIN = () => {
       <form onSubmit={handleFormSubmit} noValidate>
         <CardHeader>
           <Item className="pr-0 pl-0">
-            <BankCard />
+            <CardMedia />
             <ItemContent>
               <ItemTitle>Setting up your virtual bank card</ItemTitle>
               <ItemDescription>
