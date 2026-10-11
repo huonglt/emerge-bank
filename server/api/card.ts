@@ -28,7 +28,7 @@ export const setCardName = (req: Request, res: Response) => {
   }
   user.card.name = name
 
-  res.json({ user: toDisplayUser(user) })
+  return res.status(200).json({ ok: true })
 }
 
 /**
