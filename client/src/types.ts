@@ -1,5 +1,6 @@
 export type User = {
   id: string
+  name: string
   accountBalance: number
   maskedAccountNumber: string
   card: {

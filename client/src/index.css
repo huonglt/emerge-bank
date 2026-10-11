@@ -316,3 +316,7 @@ body {
   flex-direction: column;
   gap: 16px;
 }
+
+.buttonProfile {
+  background-color: #1f2937;
+}

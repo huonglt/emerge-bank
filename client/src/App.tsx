@@ -23,10 +23,7 @@ export const useMeQuery = () => {
   return me
 }
 export const App = () => {
-  const me = useQuery({
-    queryKey: ['user'],
-    queryFn: queryMe,
-  })
+  const me = useMeQuery()
 
   if (me.isPending)
     return (
@@ -35,15 +32,12 @@ export const App = () => {
       </main>
     )
 
-  console.log(`me = ${JSON.stringify(me)}`)
   const user = me.data
   return (
     <div className="app">
       <Header />
       <div className="main">
-        <div className="content">
-          {user ? <Dashboard user={user} /> : <LogIn />}
-        </div>
+        <div className="content">{user ? <Dashboard /> : <LogIn />}</div>
       </div>
       <Footer />
     </div>

@@ -9,15 +9,24 @@ import {
   ItemActions,
 } from '@/components/ui/item'
 import { BankCard } from './BankCard'
-export const Account = () => {
+import type { User } from './types'
+type Props = {
+  user: User
+}
+
+export const Account = (props: Props) => {
+  const user = props.user
+
+  const { name, accountBalance, maskedAccountNumber } = user
+
   return (
     <Item variant={'outline'}>
       <ItemHeader>Your account</ItemHeader>
       <BankCard />
       <ItemContent>
-        <ItemTitle>Primary</ItemTitle>
-        <ItemDescription>XXXXXX1234</ItemDescription>
-        <ItemDescription>100NZD</ItemDescription>
+        <ItemTitle>{name}</ItemTitle>
+        <ItemDescription>{maskedAccountNumber}</ItemDescription>
+        <ItemDescription>{accountBalance}</ItemDescription>
       </ItemContent>
       <ItemActions>
         <Button variant="outline">Add money</Button>
