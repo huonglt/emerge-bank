@@ -10,8 +10,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { getInitials } from './lib/utils'
-import { useMeQuery } from './App'
+import { getInitials } from '../lib/utils'
+import { useMeQuery } from '@/hooks/useMeQuery'
 
 export function ProfileMenu() {
   const me = useMeQuery()

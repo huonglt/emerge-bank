@@ -1,11 +1,10 @@
-import { api, ApiError } from './api'
-import { Dashboard } from './Dashboard'
-import { Footer } from './Footer'
-import { Header } from './Header'
-import { LogIn } from './Login'
-import type { Me } from './types'
-import { useQuery } from '@tanstack/react-query'
-const queryMe = async () => {
+import { Dashboard } from '@/components/Dashboard'
+import { Footer } from '@/components/Footer'
+import { Header } from '@/components/Header'
+import { LogIn } from '@/components/Login'
+
+import { useMeQuery } from '@/hooks/useMeQuery'
+/*const queryMe = async () => {
   try {
     const m = await api<Me>('/me')
     return m.user
@@ -21,7 +20,7 @@ export const useMeQuery = () => {
     queryFn: queryMe,
   })
   return me
-}
+}*/
 export const App = () => {
   const me = useMeQuery()
 

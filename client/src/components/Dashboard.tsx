@@ -1,5 +1,5 @@
 import { SetupCard } from './SetupCard'
-import type { User } from './types'
+import type { User } from '../types'
 import { Account } from './Account'
 type Props = {
   user: User

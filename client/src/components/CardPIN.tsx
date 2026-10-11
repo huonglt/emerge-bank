@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
+
 import { Label } from '@/components/ui/label'
 import {
   Item,
@@ -11,17 +11,12 @@ import {
 import { z } from 'zod'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 
-import { api } from './api'
+import { api } from '../lib/api'
 import { BankCard } from './BankCard'
 import { useRef, useState } from 'react'
-import { encryptPin } from './lib/utils'
-import { PIN } from './PIN'
+import { encryptPin } from '@/lib/utils'
+import { Input } from './ui/input'
 
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from '@/components/ui/input-otp'
 type CardPIN = { pin: string }
 
 /**
@@ -87,12 +82,25 @@ export const CardPIN = () => {
           <div className="flex flex-col gap-6">
             <div className="grid gap-2">
               <Label htmlFor="pin">PIN</Label>
-              <PIN ref={pinRef} />
+
+              <Input
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={4}
+                ref={pinRef}
+              />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="confirmedPin">Confirmed PIN</Label>
-              <PIN ref={confirmRef} />
+              <Input
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                maxLength={4}
+                ref={confirmRef}
+              />
             </div>
           </div>
           <div className="gid pb-2 pt-2 text-left">

@@ -9,7 +9,7 @@ import {
   ItemActions,
 } from '@/components/ui/item'
 import { BankCard } from './BankCard'
-import type { User } from './types'
+import type { User } from '../types'
 type Props = {
   user: User
 }

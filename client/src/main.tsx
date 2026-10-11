@@ -1,13 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import './css/index.css'
 import { App } from './App.tsx'
 import {
   QueryCache,
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import { ApiError, setCsrf } from './api.ts'
+import { ApiError, setCsrf } from './lib/api.ts'
 
 const queryClient: QueryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, gcTime: 60_000 } }, // short cache for sensitive data

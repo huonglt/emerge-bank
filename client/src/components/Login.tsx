@@ -10,10 +10,11 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { api, setAccessToken, setCsrf } from './api'
-import type { Me } from './types'
+import { api, setAccessToken, setCsrf } from '@/lib/api'
+
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
+import type { Me } from '@/types'
 
 type LoginInput = { userName: string; password: string }
 export const loginSchema = z.object({

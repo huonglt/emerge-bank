@@ -1,6 +1,6 @@
 'use client'
 
-import { OTPInput, REGEXP_ONLY_DIGITS } from 'input-otp'
+import { REGEXP_ONLY_DIGITS } from 'input-otp'
 
 import {
   InputOTP,
