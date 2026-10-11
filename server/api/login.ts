@@ -26,8 +26,6 @@ export const login = (req: Request, res: Response) => {
   const accessToken = generateJWT(user)
   const csrfToken = randomBytes(32).toString('base64url')
   sessions.set(user.id, { accessToken, csrfToken, nonce: undefined })
-  console.log(`login: setting session data for userid ${user.id}`)
-  req.session.userId = user.id
   return res
     .status(200)
     .json({ user: toDisplayUser(user), csrfToken, accessToken })
