@@ -9,3 +9,4 @@ export const cookieOpts = {
 export const SID = '__Host-sid' // __Host- prefix: Secure, Path=/, no Domain, so it cannot be set by sibling hosts
 export const JWT_SECRET = 'virtual-bank-jwt-secret-key' // will be stored in a vault in production
 export const SESSION_SECRET = 'virtual-bank-session-secret-key'
+export const NONCE_MS = 5 * 60 * 1000

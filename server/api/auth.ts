@@ -1,11 +1,7 @@
 import { type Request, type Response, NextFunction } from 'express'
-//import { sessions } from '../sessions'
 import { JWT_SECRET } from '../config'
-
 import jwt, { VerifyErrors } from 'jsonwebtoken'
-
-const authFail = (res: Response) =>
-  res.status(401).json({ error: 'Please sign in again' })
+import { usersDB } from '../users'
 
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization']

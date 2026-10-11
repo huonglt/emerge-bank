@@ -1,13 +1,14 @@
 import { type Request, type Response } from 'express'
 import { usersDB } from '../users'
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
-import { generateJWT, toDisplayUser } from '../util'
+import { generateJWT, toDisplayUser } from '../lib/util'
 import { loginSchema } from '../schema'
 
 const loginFail = (res: Response) =>
   res.status(401).json({ error: 'Username or password is incorrect' })
 
 export const login = (req: Request, res: Response) => {
+  console.log(`login running`)
   const parsed = loginSchema.safeParse(req.body)
   if (!parsed.success) {
     return loginFail(res)
@@ -25,5 +26,7 @@ export const login = (req: Request, res: Response) => {
   const accessToken = generateJWT(user)
   const csrfToken = randomBytes(32).toString('base64url')
   req.session.userId = user.id
-  res.json({ user: toDisplayUser(user), csrfToken, accessToken })
+  return res
+    .status(200)
+    .json({ user: toDisplayUser(user), csrfToken, accessToken })
 }

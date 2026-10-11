@@ -1,6 +1,7 @@
 declare module 'express-session' {
   interface SessionData {
     userId: string
+    pinNonce?: { value: string; exp: number }
   }
 }
 export type Session = {
@@ -30,5 +31,10 @@ export type User = {
   maskedAccountNumber: string
   accountBalance: number
   card: { name: string | null; pin: PinRecord | null }
+  nonce?: Nonce
 }
 export type PinRecord = { salt: string; mac: string }
+export type Nonce = {
+  value: string
+  exp: number
+}

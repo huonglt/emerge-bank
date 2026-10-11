@@ -1,6 +1,6 @@
 import { type Request, type Response } from 'express'
 import { usersDB } from '../users'
-import { toDisplayUser } from '../util'
+import { toDisplayUser } from '../lib/util'
 
 export const me = (req: Request, res: Response) => {
   const userId = req.session.userId as string
@@ -10,5 +10,5 @@ export const me = (req: Request, res: Response) => {
     return res.status(401).json({ error: 'Could not find user' })
   }
 
-  res.json({ user: toDisplayUser(user) })
+  return res.status(200).json({ user: toDisplayUser(user) })
 }
