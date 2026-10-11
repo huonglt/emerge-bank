@@ -15,10 +15,16 @@ const queryMe = async () => {
   }
 }
 
+export const useMeQuery = () => {
+  const me = useQuery({
+    queryKey: ['user'],
+    queryFn: queryMe,
+  })
+  return me
+}
 export const App = () => {
   const me = useQuery({
     queryKey: ['user'],
-    staleTime: 60 * 1000, // 1m
     queryFn: queryMe,
   })
 
@@ -30,12 +36,13 @@ export const App = () => {
     )
 
   console.log(`me = ${JSON.stringify(me)}`)
+  const user = me.data
   return (
     <div className="app">
       <Header />
       <div className="main">
         <div className="content">
-          {me.data ? <Dashboard user={me.data} /> : <LogIn />}
+          {user ? <Dashboard user={user} /> : <LogIn />}
         </div>
       </div>
       <Footer />

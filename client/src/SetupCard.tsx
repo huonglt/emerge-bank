@@ -1,5 +1,6 @@
 import { CardName } from './CardName'
 import type { User } from './types'
+import { CardPIN } from './CardPIN'
 
 type Props = {
   user: User
@@ -7,14 +8,15 @@ type Props = {
 export const SetupCard = (props: Props) => {
   const user = props.user
   const needCardName = !user.card?.name
-  const needSetPIN = !needCardName && !user.card.isPINSet
+  const needPIN = user.card?.name && !user.card.isPINSet
+
   return (
     <div className="content">
       <div className="text-left w-full">
         We need to setup your card before you can use it
       </div>
       {needCardName && <CardName />}
-      {needSetPIN && <div>Need card pin</div>}
+      {needPIN && <CardPIN />}
     </div>
   )
 }

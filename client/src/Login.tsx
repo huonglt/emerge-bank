@@ -31,7 +31,7 @@ export const LogIn = () => {
     onSuccess: (m) => {
       setAccessToken(m.accessToken)
       setCsrf(m.csrfToken)
-      qc.setQueryData(['user'], m.user)
+      qc.invalidateQueries({ queryKey: ['user'] })
     },
   })
   const { errors } = form.formState
@@ -45,7 +45,12 @@ export const LogIn = () => {
           <div className="flex flex-col gap-2">
             <div className="grid gap-2">
               <Label htmlFor="userName">Name</Label>
-              <Input type="text" required {...form.register('userName')} />
+              <Input
+                type="text"
+                required
+                value="helen"
+                {...form.register('userName')}
+              />
             </div>
             <div className="gid pb-2 text-left">
               {errors.userName && (
@@ -57,7 +62,12 @@ export const LogIn = () => {
             <div className="grid gap-2 pb-2">
               <Label htmlFor="password">Password</Label>
 
-              <Input type="password" required {...form.register('password')} />
+              <Input
+                type="password"
+                required
+                value={'helen123'}
+                {...form.register('password')}
+              />
               {errors.password && (
                 <div className="gid pb-2 text-left">
                   <span role="alert" className="text-red-700 ">
