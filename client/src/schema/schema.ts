@@ -1,4 +1,3 @@
-import { isWeakPin } from '@/lib/utils'
 import { z } from 'zod'
 export const loginSchema = z.object({
   userName: z.string().trim().min(4, 'Enter your user name').max(24),
@@ -17,4 +16,3 @@ export const cardNameSchema = z.object({
 export const pinSchema = z
   .string()
   .regex(/^\d{4}$/, 'PIN must be exactly 4 digits')
-  .refine((p) => !isWeakPin(p), 'Choose a PIN that is harder to guess')
