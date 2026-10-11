@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useQueryClient, useMutation } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { api, setAccessToken, setCsrf } from '@/lib/api'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,8 +18,10 @@ import { loginSchema } from '@/schema/schema'
 
 type LoginInput = { userName: string; password: string }
 
-export const LogIn = () => {
-  const qc = useQueryClient()
+type Props = {
+  onSuccess: () => void
+}
+export const LogIn = (props: Props) => {
   const form = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
 
   const login = useMutation({
@@ -28,7 +30,7 @@ export const LogIn = () => {
     onSuccess: (m) => {
       setAccessToken(m.accessToken)
       setCsrf(m.csrfToken)
-      qc.invalidateQueries({ queryKey: ['user'] })
+      props.onSuccess()
     },
   })
   const { errors } = form.formState

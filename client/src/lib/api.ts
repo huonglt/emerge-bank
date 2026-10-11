@@ -1,3 +1,5 @@
+import { jwtDecode } from 'jwt-decode'
+
 // CSRF token lives in memory only: not in localStorage, not in a cookie JS can read.
 // The session token itself is an HttpOnly cookie, so this code never sees it.
 let csrfToken = ''
@@ -39,4 +41,17 @@ export const api = async <T>(
     throw new ApiError(res.status, data.error ?? 'Something went wrong')
   }
   return data as T
+}
+
+export const tokenExpireIn = () => {
+  if (!accessToken) {
+    return
+  }
+  const decoded = jwtDecode(accessToken)
+
+  const { iat, exp } = decoded
+  if (iat && exp) {
+    return (exp - iat) * 1000
+  }
+  return
 }

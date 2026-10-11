@@ -8,31 +8,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getInitials } from '../lib/utils'
 import { useMeQuery } from '@/hooks/useMeQuery'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api, setAccessToken, setCsrf } from '@/lib/api'
+import { useLogout } from '@/hooks/useLogout'
 
 export function ProfileMenu() {
   const me = useMeQuery()
   const userName = me.data?.name
 
-  const qc = useQueryClient()
-
-  const logout = useMutation({
-    mutationFn: () => api('/logout', { method: 'POST' }),
-    onSettled: () => {
-      // wipe all user data
-      setAccessToken('')
-      setCsrf('')
-      qc.setQueryData(['user'], null)
-      qc.clear()
-    },
-  })
-
-  const logoutHandler = () => logout.mutate()
+  const { logout } = useLogout()
 
   if (!userName) {
     return null
@@ -55,7 +40,7 @@ export function ProfileMenu() {
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={logoutHandler}>Log out</DropdownMenuItem>
+          <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
