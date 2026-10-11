@@ -23,7 +23,7 @@ export function ProfileMenu() {
 
   const logout = useMutation({
     mutationFn: () => api('/logout', { method: 'POST' }),
-    onSuccess: () => {
+    onSettled: () => {
       // wipe all user data
       setAccessToken('')
       setCsrf('')
