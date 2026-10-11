@@ -42,34 +42,24 @@ export const LogIn = () => {
           <CardTitle>Login to your account</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
             <div className="grid gap-2">
               <Label htmlFor="userName">Name</Label>
-              <Input
-                type="text"
-                required
-                value={'helen'}
-                {...form.register('userName')}
-              />
+              <Input type="text" required {...form.register('userName')} />
             </div>
-            {errors.userName && (
-              <div className="mb-4">
+            <div className="gid pb-2 text-left">
+              {errors.userName && (
                 <span role="alert" className="text-red-700 ">
                   {errors.userName.message}
                 </span>
-              </div>
-            )}
-            <div className="grid gap-2">
+              )}
+            </div>
+            <div className="grid gap-2 pb-2">
               <Label htmlFor="password">Password</Label>
 
-              <Input
-                type="password"
-                required
-                value={'helen123'}
-                {...form.register('password')}
-              />
+              <Input type="password" required {...form.register('password')} />
               {errors.password && (
-                <div className="mb-4">
+                <div className="gid pb-2 text-left">
                   <span role="alert" className="text-red-700 ">
                     {errors.password.message}
                   </span>
@@ -77,15 +67,17 @@ export const LogIn = () => {
               )}
             </div>
           </div>
-        </CardContent>
-        <CardFooter className="flex-col gap-2">
           {login.error && (
-            <div className="mb-4">
-              <span role="alert" className="text-red-700 ">
-                {login.error.message}
-              </span>
+            <div className="grid gap-2 pb-2">
+              <div className="gid pb-2 text-left">
+                <span role="alert" className="text-red-700 ">
+                  {login.error.message}
+                </span>
+              </div>
             </div>
           )}
+        </CardContent>
+        <CardFooter className="flex-col gap-2">
           <Button className="w-full" type="submit">
             Login
           </Button>
