@@ -1,9 +1,11 @@
 // CSRF token lives in memory only: not in localStorage, not in a cookie JS can read.
 // The session token itself is an HttpOnly cookie, so this code never sees it.
 let csrfToken = ''
+let accessToken = ''
 export const setCsrf = (t: string) => {
   csrfToken = t
 }
+export const setAccessToken = (t: string) => (accessToken = t)
 
 export class ApiError extends Error {
   status: number
@@ -24,7 +26,10 @@ export async function api<T>(
     credentials: 'same-origin',
     headers: {
       'Content-Type': 'application/json',
-      ...(method !== 'GET' && { 'X-CSRF-Token': csrfToken }),
+      Authorization: `Bearer ${accessToken}`,
+      ...(method !== 'GET' && {
+        'X-CSRF-Token': csrfToken,
+      }),
     },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
   })
