@@ -1,75 +1,88 @@
-# React + TypeScript + Vite
+# Virtual bank app
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is a demo app to illustrate a financial web app handling user data in a secure & safe way
 
-Currently, two official plugins are available:
+Workflows supported by the app:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- login
+- logout
+- auto logout when access token expires
+- set up a virtual bank card: name and PIN
+- dashboard
 
-## React Compiler
+## How workflows are handled to make it safe and secure for users?
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Login:
 
-## Expanding the ESLint configuration
+- Raw data of username and password are sent over HTTPS
+- HTTPS will encrypts the data in transit. Server will hash it
+- User receives JWT access token, and csrfToken after login
+- JWT access token, and csrfToken are stored in memory, not in browser localStorage, sessionStorage, or cookies
+- JWT access token will be attached to all api request calls
+- csrfToken will be attached to api requests that modify server state like POST, PUT, DELETE
+- JWT access token will be used for authentication on the server
+- csrfToken will be validated on server for added extra security
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Set bank card name:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- Raw data of card name is sent over HTTPS
+- HTTPS will encrypts the data in transit
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Set bank card PIN:
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- PIN is very senstive. A PIN authorizes payments so a leaked PIN is high impact
+- On the UI, the PIN lives only in uncontrolled inputs: never in React state, the query cache, or storage.
+- PIN is read at submit time and cleared straight away.
+- On submit, PIN is encrypted with the server public key (RSA-OAEP) and a single-use token (nonce)
+- The PIN is never sent or logged in readable form
+- PIN is sent over the HTTPS
+- HTTPS will encrypts the data in transit
 
-```
+### Dashboard
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+- User senstive data like PIN, or card number never be sent to browser
+- Only masked sensitive data is sent to browser and show it on UI
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### Logout
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- JWT access token and csrf token is cleared
+- All server queries data is cleared
+- Browser will auto log out when JWT access token expires
 
-```
+## Tech stack
+
+- Vite, React, Typescript
+- Form validation: React hook form + Zod
+- UI component and styling: tailwindcss, shadcn, lucide
+- Server state management: tanstack query
+- Testing: Vitest, testing-library
+- Tooling: Eslint, Prettier
+
+## How to run
+
+Start the client:
+
+- go to client folder
+- install dependencies: npm install
+- start the app: npm run:dev
+- run test: npm run test
+
+Start the server:
+
+- go to server folder
+- install dependencies: npm install
+- start the app: npm run dev:server
+
+By default, client & server both run on localhost. Server on port 3001, client on port 5173, or 5174
+If you need to change server url, change in config.ts
+
+## Limitations
+
+Due to time constraints, this app for demo purposes only, not for production use.
+Future improvements:
+
+- setup for prod use
+- config can be setup by environment variables
+- add integration tests
+- more features
+- better UX
