@@ -1,8 +1,12 @@
 import { z } from 'zod'
 
 export const loginSchema = z.object({
-  userName: z.string().trim().min(4, 'Enter your user name').max(64),
-  password: z.string().min(4, 'Enter your password').max(28),
+  userName: z
+    .string()
+    .trim()
+    .min(4, 'Username must be at least 4 characters')
+    .max(64),
+  password: z.string().min(4, 'Password must be at least 4 characters').max(28),
 })
 
 export const cardNameSchema = z.object({

@@ -33,7 +33,7 @@ const user1: User = seed(
 )
 const user2: User = seed(
   crypto.randomUUID(),
-  'jan',
+  'jane',
   'jan123',
   '02-2338-2435670-134',
   '***.***.***.134',
