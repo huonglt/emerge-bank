@@ -15,6 +15,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import type { Me } from '@/types'
 import { loginSchema } from '@/schema/schema'
+import { Item, ItemContent, ItemTitle } from './ui/item'
+import { UserMedia } from './UserMedia'
 
 type LoginInput = { userName: string; password: string }
 
@@ -36,10 +38,20 @@ export const LogIn = (props: Props) => {
   const { errors } = form.formState
   return (
     <Card className="w-full max-w-sm">
-      <form onSubmit={form.handleSubmit((v) => login.mutate(v))} noValidate>
+      <form
+        onSubmit={form.handleSubmit((v) => login.mutate(v))}
+        noValidate
+        autoComplete="off"
+      >
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <Item className="pr-0 pl-0">
+            <UserMedia />
+            <ItemContent>
+              <ItemTitle>Login to your account</ItemTitle>
+            </ItemContent>
+          </Item>
         </CardHeader>
+
         <CardContent>
           <div className="flex flex-col gap-2">
             <div className="grid gap-2">

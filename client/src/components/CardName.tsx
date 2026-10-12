@@ -37,6 +37,7 @@ export const CardName = () => {
       <form
         onSubmit={form.handleSubmit((v) => setCardName.mutate(v))}
         noValidate
+        autoComplete="off"
       >
         <CardHeader>
           <Item className="pr-0 pl-0">

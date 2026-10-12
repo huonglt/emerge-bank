@@ -53,7 +53,7 @@ export const CardPIN = () => {
 
   return (
     <Card className="w-full max-w-sm">
-      <form onSubmit={handleFormSubmit} noValidate>
+      <form onSubmit={handleFormSubmit} noValidate autoComplete="off">
         <CardHeader>
           <Item className="pr-0 pl-0">
             <CardMedia />
