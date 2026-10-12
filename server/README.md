@@ -66,8 +66,8 @@ All HTTP response headers are set via helmet to provide protection. Headers incl
 Start the server:
 
 - go to server folder
-- install dependencies: npm install
-- start the server: npm run dev:server
+- install dependencies: `npm install`
+- start the server: `npm run dev:server`
 
 ## Limitations
 
