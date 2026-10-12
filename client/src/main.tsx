@@ -7,7 +7,8 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import { ApiError, setCsrf } from './lib/api.ts'
+import { setCsrf } from './lib/api.ts'
+import { ApiError } from './lib/ApiError.ts'
 
 const queryClient: QueryClient = new QueryClient({
   defaultOptions: { queries: { retry: false, gcTime: 60_000 } }, // short cache for sensitive data

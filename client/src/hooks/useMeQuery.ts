@@ -1,7 +1,7 @@
-import { api, ApiError } from '@/lib/api'
+import { api } from '@/lib/api'
 import type { Me } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-
+import { ApiError } from '@/lib/ApiError'
 const queryMe = async () => {
   try {
     const m = await api<Me>('/me')
