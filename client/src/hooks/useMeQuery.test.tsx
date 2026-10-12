@@ -2,9 +2,10 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useMeQuery } from '@/hooks/useMeQuery'
-import { api, ApiError } from '@/lib/api'
+import { api } from '@/lib/api'
 import { makeUser } from '@/test/fixtures'
 import { makeClient, wrapperFor } from '@/test/render'
+import { ApiError } from '@/lib/ApiError'
 
 vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),

@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { api, ApiError, setAccessToken, setCsrf } from '@/lib/api'
+import { api, setAccessToken, setCsrf } from '@/lib/api'
+import { ApiError } from './ApiError'
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {
