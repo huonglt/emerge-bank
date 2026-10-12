@@ -20,7 +20,7 @@ The server is a NodeJs, Express app. [README](server/README.md)
     - or run in preview mode: `npm run build`, then `npm run preview`
 
 - Start server
-    - - go to server folder
+    - go to server folder
     - install dependencies: `npm install`
     - run it: `npm run dev:server`
 
