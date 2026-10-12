@@ -25,8 +25,10 @@ The server is a `NodeJs`, `ExpressJs` app. Read the [README](server/README.md)
     - run it: `npm run dev:server`
 
 By default, client & server both run on `localhost`.<br/>
+
 Server running on `https://localhost:3001`, client on port `5173`, or `5174`<br/>
-If you need to change server url, change in `server/config.ts`
+
+If you need to change server url, change in `server/config.ts`<br/>
 
 To login, use either demo user [`helen`, `helen123`], or [`jane`, `jan123`]
 
