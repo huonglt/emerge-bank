@@ -12,7 +12,7 @@ import {
 } from './api/middleware'
 import { me, login, logout } from './api'
 import session from 'express-session'
-import { cookieOpts } from './config'
+import { cookieOpts, SID } from './config'
 import { SESSION_SECRET } from './config'
 import { pinNonce, setCardName, setCardPIN } from './api/card'
 
@@ -26,7 +26,7 @@ app.use(
   })
 )
 app.disable('x-powered-by')
-app.use(helmet())
+//app.use(helmet())
 // Parse JSON request bodies
 app.use(express.json({ limit: '10kb' }))
 // This parses the Cookie header and populates req.cookies
@@ -35,6 +35,7 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded())
 app.use(
   session({
+    name: SID,
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -43,10 +44,12 @@ app.use(
 )
 
 app.use('/api', noCacheControl)
-app.use(errorHandler)
+
 app.post('/api/login', login)
 app.post('/api/logout', auth, sessionCheck, csrf, logout)
 app.get('/api/me', auth, sessionCheck, me)
 app.put('/api/card/name', auth, csrf, sessionCheck, setCardName)
 app.put('/api/card/pin', auth, csrf, sessionCheck, setCardPIN)
 app.get('/api/card/pinNonce', auth, sessionCheck, pinNonce)
+// Error handlers only catch errors from routes registered BEFORE them, so this goes last
+app.use(errorHandler)
