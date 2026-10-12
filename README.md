@@ -26,4 +26,4 @@ To login, user either this demo user [helen, helen123], or [jane, jan123]
 
 ### Screenshots
 
-Screenshots of the app can be view at client/screenshots
+Click here to view the screenshots [screenshots](client/screenshots/login.png)
