@@ -55,10 +55,11 @@ All HTTP response headers are set via helmet to provide protection. Headers incl
 
 ## Tech stack
 
-- Node, ExpressJS, Typescript
+- ExpressJS, Typescript
 - Schema vaidation: Zod
 - Testing: Vitest
 - Tooling: Eslint, Prettier
+- Node: v26.82
 
 ## How to run
 

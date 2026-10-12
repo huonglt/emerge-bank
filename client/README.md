@@ -17,6 +17,8 @@ Workflows supported by the app:
 
 ## How workflows are handled to make it safe and secure for users?
 
+First, all communications between client & server is on HTTPS, with LTS, so it is secure.
+
 ### Login:
 
 - Raw data of username and password are sent over HTTPS
@@ -62,6 +64,7 @@ Workflows supported by the app:
 - Server state management: tanstack query
 - Testing: Vitest, testing-library
 - Tooling: Eslint, Prettier
+- Node: v26.82
 
 ## How to run
 
