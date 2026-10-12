@@ -18,7 +18,7 @@ export const login = (req: Request, res: Response) => {
   if (!user) {
     return loginFail(res)
   }
-  const hash = scryptSync(password, user.salt, 32) // same work either way
+  const hash = scryptSync(password, user.salt, 32)
   if (!timingSafeEqual(hash, user.hashedPassword)) {
     return loginFail(res)
   }
