@@ -1,31 +1,25 @@
 import {
-  AlertDialog,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  Dialog,
+} from './ui/dialog'
 
 type Props = {
   trigger: React.ReactElement
 }
 export const Todo = (props: Props) => {
   return (
-    <AlertDialog>
-      <AlertDialogTrigger render={props.trigger} />
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogDescription>
-            This feature under construction
-          </AlertDialogDescription>
-          <AlertDialogDescription>Will be ready soon</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>OK</AlertDialogCancel>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <Dialog>
+      <DialogTrigger render={props.trigger} />
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Todo</DialogTitle>
+          <DialogDescription>This feature will be ready soon</DialogDescription>
+        </DialogHeader>
+      </DialogContent>
+    </Dialog>
   )
 }
