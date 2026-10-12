@@ -11,6 +11,7 @@ export const useLogout = () => {
       // wipe all user data
       setAccessToken('')
       setCsrf('')
+      qc.setQueryData(['user'], null)
       qc.clear()
     },
   })
