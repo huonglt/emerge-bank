@@ -12,6 +12,9 @@ export const App = () => {
   const qc = useQueryClient()
   const { setLogoutIn } = useLogout()
 
+  /**
+   * set timer to auto logout when token expires
+   */
   const onLoginSuccess = () => {
     const timer = tokenExpireIn()
     setLogoutIn(timer)

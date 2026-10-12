@@ -9,6 +9,12 @@ let accessToken = ''
 export const setCsrf = (t: string) => (csrfToken = t)
 export const setAccessToken = (t: string) => (accessToken = t)
 
+/**
+ * Generic method for calling api
+ * Attach accessToken to all api request
+ * Attach csrfToken for all other api request except GET
+ */
+
 export const api = async <T>(
   path: string,
   options: { method?: string; body?: unknown } = {}
@@ -33,6 +39,9 @@ export const api = async <T>(
   return data as T
 }
 
+/**
+ * Find the time in ms the access token will expire in
+ */
 export const tokenExpireIn = () => {
   if (!accessToken) {
     return
