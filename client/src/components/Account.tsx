@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/item'
 import { CashCoinMedia } from './CashCoinMedia'
 import type { User } from '../types'
-
+import { Todo } from './Todo'
 type Props = {
   user: User
 }
@@ -29,9 +29,9 @@ export const Account = (props: Props) => {
         <ItemDescription>NZD {accountBalance}$</ItemDescription>
       </ItemContent>
       <ItemActions>
-        <Button variant="outline">Add money</Button>
-        <Button variant="outline">Transfer</Button>
-        <Button variant="outline">Pay</Button>
+        <Todo trigger={<Button variant="outline">Add money</Button>} />
+        <Todo trigger={<Button variant="outline">Transfer</Button>} />
+        <Todo trigger={<Button variant="outline">Pay</Button>} />
       </ItemActions>
     </Item>
   )
