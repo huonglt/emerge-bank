@@ -6,6 +6,7 @@ import {
   randomBytes,
   timingSafeEqual,
 } from 'node:crypto'
+import { PinRecord } from '../types'
 
 // Transport: the browser encrypts the PIN with this public key (RSA-OAEP, SHA-256).
 // Demo: key pair lives in memory. Production: the card issuer/processor, or an HSM/KMS.
@@ -45,7 +46,6 @@ const PIN_KEY = process.env.PIN_HMAC_KEY
   ? Buffer.from(process.env.PIN_HMAC_KEY, 'hex')
   : randomBytes(32)
 
-export type PinRecord = { salt: string; mac: string }
 const macOf = (salt: Buffer, pin: string) =>
   createHmac('sha256', PIN_KEY).update(salt).update(pin).digest()
 
