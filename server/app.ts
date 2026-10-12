@@ -21,7 +21,7 @@ export const app: Express = express()
 // Configure CORS to trust your Vite frontend origin
 app.use(
   cors({
-    origin: 'http://localhost:5174',
+    origin: ['http://localhost:5174', 'http://localhost:4173'],
     credentials: true, // Required if your frontend sends cookies, authorization headers, or credentials
   })
 )
