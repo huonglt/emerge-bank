@@ -8,7 +8,10 @@ It focuces on:
 - how secure data is read down and displayed on the frontend
 
 The client is a React + Typescript + tailwindcss app\
+[README](client/README.md)
+
 The server is a NodeJs, Express app
+[README](server/README.md)
 
 ### To start
 
