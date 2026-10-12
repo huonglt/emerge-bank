@@ -1,8 +1,10 @@
 import { api } from './api'
 
-// Encrypts the PIN in the browser with the server's public key (RSA-OAEP) and a
-// single-use nonce, so the PIN is never sent or logged in readable form and the
-// request cannot be replayed. This sits ON TOP of HTTPS; it does not replace it.
+/**
+ * Encrypts the PIN in the browser with the server's public key (RSA-OAEP) and a  single-use nonce
+ * the PIN is never sent or logged in readable form
+ * the request cannot be replayed
+ */
 export const encryptPin = async (
   pin: string,
   confirmPin: string
@@ -28,6 +30,9 @@ export const encryptPin = async (
   return btoa(String.fromCharCode(...cipher))
 }
 
+/**
+ * Get initial of user name
+ */
 export const getInitials = (name: string) => {
   const parts = name.split(' ')
   let initials = ''

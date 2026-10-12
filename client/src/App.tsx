@@ -10,14 +10,14 @@ import { useQueryClient } from '@tanstack/react-query'
 export const App = () => {
   const me = useMeQuery()
   const qc = useQueryClient()
-  const { setLogoutIn } = useLogout()
+  const { setTimer } = useLogout()
 
   /**
    * set timer to auto logout when token expires
    */
   const onLoginSuccess = () => {
     const timer = tokenExpireIn()
-    setLogoutIn(timer)
+    setTimer(timer)
     qc.invalidateQueries({ queryKey: ['user'] })
   }
   const user = me.data

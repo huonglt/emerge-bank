@@ -29,7 +29,7 @@ export const useLogout = () => {
   }, [timer, logout])
 
   return {
-    setLogoutIn: setTimer,
+    setTimer,
     logout: () => logout.mutate(),
   }
 }
