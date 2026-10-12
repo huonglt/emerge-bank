@@ -63,7 +63,7 @@ First, all communications between client & server is on `HTTPS`, with LTS, so it
 - UI component and styling: `tailwindcss`, `shadcn`, `lucide`
 - Server state management: `tanstack query`
 - Testing: `Vitest`, `testing-library`
-- Tooling: `Eslint`, Prettier`
+- Tooling: `Eslint`, `Prettier`
 - `Node v26.82`
 
 ## How to run
@@ -74,6 +74,9 @@ Start the client:
 - install dependencies: `npm install`
 - start the app: `npm run:dev`
 - run test: `npm run test`
+- build for pro: `npm run build`
+- preview prod: `npm run preview`
+- linting: `npm run lint`
 
 ## Limitations
 
