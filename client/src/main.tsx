@@ -7,7 +7,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query'
-import { setCsrf } from './lib/api.ts'
+import { setAccessToken, setCsrf } from './lib/api.ts'
 import { ApiError } from './lib/ApiError.ts'
 
 const queryClient: QueryClient = new QueryClient({
@@ -16,6 +16,7 @@ const queryClient: QueryClient = new QueryClient({
     onError: (err) => {
       // Session expired mid-use: drop everything sensitive and show sign-in.
       if (err instanceof ApiError && err.status === 401) {
+        setAccessToken('')
         setCsrf('')
         queryClient.clear()
         queryClient.setQueryData(['me'], null)
