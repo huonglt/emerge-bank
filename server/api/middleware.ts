@@ -1,10 +1,10 @@
 import { type NextFunction, type Request, type Response } from 'express'
 
 import { timingSafeEqual } from 'node:crypto'
-import { sessions } from './api/sessions'
+import { sessions } from './sessions'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
-import { JWT_SECRET } from './config'
+import { JWT_SECRET } from '../config'
 
 /**
  * Browsers, and proxy dont cache any part of the request or response

@@ -9,7 +9,7 @@ import {
   errorHandler,
   auth,
   sessionCheck,
-} from './middleware'
+} from './api/middleware'
 import { me, login, logout } from './api'
 import session from 'express-session'
 import { cookieOpts } from './config'

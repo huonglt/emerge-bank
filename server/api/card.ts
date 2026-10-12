@@ -106,9 +106,7 @@ export const setCardPIN = (req: Request, res: Response) => {
     return res.status(409).json({ error: 'PINs do not match' })
   }
   if (!pinSchema.safeParse(payload.pin).success) {
-    return res
-      .status(409)
-      .json({ error: 'Choose a PIN that is harder to guess' })
+    return res.status(409).json({ error: 'PIN must be exactly 4 digits' })
   }
 
   user.card.pin = createPinRecord(payload.pin)
