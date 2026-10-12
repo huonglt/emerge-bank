@@ -1,6 +1,5 @@
 import express, { type Express } from 'express'
 import cookieParser from 'cookie-parser'
-import bodyParser from 'body-parser'
 import cors from 'cors'
 import helmet from 'helmet'
 import {
@@ -12,44 +11,53 @@ import {
 } from './api/middleware'
 import { me, login, logout } from './api'
 import session from 'express-session'
-import { cookieOpts, SID } from './config'
+import { cookieOpts } from './config'
 import { SESSION_SECRET } from './config'
 import { pinNonce, setCardName, setCardPIN } from './api/card'
 
 export const app: Express = express()
 
-// Configure CORS to trust your Vite frontend origin
+/**
+ * Configure CORS to trust for client
+ * credentials is true so client can sends cookies, authorization headers, or credentials
+ */
 app.use(
   cors({
     origin: ['http://localhost:5174', 'http://localhost:4173'],
-    credentials: true, // Required if your frontend sends cookies, authorization headers, or credentials
+    credentials: true,
   })
 )
 app.disable('x-powered-by')
-//app.use(helmet())
-// Parse JSON request bodies
+
+// add security header like CSP
+app.use(helmet())
+// parses JSON bodies into req.body
 app.use(express.json({ limit: '10kb' }))
-// This parses the Cookie header and populates req.cookies
+
+// populate req.cookies from the Cookie header.
 app.use(cookieParser())
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded())
+
+// req.session. using MemoryStore by default
 app.use(
   session({
-    name: SID,
     secret: SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: cookieOpts,
   })
 )
-
+// browsers and proxies dont cache the data
 app.use('/api', noCacheControl)
 
+/**
+ * apis
+ */
 app.post('/api/login', login)
-app.post('/api/logout', auth, sessionCheck, csrf, logout)
+app.post('/api/logout', auth, csrf, sessionCheck, logout)
 app.get('/api/me', auth, sessionCheck, me)
 app.put('/api/card/name', auth, csrf, sessionCheck, setCardName)
+app.get('/api/card/pinNonce', auth, sessionCheck, pinNonce) // get request has no csrf token so skip csrf
 app.put('/api/card/pin', auth, csrf, sessionCheck, setCardPIN)
-app.get('/api/card/pinNonce', auth, sessionCheck, pinNonce)
+
 // Error handlers only catch errors from routes registered BEFORE them, so this goes last
 app.use(errorHandler)

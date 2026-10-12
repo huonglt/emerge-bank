@@ -47,21 +47,21 @@ export const pinNonce = (req: Request, res: Response) => {
   if (!user.card.name || user.card.pin) {
     return res.status(409).json({ error: 'PIN cannot be set right now' })
   }
-  /**
-   * one time used token. a random string of numbers & letters
-   */
-  req.session.pinNonce = {
-    value: randomBytes(16).toString('base64url'),
-    exp: Date.now() + NONCE_MS,
-  }
 
   const userSessionData = sessions.get(user.id)
   if (!userSessionData) {
     return res.status(404).json({ error: 'User session not found' })
   }
-  userSessionData.nonce = req.session.pinNonce
+  /**
+   * one time used token. a random string of numbers & letters
+   */
+  const nonce = {
+    value: randomBytes(16).toString('base64url'),
+    exp: Date.now() + NONCE_MS,
+  }
+  userSessionData.nonce = nonce
 
-  res.json({ publicKey: publicKeyJwk, nonce: req.session.pinNonce.value })
+  return res.json({ publicKey: publicKeyJwk, nonce: nonce.value })
 }
 
 export const setCardPIN = (req: Request, res: Response) => {
