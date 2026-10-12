@@ -16,7 +16,7 @@ export const api = async <T>(
   const method = options.method ?? 'GET'
   const res = await fetch(`${serverUrl}/api${path}`, {
     method,
-    credentials: 'same-origin',
+    credentials: 'include',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${accessToken}`,
