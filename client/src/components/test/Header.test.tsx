@@ -12,7 +12,7 @@ afterEach(cleanup)
 describe('Header', () => {
   it('should show the app name and the profile menu', () => {
     render(<Header />)
-    expect(screen.getByText('Virtual bank')).toBeTruthy()
+    expect(screen.getByText('Digital bank')).toBeTruthy()
     expect(screen.getByTestId('profile-menu')).toBeTruthy()
   })
 })

@@ -9,7 +9,7 @@ describe('Footer', () => {
   it('should show the copyright notice', () => {
     render(<Footer />)
     expect(
-      screen.getByText('© 2026 Virtual Bank Limited. All rights reserved')
+      screen.getByText('© 2026 Digital bank limited. All rights reserved')
     ).toBeTruthy()
   })
 })

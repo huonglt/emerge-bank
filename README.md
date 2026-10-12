@@ -1,4 +1,4 @@
-# Virtual bank app
+# Digital bank app
 
 This is a demo app to illustrate a financial web app handling user data in a secure & safe way.<br/>
 It focuces on:
