@@ -75,15 +75,6 @@ Start the client:
 - start the app: npm run:dev
 - run test: npm run test
 
-Start the server:
-
-- go to server folder
-- install dependencies: `npm install`
-- start the app: `npm run dev:server`
-
-By default, client & server both run on localhost. Server on port 3001, client on port 5173, or 5174
-If you need to change server url, change in config.ts
-
 ## Limitations
 
 Due to time constraints, this app for demo purposes only, not for production use.
