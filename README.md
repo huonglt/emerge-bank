@@ -21,3 +21,5 @@ The server is a NodeJs, Express app
     - install dependencies: npm install
     - run it: npm run dev:server
 
+
+To login, user either this demo user [helen, helen123], or [jane, jan123]
