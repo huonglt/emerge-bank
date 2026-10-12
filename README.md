@@ -30,7 +30,11 @@ Server running on `https://localhost:3001`, client on port `5173`, or `5174`<br/
 
 If you need to change server url, change in `server/config.ts`<br/>
 
-To login, use either demo user [`helen`, `helen123`], or [`jane`, `jan123`]
+- To login, use either demo user [`helen`, `helen123`], or [`jane`, `jan123`]<br/>
+
+    - User `helen` will require setting up both card name & card PIN
+    - User `jane` will require setting up card PIN only
+
 
 ### Screenshots
 
