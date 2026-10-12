@@ -2,6 +2,10 @@ import { api } from '@/lib/api'
 import type { Me } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { ApiError } from '@/lib/ApiError'
+
+/**
+ * query user data
+ */
 const queryMe = async () => {
   try {
     const m = await api<Me>('/me')
@@ -12,6 +16,9 @@ const queryMe = async () => {
   }
 }
 
+/**
+ * hook to conveniently get user data
+ */
 export const useMeQuery = () => {
   const me = useQuery({
     queryKey: ['user'],
