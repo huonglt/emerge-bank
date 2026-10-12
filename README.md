@@ -23,3 +23,7 @@ The server is a NodeJs, Express app
 
 
 To login, user either this demo user [helen, helen123], or [jane, jan123]
+
+### Screenshots
+
+Screenshots of the app can be view at client/screenshots
