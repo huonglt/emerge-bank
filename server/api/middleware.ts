@@ -18,6 +18,9 @@ export const noCacheControl = (
   next()
 }
 
+/**
+ * catch all error handler
+ */
 export const errorHandler = (
   err: Error & { status?: number },
   req: Request,
@@ -33,6 +36,9 @@ export const errorHandler = (
     .json({ error: status === 400 ? 'Bad request' : 'Something went wrong' })
 }
 
+/**
+ * middlware checking for csrf token
+ */
 export const csrf = (req: Request, res: Response, next: NextFunction) => {
   const reqCSRFToken = Buffer.from(req.headers['x-csrf-token'] as string)
   const userId = req.session.userId
@@ -48,7 +54,9 @@ export const csrf = (req: Request, res: Response, next: NextFunction) => {
   }
   next()
 }
-
+/**
+ * middleware checking for access token
+ */
 export const auth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers['authorization']
   const token = authHeader && authHeader.split(' ')[1]
@@ -65,6 +73,9 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
   })
 }
 
+/**
+ * middleware checking for server session
+ */
 export const sessionCheck = (
   req: Request,
   res: Response,
