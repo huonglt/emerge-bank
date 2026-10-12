@@ -26,7 +26,7 @@ export const useLogout = () => {
     }, timer)
 
     return () => clearTimeout(id)
-  }, [timer])
+  }, [timer, logout])
 
   return {
     setLogoutIn: setTimer,

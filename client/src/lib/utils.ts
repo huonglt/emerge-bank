@@ -1,5 +1,3 @@
-export { cn } from 'cn'
-
 import { api } from './api'
 
 // Encrypts the PIN in the browser with the server's public key (RSA-OAEP) and a
@@ -30,10 +28,10 @@ export const encryptPin = async (
   return btoa(String.fromCharCode(...cipher))
 }
 
-export const getInitials = function (name: string) {
-  var parts = name.split(' ')
-  var initials = ''
-  for (var i = 0; i < parts.length; i++) {
+export const getInitials = (name: string) => {
+  const parts = name.split(' ')
+  let initials = ''
+  for (let i = 0; i < parts.length; i++) {
     if (parts[i].length > 0 && parts[i] !== '') {
       initials += parts[i][0]
     }
