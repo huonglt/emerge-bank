@@ -8,6 +8,9 @@ import { createPinRecord, decryptPinPayload, publicKeyJwk } from '../lib/pin'
 import { z } from 'zod'
 import { sessions } from './sessions'
 
+/**
+ * API handle setting card name
+ */
 export const setCardName = (req: Request, res: Response) => {
   const parsed = cardNameSchema.safeParse(req.body)
   if (!parsed.success) {
@@ -33,9 +36,6 @@ export const setCardName = (req: Request, res: Response) => {
 
 /**
  * Step 1 of PIN setup: public key + one time use token to this session.
- * @param req
- * @param res
- * @returns
  */
 export const pinNonce = (req: Request, res: Response) => {
   const userId = req.session.userId!
@@ -61,9 +61,12 @@ export const pinNonce = (req: Request, res: Response) => {
   }
   userSessionData.nonce = nonce
 
-  return res.json({ publicKey: publicKeyJwk, nonce: nonce.value })
+  return res.status(200).json({ publicKey: publicKeyJwk, nonce: nonce.value })
 }
 
+/**
+ * Step 2 of PIN setup: setting pin
+ */
 export const setCardPIN = (req: Request, res: Response) => {
   const userId = req.session.userId!
   const user = usersDB.getById(userId)

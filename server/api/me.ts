@@ -2,6 +2,10 @@ import { type Request, type Response } from 'express'
 import { usersDB } from '../users'
 import { toDisplayUser } from '../lib/util'
 
+/**
+ * get user data
+ * all sensitive user data are not sent to browser
+ */
 export const me = (req: Request, res: Response) => {
   const userId = req.session.userId as string
   const user = usersDB.getById(userId)

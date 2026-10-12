@@ -8,6 +8,10 @@ import { sessions } from './sessions'
 const loginFail = (res: Response) =>
   res.status(401).json({ error: 'Username or password is incorrect' })
 
+/**
+ * handle user login
+ * create csrfToken and JWT accessToken for user
+ */
 export const login = (req: Request, res: Response) => {
   const parsed = loginSchema.safeParse(req.body)
   if (!parsed.success) {
