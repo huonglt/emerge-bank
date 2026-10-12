@@ -31,4 +31,4 @@ To login, use either demo user [`helen`, `helen123`], or [`jane`, `jan123`]
 
 ### Screenshots
 
-Click here to view the screenshots [screenshots](client/screenshots/login.png)
+Click here to view the screenshots [screenshots](client/screenshots/screenshots.jpg)
