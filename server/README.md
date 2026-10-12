@@ -1,6 +1,6 @@
 # Virtual bank app
 
-This is a demo server app to illustrate handling user data in a secure & safe way for a financial product
+This is a demo server app to illustrate handling user data in a secure & safe way for a financial product.<br/>
 It focuces on:
 
 - simple secure session and token management
@@ -27,7 +27,7 @@ A chain of middlewares are performed on each request to authenticate & verify us
 
 csrf middleware is needed for server state change request only.
 
-All HTTP response headers are set via helmet to provide protection. Headers include CSP, Strict-Transport-Security, and Cross-Origin-Resource-Policy
+All HTTP response headers are set via helmet to provide protection. Headers include `CSP`, `Strict-Transport-Security`, and `Cross-Origin-Resource-Policy`
 
 ### Login:
 
@@ -55,23 +55,23 @@ All HTTP response headers are set via helmet to provide protection. Headers incl
 
 ## Tech stack
 
-- ExpressJS, Typescript
-- Schema vaidation: Zod
-- Testing: Vitest
-- Tooling: Eslint, Prettier
-- Node: v26.82
+- `ExpressJS`, `Typescript`
+- Schema vaidation: `zod`
+- Testing: `Vitest`
+- Tooling: `Eslint`, `Prettier`
+- `Node v26.82`
 
 ## How to run
 
 Start the server:
 
-- go to server folder
+- go to `server` folder
 - install dependencies: `npm install`
 - start the server: `npm run dev:server`
 
 ## Limitations
 
-Due to time constraints, this app for demo purposes only, not for production use.
+Due to time constraints, this app for demo purposes only, not for production use.<br/>
 Future improvements:
 
 - secrets should be stored in a vault

@@ -1,6 +1,6 @@
 # Virtual bank app
 
-This is a demo app to illustrate a financial web app handling user data in a secure & safe way.
+This is a demo app to illustrate a financial web app handling user data in a secure & safe way.<br/>
 It focuces on:
 
 - secure data is captured on the frontend and transmitted to the backend safely
@@ -17,16 +17,16 @@ Workflows supported by the app:
 
 ## How workflows are handled to make it safe and secure for users?
 
-First, all communications between client & server is on HTTPS, with LTS, so it is secure.
+First, all communications between client & server is on `HTTPS`, with LTS, so it is secure.
 
 ### Login:
 
-- Raw data of username and password are sent over HTTPS
+- Raw data of username and password are sent over `HTTPS`
 - HTTPS will encrypts the data in transit. Server will hash it
 - User receives JWT access token, and csrfToken after login
-- JWT access token, and csrfToken are stored in memory, not in browser localStorage, sessionStorage, or cookies
+- JWT access token, and csrfToken are stored in memory, not in browser `localStorage`, `sessionStorage`, or `cookies`
 - JWT access token will be attached to all api request calls
-- csrfToken will be attached to api requests that modify server state like POST, PUT, DELETE
+- csrfToken will be attached to api requests that modify server state like `POST`, `PUT`, `DELETE`
 - JWT access token will be used for authentication on the server
 - csrfToken will be validated on server for added extra security
 
@@ -58,26 +58,26 @@ First, all communications between client & server is on HTTPS, with LTS, so it i
 
 ## Tech stack
 
-- Vite, React, Typescript
-- Form validation: React hook form + Zod
-- UI component and styling: tailwindcss, shadcn, lucide
-- Server state management: tanstack query
-- Testing: Vitest, testing-library
-- Tooling: Eslint, Prettier
-- Node: v26.82
+- `Vite`, `React`, `Typescript`
+- Form validation: `React hook form`, `zod`
+- UI component and styling: `tailwindcss`, `shadcn`, `lucide`
+- Server state management: `tanstack query`
+- Testing: `Vitest`, `testing-library`
+- Tooling: `Eslint`, Prettier`
+- `Node v26.82`
 
 ## How to run
 
 Start the client:
 
 - go to client folder
-- install dependencies: npm install
-- start the app: npm run:dev
-- run test: npm run test
+- install dependencies: `npm install`
+- start the app: `npm run:dev`
+- run test: `npm run test`
 
 ## Limitations
 
-Due to time constraints, this app for demo purposes only, not for production use.
+Due to time constraints, this app for demo purposes only, not for production use.<br/>
 Future improvements:
 
 - setup for prod use
