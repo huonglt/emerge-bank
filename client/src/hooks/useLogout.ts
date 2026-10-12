@@ -1,6 +1,11 @@
 import { api, setAccessToken, setCsrf } from '@/lib/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
+
+/**
+ * Hook to handler logout
+ * Having set timer to logout automatically
+ */
 export const useLogout = () => {
   const [timer, setTimer] = useState<number | undefined>()
   const qc = useQueryClient()
