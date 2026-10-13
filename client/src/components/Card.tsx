@@ -1,4 +1,10 @@
-import { Item, ItemContent, ItemTitle, ItemHeader } from '@/components/ui/item'
+import {
+  Item,
+  ItemContent,
+  ItemTitle,
+  ItemHeader,
+  ItemDescription,
+} from '@/components/ui/item'
 import { CardMedia } from './CardMedia'
 
 import type { User } from '@/types'
@@ -8,7 +14,7 @@ type Props = {
 }
 export const Card = (props: Props) => {
   const {
-    card: { maskedAccountNumber },
+    card: { maskedAccountNumber, name },
   } = props.user
 
   return (
@@ -16,7 +22,8 @@ export const Card = (props: Props) => {
       <ItemHeader>Your card</ItemHeader>
       <CardMedia />
       <ItemContent>
-        <ItemTitle>{maskedAccountNumber}</ItemTitle>
+        <ItemTitle>{name}</ItemTitle>
+        <ItemDescription>{maskedAccountNumber}</ItemDescription>
       </ItemContent>
     </Item>
   )
