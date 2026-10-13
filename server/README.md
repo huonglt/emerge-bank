@@ -48,10 +48,13 @@ All HTTP response headers are set via helmet to provide protection. Headers incl
 
 - PIN is very senstive. A PIN authorizes payments so a leaked PIN is high impact
 - 2 step process:
-- Step 1: Client request for a one time used token, and a public key. This token is short lived, expires in 5 mins
-- Step 2: One time used token is validated against user session data, and checked for expiry. The one time used token is cleared immediately after read
-- The PIN and confirm PIN is checked for matching on server
-- If all valid, PIN is saved to user data (will not do this for production)
+- Step 2:
+  - Server uses it private key to decrypt the encrypted data from client
+  - The decrypted data will contain the one time used token (nonce), the PIN, and confirm PIN
+  - The nonce is validated against a copy of its on the server, and expiration
+  - The nonce is cleared immediately after read. This to make it single-use token
+  - Server re-checks for PIN, and confirm PIN matching
+  - If all valid, PIN is saved to user data (will not do this for production)
 
 ## Tech stack
 
@@ -80,5 +83,5 @@ Future improvements:
 - PIN card should not be stored on server, should be stored by card issuer instead
 - add rate limit on request calls
 - handle concurrency
-- add permissions to user schema and check api requests against authorization
+- add permissions to user schema and check api requests for authorization
 - config can be setup via environment variables

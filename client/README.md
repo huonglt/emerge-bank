@@ -24,7 +24,7 @@ First, all communications between client & server is on `HTTPS`, with LTS, so it
 - Raw data of username and password are sent over `HTTPS`
 - HTTPS will encrypts the data in transit. Server will hash it
 - User receives JWT access token, and csrfToken after login
-- JWT access token, and csrfToken are stored in memory, not in browser `localStorage`, `sessionStorage`, or `cookies`
+- JWT access token, and csrfToken are stored in memory only, not in browser `localStorage`, `sessionStorage`, or `cookies`
 - JWT access token will be attached to all api request calls
 - csrfToken will be attached to api requests that modify server state like `POST`, `PUT`, `DELETE`
 - JWT access token will be used for authentication on the server
@@ -38,12 +38,12 @@ First, all communications between client & server is on `HTTPS`, with LTS, so it
 ### Set bank card PIN:
 
 - PIN is very senstive. A PIN authorizes payments so a leaked PIN is high impact
-- On the UI, the PIN lives only in uncontrolled inputs: never in React state, the query cache, or storage.
+- On the UI, the PIN lives only in uncontrolled inputs, not in React state, the query cache, or browser storage.
 - PIN is read at submit time and cleared straight away.
-- On submit, PIN is encrypted with the server public key (RSA-OAEP) and a single-use token (nonce)
-- The PIN is never sent or logged in readable form
-- PIN is sent over the HTTPS
-- HTTPS will encrypts the data in transit
+- Prior to PIN submission, server sends a public key (RSA-OAEP) and a single-use token (nonce)
+- On submit, PIN is encrypted with the server public key and the nonce
+- Encrypted PIN is sent to server over HTTPS
+- PIN is never sent or logged in readable form on the client
 
 ### Dashboard
 
@@ -88,3 +88,4 @@ Future improvements:
 - add integration tests
 - more features
 - better UX
+- using theming
