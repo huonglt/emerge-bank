@@ -12,8 +12,9 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { getInitials } from '../lib/utils'
 import { useMeQuery } from '@/hooks/useMeQuery'
 import { useLogout } from '@/hooks/useLogout'
+import { UserIcon } from 'lucide-react'
 
-export function ProfileMenu() {
+export const ProfileMenu = () => {
   const me = useMeQuery()
   const userName = me.data?.name
 
@@ -36,12 +37,13 @@ export function ProfileMenu() {
       <DropdownMenuContent className="w-40" align="start">
         <DropdownMenuGroup>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
-          <DropdownMenuItem>Profile</DropdownMenuItem>
+
+          <DropdownMenuItem onClick={logout}>
+            <UserIcon />
+            Log out
+          </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem onClick={logout}>Log out</DropdownMenuItem>
-        </DropdownMenuGroup>
       </DropdownMenuContent>
     </DropdownMenu>
   )

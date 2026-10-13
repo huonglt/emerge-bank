@@ -63,7 +63,7 @@ describe('ProfileMenu: display', () => {
   it('should show Profile and Log out', () => {
     renderWithClient(<ProfileMenu />)
     expect(screen.getByText('My Account')).toBeTruthy()
-    expect(screen.getByRole('menuitem', { name: 'Profile' })).toBeTruthy()
+
     expect(screen.getByRole('menuitem', { name: 'Log out' })).toBeTruthy()
   })
 })
