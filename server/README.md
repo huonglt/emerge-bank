@@ -79,6 +79,7 @@ Start the server:
 Due to time constraints, this app for demo purposes only, not for production use.<br/>
 Future improvements:
 
+- use MFA for more secured authentication
 - secrets should be stored in a vault
 - complex session management like auto cleared session when token expires
 - use actual database
