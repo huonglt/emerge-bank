@@ -7,7 +7,7 @@ It focuces on:
 - simple secure session and token management
 - how secure data is read down and displayed on the frontend
 
-The client is a `React` + `Typescript` + +`shadcn` + `tailwindcss` app. Read the [README](client/README.md)<br/>
+The client is a `React` + `Typescript` + `shadcn` + `tailwindcss` app. Read the [README](client/README.md)<br/>
 
 The server is a `NodeJs`, `ExpressJs` app. Read the [README](server/README.md)
 
