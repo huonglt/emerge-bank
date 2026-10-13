@@ -16,6 +16,7 @@ Workflows supported by the app:
 - login
 - logout
 - set up a virtual bank card: name and PIN
+- user data
 
 ## How workflows are handled to make it safe and secure for users?
 
@@ -39,6 +40,12 @@ All HTTP response headers are set via helmet to provide protection. Headers incl
 ### Logout
 
 - Server side session is cleared
+
+### User data
+
+- return user data for client
+- PIN data is not returned, only isPinSet is returned
+- card number not returned, only maskedCardNumber is returned
 
 ### Set bank card name:
 
