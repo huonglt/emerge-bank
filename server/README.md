@@ -48,6 +48,8 @@ All HTTP response headers are set via helmet to provide protection. Headers incl
 
 - PIN is very senstive. A PIN authorizes payments so a leaked PIN is high impact
 - 2 step process:
+- Step 1:
+  - Server sends a publicKey and a one time used token (nonce) to client for PIN encryption
 - Step 2:
   - Server uses it private key to decrypt the encrypted data from client
   - The decrypted data will contain the one time used token (nonce), the PIN, and confirm PIN
