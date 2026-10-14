@@ -1,7 +1,7 @@
 // @vitest-environment node
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from '@/lib/api'
-import { encryptPin, formaCurrency, getInitials } from '@/lib/utils'
+import { encryptPin, formatCurrency, getInitials } from '@/lib/utils'
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }))
 
@@ -14,7 +14,7 @@ describe('formatNZD', () => {
     [0.005, '$0.01'],
     [-5, '-$5.00'],
   ])('should format %d as %s', (amount, expected) => {
-    expect(formaCurrency(amount)).toBe(expected)
+    expect(formatCurrency(amount)).toBe(expected)
   })
 })
 

@@ -11,7 +11,7 @@ import {
 import { CashCoinMedia } from './CashCoinMedia'
 import type { User } from '../types'
 import { Todo } from './Todo'
-import { formaCurrency } from '@/lib/utils'
+import { formatCurrency } from '@/lib/utils'
 type Props = {
   user: User
 }
@@ -27,7 +27,7 @@ export const Account = (props: Props) => {
       <ItemContent>
         <ItemTitle>{name}</ItemTitle>
         <ItemDescription>{accountNumber}</ItemDescription>
-        <ItemDescription>{formaCurrency(accountBalance)}</ItemDescription>
+        <ItemDescription>{formatCurrency(accountBalance)}</ItemDescription>
       </ItemContent>
       <ItemActions>
         <Todo trigger={<Button variant="outline">Add money</Button>} />
