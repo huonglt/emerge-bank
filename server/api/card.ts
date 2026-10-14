@@ -48,7 +48,7 @@ export const pinNonce = (req: Request, res: Response) => {
 
   const userSessionData = sessions.get(user.id)
   if (!userSessionData) {
-    return res.status(404).json({ error: 'User session not found' })
+    return res.status(401).json({ error: 'User session not found' })
   }
   /**
    * one time used token. a random string of numbers & letters
@@ -85,7 +85,7 @@ export const setCardPIN = (req: Request, res: Response) => {
    */
   const userSessionData = sessions.get(user.id)
   if (!userSessionData) {
-    return res.status(404).json({ error: 'User session not found' })
+    return res.status(401).json({ error: 'User session not found' })
   }
   const nonce = userSessionData.nonce
   userSessionData.nonce = undefined
