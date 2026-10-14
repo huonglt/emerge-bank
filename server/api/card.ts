@@ -14,7 +14,7 @@ import { sessions } from './sessions'
 export const setCardName = (req: Request, res: Response) => {
   const parsed = cardNameSchema.safeParse(req.body)
   if (!parsed.success) {
-    return res.status(400).json({ ok: false, error: 'Card name invalid' })
+    return res.status(400).json({ error: 'Card name invalid' })
   }
 
   const { name } = parsed.data
@@ -25,9 +25,7 @@ export const setCardName = (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Could not find user' })
   }
   if (user.card.name) {
-    return res
-      .status(400)
-      .json({ ok: false, error: 'Card name is already set' })
+    return res.status(400).json({ error: 'Card name is already set' })
   }
   user.card.name = name
 
@@ -75,10 +73,10 @@ export const setCardPIN = (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Could not find user' })
   }
   if (!user.card.name) {
-    return res.status(409).json({ ok: false, error: 'Name your card first' })
+    return res.status(409).json({ error: 'Name your card first' })
   }
   if (user.card.pin) {
-    return res.status(409).json({ ok: false, error: 'PIN is already set' })
+    return res.status(409).json({ error: 'PIN is already set' })
   }
   const body = z.object({ encrypted: z.string().max(1024) }).safeParse(req.body)
 
@@ -87,7 +85,7 @@ export const setCardPIN = (req: Request, res: Response) => {
    */
   const userSessionData = sessions.get(user.id)
   if (!userSessionData) {
-    return res.status(404).json({ ok: false, error: 'User session not found' })
+    return res.status(404).json({ error: 'User session not found' })
   }
   const nonce = userSessionData.nonce
   userSessionData.nonce = undefined
