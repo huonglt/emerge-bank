@@ -1,4 +1,5 @@
-import { api, setAccessToken, setCsrf, tokenExpireIn } from '@/lib/api'
+import { api, tokenExpireIn } from '@/lib/api'
+import { clearSession } from '@/lib/session'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect } from 'react'
 
@@ -10,13 +11,8 @@ export const useLogout = () => {
 
   const { mutate } = useMutation({
     mutationFn: () => api('/logout', { method: 'POST' }),
-    onSettled: () => {
-      // wipe all user data
-      setAccessToken('')
-      setCsrf('')
-      qc.setQueryData(['user'], null)
-      qc.clear()
-    },
+    // wipe all user data
+    onSettled: () => clearSession(qc),
   })
 
   return { logout: useCallback(() => mutate(), [mutate]) }
