@@ -68,7 +68,7 @@ export const CardName = () => {
             <div className="grid gap-2 pb-2">
               <div className="gid pb-2 text-left">
                 <span role="alert" className="text-red-700 ">
-                  {setCardName.error.message}
+                  Failed to save card name
                 </span>
               </div>
             </div>
