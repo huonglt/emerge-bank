@@ -9,6 +9,8 @@ import {
   noCacheControl,
   sessionCheck,
 } from './middleware'
+import request from 'supertest'
+import { app } from '../app'
 import { ctx } from '../test/mocks'
 
 const sign = (payload: object = { sub: 'u1' }, opts: jwt.SignOptions = {}) =>
@@ -31,10 +33,16 @@ describe('noCacheControl', () => {
 describe('errorHandler', () => {
   afterEach(() => vi.restoreAllMocks())
 
+  const handle = (err: unknown, headersSent = false) => {
+    const c = ctx()
+    Object.assign(c.res, { headersSent })
+    errorHandler(err, c.req, c.res, c.next)
+    return c.spies
+  }
+
   it('answers 500 with a generic message and logs only the message', () => {
     const log = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const { req, res, next, spies } = ctx()
-    errorHandler(new Error('db password is hunter2'), req, res, next)
+    const spies = handle(new Error('db password is hunter2'))
     expect(spies.status).toHaveBeenCalledWith(500)
     expect(spies.json).toHaveBeenCalledWith({ error: 'Something went wrong' })
     expect(log).toHaveBeenCalledWith('db password is hunter2') // the message only, never the error object or stack
@@ -42,40 +50,91 @@ describe('errorHandler', () => {
 
   it.each([500, 502, 503])('answers 500 for status %i', (status) => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    const { req, res, next, spies } = ctx()
-    errorHandler(Object.assign(new Error('x'), { status }), req, res, next)
+    const spies = handle(Object.assign(new Error('x'), { status }))
     expect(spies.status).toHaveBeenCalledWith(500)
   })
 
-  it.each([400, 401, 403, 404, 413])(
-    'answers 400 "Bad request" for client error %i, without logging',
-    (status) => {
+  it.each([
+    [400, 'Bad Request'],
+    [401, 'Unauthorized'],
+    [403, 'Forbidden'],
+    [404, 'Not Found'],
+    [413, 'Payload Too Large'],
+    [415, 'Unsupported Media Type'],
+  ])(
+    'keeps client error %i with the standard message "%s", without logging',
+    (status, message) => {
       const log = vi.spyOn(console, 'error').mockImplementation(() => {})
-      const { req, res, next, spies } = ctx()
-      errorHandler(
-        Object.assign(new Error('secret detail'), { status }),
-        req,
-        res,
-        next
+      const spies = handle(
+        Object.assign(new Error('secret detail'), { status })
       )
-      expect(spies.status).toHaveBeenCalledWith(400)
-      expect(spies.json).toHaveBeenCalledWith({ error: 'Bad request' })
+      expect(spies.status).toHaveBeenCalledWith(status)
+      expect(spies.json).toHaveBeenCalledWith({ error: message })
       expect(log).not.toHaveBeenCalled()
     }
   )
 
+  it('reads statusCode as well as status', () => {
+    const spies = handle(Object.assign(new Error('x'), { statusCode: 413 }))
+    expect(spies.status).toHaveBeenCalledWith(413)
+  })
+
+  it.each([
+    ['a non error value', 'boom'],
+    ['null', null],
+    [
+      'a status that is not an http error',
+      Object.assign(new Error('x'), { status: 200 }),
+    ],
+    [
+      'a status that is not a number',
+      Object.assign(new Error('x'), { status: 'bad' }),
+    ],
+  ])('answers 500 for %s', (_label, err) => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const spies = handle(err)
+    expect(spies.status).toHaveBeenCalledWith(500)
+    expect(spies.json).toHaveBeenCalledWith({ error: 'Something went wrong' })
+  })
+
   it('never sends the error message to the client', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
-    const { req, res, next, spies } = ctx()
-    errorHandler(new Error('internal detail'), req, res, next)
+    const spies = handle(new Error('internal detail'))
     expect(JSON.stringify(spies.json.mock.calls)).not.toContain(
       'internal detail'
     )
   })
 
-  it.todo(
-    'keeps the original client status (for example 413 for a body that is too large) instead of 400'
-  )
+  it('hands over to Express when the response has already started', () => {
+    const err = new Error('late failure')
+    const spies = handle(err, true)
+    expect(spies.next).toHaveBeenCalledWith(err)
+    expect(spies.status).not.toHaveBeenCalled()
+    expect(spies.json).not.toHaveBeenCalled()
+  })
+
+  describe('through the app', () => {
+    it('answers 413 for a body over the 10kb limit', async () => {
+      const res = await request(app)
+        .post('/api/login')
+        .set('Content-Type', 'application/json')
+        .send(
+          JSON.stringify({ userName: 'x'.repeat(11 * 1024), password: 'p' })
+        )
+      expect(res.status).toBe(413)
+      expect(res.body).toEqual({ error: 'Payload Too Large' })
+    })
+
+    it('answers 400 for malformed JSON without echoing the body', async () => {
+      const res = await request(app)
+        .post('/api/login')
+        .set('Content-Type', 'application/json')
+        .send('{"userName": "helen", "password": hunter2')
+      expect(res.status).toBe(400)
+      expect(res.body).toEqual({ error: 'Bad Request' })
+      expect(res.text).not.toContain('hunter2')
+    })
+  })
 })
 
 describe('auth', () => {
@@ -96,7 +155,9 @@ describe('auth', () => {
     })
     await vi.waitFor(() => expect(c.spies.next).toHaveBeenCalledTimes(1))
     expect(c.res.locals.userId).toBe('u1')
-    expect(c.res.locals.accessToken).toBe(c.req.headers.authorization!.split(' ')[1])
+    expect(c.res.locals.accessToken).toBe(
+      c.req.headers.authorization!.split(' ')[1]
+    )
     expect(c.spies.status).not.toHaveBeenCalled()
   })
 
