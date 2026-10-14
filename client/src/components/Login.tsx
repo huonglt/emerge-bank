@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { api, setAccessToken, setCsrf } from '@/lib/api'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,17 +19,19 @@ type Props = {
 }
 export const LogIn = (props: Props) => {
   const form = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
-
+  const qc = useQueryClient()
   const login = useMutation({
     mutationFn: (v: LoginInput) =>
       api<Me>('/login', { method: 'POST', body: v }),
     onSuccess: (m) => {
       setAccessToken(m.accessToken)
       setCsrf(m.csrfToken)
+      qc.setQueryData(['user'], m.user)
       props.onSuccess()
     },
   })
   const { errors } = form.formState
+
   return (
     <Card className="w-full max-w-sm">
       <form
