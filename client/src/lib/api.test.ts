@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { api, setAccessToken, setCsrf } from '@/lib/api'
+import { api, setAccessToken, setCsrf, tokenExpireIn } from '@/lib/api'
 import { ApiError } from './ApiError'
 
 const json = (status: number, body: unknown) =>
@@ -107,6 +107,31 @@ describe('api: response', () => {
       status: 500,
       message: 'Something went wrong',
     })
+  })
+})
+
+describe('tokenExpireIn', () => {
+  // unsigned JWT: tokenExpireIn only decodes the payload
+  const jwtWith = (payload: object) =>
+    `e30.${btoa(JSON.stringify(payload)).replace(/=+$/, '')}.sig`
+
+  afterEach(() => vi.useRealTimers())
+
+  it('should return undefined without an access token', () => {
+    expect(tokenExpireIn()).toBeUndefined()
+  })
+
+  it('should return the time left from now, not the full token lifetime', () => {
+    vi.useFakeTimers({ now: 1_000_000_000 })
+    const iat = 1_000_000 - 60 // issued 1 min ago
+    setAccessToken(jwtWith({ sub: 'u-1', iat, exp: iat + 300 }))
+
+    expect(tokenExpireIn()).toBe(240_000)
+  })
+
+  it('should return undefined when the token has no exp', () => {
+    setAccessToken(jwtWith({ sub: 'u-1' }))
+    expect(tokenExpireIn()).toBeUndefined()
   })
 })
 
