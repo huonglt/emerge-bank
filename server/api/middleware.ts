@@ -41,7 +41,7 @@ export const errorHandler = (
  * middlware checking for csrf token
  */
 export const csrf = (req: Request, res: Response, next: NextFunction) => {
-  const reqCSRFToken = Buffer.from(req.headers['x-csrf-token'] as string)
+  const reqCSRFToken = Buffer.from(String(req.headers['x-csrf-token'] ?? ''))
   const userId = res.locals.userId
 
   const userSesssion = sessions.get(userId!)
@@ -91,7 +91,7 @@ export const sessionCheck = (
   const userId = res.locals.userId
   const userSession = sessions.get(userId!)
   if (!userSession) {
-    return res.status(404).json({ error: 'Session user not found' })
+    return res.status(401).json({ error: 'Session user not found' })
   }
   const accessToken = res.locals.accessToken ?? ''
   if (!isEqual(accessToken, userSession.accessToken)) {
