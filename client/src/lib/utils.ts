@@ -43,3 +43,17 @@ export const getInitials = (name: string) => {
   }
   return initials
 }
+
+/**
+ * locale for formatting
+ */
+export const locale = 'en-NZ'
+const numberFormatter = new Intl.NumberFormat(locale, {
+  style: 'currency',
+  currency: 'NZD',
+})
+
+/**
+ * Format an amount using the locale
+ */
+export const formaCurrency = (amount: number) => numberFormatter.format(amount)

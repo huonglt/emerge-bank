@@ -12,12 +12,12 @@ describe('Account', () => {
     expect(screen.getByText('Your account')).toBeTruthy()
     expect(screen.getByText('Alice Tane')).toBeTruthy()
     expect(screen.getByText('•••••••••6789')).toBeTruthy()
-    expect(screen.getByText('NZD 2450.75$')).toBeTruthy()
+    expect(screen.getByText('$2,450.75')).toBeTruthy()
   })
 
   it('should shows a zero balance', () => {
     render(<Account user={makeUser({ accountBalance: 0 })} />)
-    expect(screen.getByText('NZD 0$')).toBeTruthy()
+    expect(screen.getByText('$0.00')).toBeTruthy()
   })
 
   it('should shows the account number exactly as the server sent it', () => {
