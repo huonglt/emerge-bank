@@ -81,6 +81,11 @@ Start the server:
 - install dependencies: `npm install`
 - start the server: `npm run dev:server`
 
+Check the code:
+
+- run the tests: `npm test`
+- type-check: `npm run typecheck`
+
 ## Limitations
 
 Due to time constraints, this app for demo purposes only, not for production use.<br/>
