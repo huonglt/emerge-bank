@@ -5,8 +5,8 @@ export const loginSchema = z.object({
     .string()
     .trim()
     .min(4, 'Username must be at least 4 characters')
-    .max(64),
-  password: z.string().min(4, 'Password must be at least 4 characters').max(28),
+    .max(24),
+  password: z.string().min(4, 'Password must be at least 4 characters').max(24),
 })
 
 export const cardNameSchema = z.object({
