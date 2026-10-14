@@ -5,11 +5,9 @@ import { LogIn } from '@/components/Login'
 import { useMeQuery } from '@/hooks/useMeQuery'
 import { tokenExpireIn } from './lib/api'
 import { useLogout } from './hooks/useLogout'
-import { useQueryClient } from '@tanstack/react-query'
 
 export const App = () => {
   const me = useMeQuery()
-  const qc = useQueryClient()
   const { setTimer } = useLogout()
 
   /**
@@ -18,19 +16,25 @@ export const App = () => {
   const onLoginSuccess = () => {
     const timer = tokenExpireIn()
     setTimer(timer)
-    qc.invalidateQueries({ queryKey: ['user'] })
   }
+
   const user = me.data
+  const showError = me.isError
+  const showLogin = !me.isError && !user
+  const showDashboard = !me.isError && user
+
   return (
     <div className="app">
       <Header />
       <div className="main">
         <div className="content">
-          {user ? (
-            <Dashboard user={user} />
-          ) : (
-            <LogIn onSuccess={onLoginSuccess} />
+          {showError && (
+            <span role="alert" className="text-red-700 ">
+              Error to fetch user data
+            </span>
           )}
+          {showLogin && <LogIn onSuccess={onLoginSuccess} />}
+          {showDashboard && <Dashboard user={user!} />}
         </div>
       </div>
       <Footer />
