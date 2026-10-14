@@ -19,7 +19,7 @@ const queryClient: QueryClient = new QueryClient({
         setAccessToken('')
         setCsrf('')
         queryClient.clear()
-        queryClient.setQueryData(['me'], null)
+        queryClient.setQueryData(['user'], null)
       }
     },
   }),
