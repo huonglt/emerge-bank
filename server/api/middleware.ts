@@ -1,6 +1,7 @@
 import { type NextFunction, type Request, type Response } from 'express'
 
 import { timingSafeEqual } from 'node:crypto'
+import { STATUS_CODES } from 'node:http'
 import { sessions } from './sessions'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
@@ -20,21 +21,43 @@ export const noCacheControl = (
 }
 
 /**
+ * http status of a thrown value, 500 when it has none
+ * body-parser and http-errors set `status` (e.g. 400 bad JSON, 413 body too large)
+ */
+const statusOf = (err: unknown): number => {
+  const e = err as { status?: unknown; statusCode?: unknown } | null
+  const status = Number(e?.status ?? e?.statusCode)
+  return Number.isInteger(status) && status >= 400 && status <= 599
+    ? status
+    : 500
+}
+
+/**
  * catch all error handler
+ * client errors (4xx) keep their status, server errors become 500
+ * the client only ever gets a fixed message: err.message can hold internals,
+ * and a JSON parse error message contains part of the request body
  */
 export const errorHandler = (
-  err: Error & { status?: number },
+  err: unknown,
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const status = err.status && err.status < 500 ? 400 : 500
-  if (status === 500) {
-    console.error(err.message) // message only: never log request bodies
+  // the response has already started: let Express close the connection
+  if (res.headersSent) {
+    return next(err)
   }
-  res
-    .status(status)
-    .json({ error: status === 400 ? 'Bad request' : 'Something went wrong' })
+
+  const status = statusOf(err)
+  if (status >= 500) {
+    // message only: never log the error object, stack or request body
+    console.error(err instanceof Error ? err.message : String(err))
+    return res.status(500).json({ error: 'Something went wrong' })
+  }
+
+  // standard reason phrase, e.g. 'Bad Request', 'Payload Too Large'
+  return res.status(status).json({ error: STATUS_CODES[status] ?? 'Bad Request' })
 }
 
 /**
