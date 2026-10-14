@@ -1,7 +1,6 @@
 declare module 'express-session' {
   interface SessionData {
     userId: string
-    pinNonce?: { value: string; exp: number }
   }
 }
 export type Session = {
