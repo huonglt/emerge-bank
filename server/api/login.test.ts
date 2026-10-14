@@ -68,10 +68,6 @@ describe('POST /api/login: success', () => {
       /salt|hashedPassword|"pin"|"mac"|helen123/
     )
   })
-  it('does not set a cookie (the app relies on the tokens)', async () => {
-    const res = await post({ userName: 'helen', password: 'helen123' })
-    expect(res.headers['set-cookie']).toBeUndefined()
-  })
 
   it('asks for no caching', async () => {
     const res = await post({ userName: 'helen', password: 'helen123' })

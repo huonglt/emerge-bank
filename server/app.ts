@@ -1,5 +1,4 @@
 import express, { type Express } from 'express'
-import cookieParser from 'cookie-parser'
 import cors from 'cors'
 import helmet from 'helmet'
 import {
@@ -10,9 +9,6 @@ import {
   sessionCheck,
 } from './api/middleware'
 import { me, login, logout } from './api'
-import session from 'express-session'
-import { cookieOpts } from './config'
-import { SESSION_SECRET } from './config'
 import { pinNonce, setCardName, setCardPIN } from './api/card'
 
 export const app: Express = express()
@@ -28,7 +24,6 @@ app.use(
       'http://localhost:5174',
       'http://localhost:4173',
     ],
-    credentials: true,
   })
 )
 app.disable('x-powered-by')
@@ -38,18 +33,6 @@ app.use(helmet())
 // parses JSON bodies into req.body
 app.use(express.json({ limit: '10kb' }))
 
-// populate req.cookies from the Cookie header.
-app.use(cookieParser())
-
-// req.session. using MemoryStore by default
-app.use(
-  session({
-    secret: SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    cookie: cookieOpts,
-  })
-)
 // browsers and proxies dont cache the data
 app.use('/api', noCacheControl)
 

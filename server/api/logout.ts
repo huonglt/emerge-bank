@@ -6,6 +6,5 @@ import { sessions } from './sessions'
  */
 export const logout = (req: Request, res: Response) => {
   sessions.delete(res.locals.userId!)
-  req.session.destroy(() => {})
   return res.json({ ok: true })
 }

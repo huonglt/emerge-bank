@@ -60,6 +60,34 @@ describe('GET /api/me', () => {
     expect(res.status).toBe(401)
   })
 
+  it('rejects the token from an earlier login once the user logs in again', async () => {
+    // JWT times are in seconds: move the clock so the second login gets a different token
+    vi.useFakeTimers({ toFake: ['Date'] })
+    try {
+      const first = await loginAs(testUser1)
+      vi.setSystemTime(Date.now() + 2_000)
+      const second = await loginAs(testUser1)
+      expect(second.token).not.toBe(first.token)
+
+      const old = await call('get', '/api/me', first)
+      expect(old.status).toBe(401)
+      expect(old.body).toEqual({ error: 'Token expired or invalid.' })
+      expect((await call('get', '/api/me', second)).status).toBe(200)
+    } finally {
+      vi.useRealTimers()
+    }
+  })
+
+  it('rejects a validly signed token that login did not issue', async () => {
+    const c = await loginAs(testUser1)
+    const res = await call('get', '/api/me', {
+      token: forgeToken(c.id, { expiresIn: '4m' }),
+      csrf: '', // GET requests carry no CSRF token
+      id: '',
+    })
+    expect(res.status).toBe(401)
+  })
+
   it('answers 404 when there is a session but the user no longer exists', async () => {
     const res = await call('get', '/api/me', ghost())
     expect(res.status).toBe(404)

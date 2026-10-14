@@ -90,12 +90,13 @@ describe('auth', () => {
     expect(c.spies.next).not.toHaveBeenCalled()
   }
 
-  it('accepts a valid token, remembers the user id, and continues', async () => {
+  it('accepts a valid token, stores the user id and token in res.locals, and continues', async () => {
     const c = run({
       authorization: `Bearer ${sign({ sub: 'u1' }, { expiresIn: '5m' })}`,
     })
     await vi.waitFor(() => expect(c.spies.next).toHaveBeenCalledTimes(1))
-    expect((c.req.session as unknown as { userId: string }).userId).toBe('u1')
+    expect(c.res.locals.userId).toBe('u1')
+    expect(c.res.locals.accessToken).toBe(c.req.headers.authorization!.split(' ')[1])
     expect(c.spies.status).not.toHaveBeenCalled()
   })
 
@@ -144,9 +145,7 @@ describe('auth', () => {
   it('does not set a user id when the token is bad', async () => {
     const c = run({ authorization: 'Bearer not.a.jwt' })
     await vi.waitFor(() => expect(c.spies.status).toHaveBeenCalled())
-    expect(
-      (c.req.session as unknown as { userId?: string }).userId
-    ).toBeUndefined()
+    expect(c.res.locals.userId).toBeUndefined()
   })
 
   // The algorithm is not pinned, so HS384 and HS512 tokens signed with the same secret are accepted.
@@ -164,10 +163,10 @@ describe('auth', () => {
 
 describe('csrf', () => {
   const run = (userId: string | undefined, token: string | undefined) =>
-    ctx({
-      session: { userId },
-      headers: token === undefined ? {} : { 'x-csrf-token': token },
-    })
+    ctx(
+      { headers: token === undefined ? {} : { 'x-csrf-token': token } },
+      { userId }
+    )
 
   it('continues when the token matches the one stored for the user', () => {
     addSession('u1', 'good-token')
@@ -230,10 +229,15 @@ describe('csrf', () => {
 })
 
 describe('sessionCheck', () => {
-  it('continues when the user has a session', () => {
+  const run = (userId: string | undefined, accessToken?: string) => {
+    const c = ctx({}, { userId, accessToken })
+    sessionCheck(c.req, c.res, c.next)
+    return c.spies
+  }
+
+  it('continues when the token is the one issued at login', () => {
     addSession('u1')
-    const { req, res, next, spies } = ctx({ session: { userId: 'u1' } })
-    sessionCheck(req, res, next)
+    const spies = run('u1', 'a')
     expect(spies.next).toHaveBeenCalledTimes(1)
     expect(spies.status).not.toHaveBeenCalled()
   })
@@ -242,10 +246,23 @@ describe('sessionCheck', () => {
     ['the user has no session', 'u9'],
     ['there is no user id', undefined],
   ])('answers 404 when %s', (_label, userId) => {
-    const { req, res, next, spies } = ctx({ session: { userId } })
-    sessionCheck(req, res, next)
+    const spies = run(userId, 'a')
     expect(spies.status).toHaveBeenCalledWith(404)
     expect(spies.json).toHaveBeenCalledWith({ error: 'Session user not found' })
+    expect(spies.next).not.toHaveBeenCalled()
+  })
+
+  it.each([
+    ['an older token', 'old-token'],
+    ['no token', undefined],
+    ['an empty token', ''],
+  ])('answers 401 when the request carries %s', (_label, token) => {
+    addSession('u1')
+    const spies = run('u1', token)
+    expect(spies.status).toHaveBeenCalledWith(401)
+    expect(spies.json).toHaveBeenCalledWith({
+      error: 'Token expired or invalid.',
+    })
     expect(spies.next).not.toHaveBeenCalled()
   })
 })

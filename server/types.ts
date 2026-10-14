@@ -1,6 +1,12 @@
-declare module 'express-session' {
-  interface SessionData {
-    userId: string
+/**
+ * per request data set by the auth middleware (res.locals)
+ */
+declare global {
+  namespace Express {
+    interface Locals {
+      userId?: string
+      accessToken?: string
+    }
   }
 }
 export type Session = {

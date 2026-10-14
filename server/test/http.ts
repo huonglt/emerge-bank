@@ -54,12 +54,13 @@ export const forgeToken = (sub: string, opts: jwt.SignOptions = {}) =>
 
 // A valid token and session for a user id that does not exist in the users list.
 export const ghost = (): Creds => {
+  const token = forgeToken('ghost')
   sessions.set('ghost', {
-    accessToken: 'x',
+    accessToken: token,
     csrfToken: 'csrf-for-ghost',
     nonce: undefined,
   })
-  return { token: forgeToken('ghost'), csrf: 'csrf-for-ghost', id: 'ghost' }
+  return { token, csrf: 'csrf-for-ghost', id: 'ghost' }
 }
 
 // What the browser does: encrypt with the server's public key (RSA-OAEP, SHA-256).

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { call, loginAs, resetState } from '../test/http'
 import { ctx } from '../test/mocks'
 import { logout } from './logout'
@@ -7,20 +7,18 @@ import { sessions } from './sessions'
 beforeEach(resetState)
 
 describe('logout (handler)', () => {
-  it("removes the user's session, destroys the express session and answers ok", () => {
+  it("removes the user's session and answers ok", () => {
     sessions.set('u1', { accessToken: 'a', csrfToken: 'c', nonce: undefined })
-    const destroy = vi.fn()
-    const { req, res, spies } = ctx({ session: { userId: 'u1', destroy } })
+    const { req, res, spies } = ctx({}, { userId: 'u1' })
     logout(req, res)
     expect(sessions.has('u1')).toBe(false)
-    expect(destroy).toHaveBeenCalledWith(expect.any(Function))
     expect(spies.json).toHaveBeenCalledWith({ ok: true })
   })
 
   it("leaves other users' sessions alone", () => {
     sessions.set('u1', { accessToken: 'a', csrfToken: 'c', nonce: undefined })
     sessions.set('u2', { accessToken: 'a', csrfToken: 'c', nonce: undefined })
-    const { req, res } = ctx({ session: { userId: 'u1', destroy: vi.fn() } })
+    const { req, res } = ctx({}, { userId: 'u1' })
     logout(req, res)
     expect(sessions.has('u2')).toBe(true)
   })

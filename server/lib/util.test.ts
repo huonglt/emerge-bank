@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import { describe, expect, it } from 'vitest'
-import { ABSOLUTE_MS, JWT_SECRET } from '../config'
+import { JWT_SECRET } from '../config'
 import type { User } from '../types'
 import { generateJWT, isEqual, toDisplayUser } from './util'
 
@@ -105,10 +105,9 @@ describe('generateJWT', () => {
     expect(Object.keys(decoded).sort()).toEqual(['exp', 'iat', 'sub'])
   })
 
-  it('expires after 5 minutes, the same as the server session', () => {
+  it('expires after 5 minutes', () => {
     const { exp, iat } = jwt.decode(generateJWT(makeUser())) as jwt.JwtPayload
     expect(exp! - iat!).toBe(300)
-    expect(exp! - iat!).toBe(ABSOLUTE_MS / 1000)
   })
 
   it('is rejected once it has expired', () => {
