@@ -12,12 +12,7 @@ declare global {
 export type UserSessionData = {
   accessToken: string
   csrfToken: string
-  nonce:
-    | {
-        value: string
-        exp: number
-      }
-    | undefined
+  nonce: Nonce | undefined
 }
 export type DisplayUser = {
   id: string

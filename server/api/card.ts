@@ -43,7 +43,7 @@ export const pinNonce = (req: Request, res: Response) => {
     return res.status(404).json({ error: 'Could not find user' })
   }
   if (!user.card.name || user.card.pin) {
-    return res.status(400).json({ error: 'PIN cannot be set right now' })
+    return res.status(409).json({ error: 'PIN cannot be set right now' })
   }
 
   const userSessionData = sessions.get(user.id)
