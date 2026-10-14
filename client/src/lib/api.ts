@@ -2,12 +2,14 @@ import { jwtDecode } from 'jwt-decode'
 import { serverUrl } from './config'
 import { ApiError } from './ApiError'
 
-// CSRF token lives in memory only: not in localStorage, not in a cookie JS can read.
-// The session token itself is an HttpOnly cookie, so this code never sees it.
-let csrfToken = ''
+/**
+ * accessToken and csrf token lives in memory only
+ * they are not stored in browser storage, or in cookie that javascript can read
+ */
 let accessToken = ''
-export const setCsrf = (t: string) => (csrfToken = t)
+let csrfToken = ''
 export const setAccessToken = (t: string) => (accessToken = t)
+export const setCsrf = (t: string) => (csrfToken = t)
 
 /**
  * Generic method for calling api
