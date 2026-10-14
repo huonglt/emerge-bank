@@ -17,18 +17,22 @@ import {
 } from '@/components/ui/item'
 import { CardMedia } from './CardMedia'
 import { cardNameSchema } from '@/schema/schema'
+import { useState } from 'react'
 
 type CardName = { name: string }
 
 export const CardName = () => {
   const form = useForm<CardName>({ resolver: zodResolver(cardNameSchema) })
   const qc = useQueryClient()
-
+  const [error, setError] = useState<string>()
   const setCardName = useMutation({
     mutationFn: (v: CardName) =>
       api<User>('/card/name', { method: 'PUT', body: v }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['user'] })
+    },
+    onError: () => {
+      setError('Failed to save card name')
     },
   })
   const { errors } = form.formState
@@ -60,6 +64,11 @@ export const CardName = () => {
               {errors.name && (
                 <span role="alert" className="text-red-700 ">
                   {errors.name.message}
+                </span>
+              )}
+              {error && (
+                <span role="alert" className="text-red-700 ">
+                  {error}
                 </span>
               )}
             </div>
