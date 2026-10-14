@@ -33,7 +33,7 @@ describe('api: request', () => {
     const { url, init, headers } = sent(spy)
     expect(url).toBe('https://localhost:3001/api/me')
     expect(init.method).toBe('GET')
-    expect(init.credentials).toBe('include')
+    expect(init.credentials).toBeUndefined() // no cookies: auth is the Bearer token
     expect(init.body).toBeUndefined()
     expect(headers.get('Content-Type')).toBe('application/json')
   })

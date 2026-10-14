@@ -205,19 +205,15 @@ describe('csrf', () => {
     expect(spies.next).not.toHaveBeenCalled()
   })
 
-  // Two bugs, described as the wanted behaviour. Both pass only because they are marked `fails`.
-  // Fix csrf to read the header safely (`String(req.headers['x-csrf-token'] ?? '')`) and to reject an
-  // empty token, then delete the `.fails`.
-  it.fails(
-    'answers 401 instead of throwing when the CSRF header is missing',
-    () => {
-      addSession('u1', 'good-token')
-      const { req, res, next, spies } = run('u1', undefined)
-      expect(() => csrf(req, res, next)).not.toThrow()
-      expect(spies.status).toHaveBeenCalledWith(401)
-    }
-  )
+  it('answers 401 instead of throwing when the CSRF header is missing', () => {
+    addSession('u1', 'good-token')
+    const { req, res, next, spies } = run('u1', undefined)
+    expect(() => csrf(req, res, next)).not.toThrow()
+    expect(spies.status).toHaveBeenCalledWith(401)
+  })
 
+  // A bug, described as the wanted behaviour. It passes only because it is marked `fails`.
+  // Reject an empty token (or run sessionCheck before csrf), then delete the `.fails`.
   it.fails(
     'blocks an empty token when the user has no session (empty equals empty today)',
     () => {
@@ -245,9 +241,9 @@ describe('sessionCheck', () => {
   it.each([
     ['the user has no session', 'u9'],
     ['there is no user id', undefined],
-  ])('answers 404 when %s', (_label, userId) => {
+  ])('answers 401 when %s', (_label, userId) => {
     const spies = run(userId, 'a')
-    expect(spies.status).toHaveBeenCalledWith(404)
+    expect(spies.status).toHaveBeenCalledWith(401)
     expect(spies.json).toHaveBeenCalledWith({ error: 'Session user not found' })
     expect(spies.next).not.toHaveBeenCalled()
   })

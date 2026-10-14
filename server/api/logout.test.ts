@@ -41,11 +41,12 @@ describe('POST /api/logout', () => {
     expect(sessions.has(c.id)).toBe(false)
   })
 
+  // 401 (not 404) sso the client treats it as signed out and shows the login screen
   it('makes the old access token useless, even though the token has not expired', async () => {
     const c = await loginAs(testUser1)
     await call('post', '/api/logout', c)
     const res = await call('get', '/api/me', c)
-    expect(res.status).toBe(404)
+    expect(res.status).toBe(401)
     expect(res.body).toEqual({ error: 'Session user not found' })
   })
 
@@ -70,6 +71,4 @@ describe('POST /api/logout', () => {
     expect(sessions.has(u2.id)).toBe(true)
     expect((await call('get', '/api/me', u2)).status).toBe(200)
   })
-
-  it.todo('answers 401, not 404, when the session is gone')
 })

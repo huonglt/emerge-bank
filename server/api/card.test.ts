@@ -44,7 +44,7 @@ describe('PUT /api/card/name', () => {
     expect(
       (await call('put', '/api/card/name', c).send(nameBody('Second Name')))
         .status
-    ).toBe(400)
+    ).toBe(409)
     expect(user(testUser1.userName).card.name).toBe('First Name')
   })
 

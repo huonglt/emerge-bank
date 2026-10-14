@@ -94,13 +94,13 @@ describe('GET /api/me', () => {
     expect(res.body).toEqual({ error: 'Could not find user' })
   })
 
-  it('answers 404 when the token is valid but the user never logged in', async () => {
+  it('answers 401 when the token is valid but the user never logged in', async () => {
     const res = await call('get', '/api/me', {
       token: forgeToken(user('helen')?.id),
       csrf: '',
       id: '',
     })
-    expect(res.status).toBe(404)
+    expect(res.status).toBe(401)
     expect(res.body).toEqual({ error: 'Session user not found' })
   })
 })

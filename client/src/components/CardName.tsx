@@ -1,7 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { useQueryClient, useMutation } from '@tanstack/react-query'
-import type { User } from '@/types'
 import { api } from '@/lib/api'
 
 import { Button } from '@/components/ui/button'

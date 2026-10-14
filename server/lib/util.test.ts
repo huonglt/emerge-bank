@@ -78,9 +78,7 @@ describe('toDisplayUser', () => {
     expect(u).toEqual(before)
   })
 
-  // The check is `pin !== null`, so a missing (undefined) PIN counts as "set". This describes the wanted
-  // behaviour and passes only because it is marked `fails`. Use `!!card?.pin` and delete the `.fails`.
-  it.fails('treats a missing (undefined) PIN as not set', () => {
+  it('treats a missing (undefined) PIN as not set', () => {
     const u = makeUser({
       card: { name: 'x', pin: undefined as never, maskedCardNumber: 'm' },
     })
