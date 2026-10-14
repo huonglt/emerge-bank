@@ -31,7 +31,7 @@ export const CardName = () => {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
   })
   const { errors } = form.formState
-  const errMessage = errors?.name?.message ?? setCardName.error?.message
+
   return (
     <Card className="w-full max-w-sm">
       <form
@@ -62,13 +62,17 @@ export const CardName = () => {
                   {errors.name.message}
                 </span>
               )}
-              {errMessage && (
-                <span role="alert" className="text-red-700 ">
-                  {errMessage}
-                </span>
-              )}
             </div>
           </div>
+          {setCardName.error && (
+            <div className="grid gap-2 pb-2">
+              <div className="gid pb-2 text-left">
+                <span role="alert" className="text-red-700 ">
+                  {setCardName.error.message}
+                </span>
+              </div>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button type="submit" className="w-full">
