@@ -56,4 +56,4 @@ const numberFormatter = new Intl.NumberFormat(locale, {
 /**
  * Format an amount using the locale
  */
-export const formaCurrency = (amount: number) => numberFormatter.format(amount)
+export const formatCurrency = (amount: number) => numberFormatter.format(amount)
