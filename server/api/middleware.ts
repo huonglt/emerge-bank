@@ -5,7 +5,7 @@ import { STATUS_CODES } from 'node:http'
 import { sessions } from './sessions'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
-import { JWT_SECRET } from '../config'
+import { JWT_ALGORITHM, JWT_SECRET } from '../config'
 import { isEqual } from '../lib/util'
 
 /**
@@ -87,7 +87,9 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
 
   if (!token) return res.status(401).json({ error: 'Access token required.' })
 
-  jwt.verify(token, JWT_SECRET, (err: VerifyErrors | null, decoded: any) => {
+  // pin the algorithm: accept only tokens signed the way generateJWT signs them
+  const options = { algorithms: [JWT_ALGORITHM] }
+  jwt.verify(token, JWT_SECRET, options, (err: VerifyErrors | null, decoded: any) => {
     if (err) {
       return res.status(401).json({ error: 'Token expired or invalid.' })
     }

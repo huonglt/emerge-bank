@@ -87,6 +87,11 @@ describe('toDisplayUser', () => {
 })
 
 describe('generateJWT', () => {
+  it('signs with HS256, the only algorithm auth accepts', () => {
+    const { header } = jwt.decode(generateJWT(makeUser()), { complete: true })!
+    expect(header.alg).toBe('HS256')
+  })
+
   it('creates a token that verifies with the secret and carries the user id', () => {
     const decoded = jwt.verify(
       generateJWT(makeUser()),

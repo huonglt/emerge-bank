@@ -209,16 +209,23 @@ describe('auth', () => {
     expect(c.res.locals.userId).toBeUndefined()
   })
 
-  // The algorithm is not pinned, so HS384 and HS512 tokens signed with the same secret are accepted.
-  // Describes the wanted behaviour; passes only because it is marked `fails`. Pass
-  // `{ algorithms: ['HS256'] }` to jwt.verify, then delete the `.fails`.
-  it.fails('accepts only HS256 tokens', async () => {
+  it.each(['HS384', 'HS512'] as const)(
+    'rejects a token signed with %s, even with the right secret',
+    async (algorithm) => {
+      await rejected(
+        run({
+          authorization: `Bearer ${sign({ sub: 'u1' }, { algorithm, expiresIn: '5m' })}`,
+        }),
+        'Token expired or invalid.'
+      )
+    }
+  )
+
+  it('accepts a token signed with HS256', async () => {
     const c = run({
-      authorization: `Bearer ${sign({ sub: 'u1' }, { algorithm: 'HS512', expiresIn: '5m' })}`,
+      authorization: `Bearer ${sign({ sub: 'u1' }, { algorithm: 'HS256', expiresIn: '5m' })}`,
     })
-    await vi.waitFor(() => expect(c.spies.status).toHaveBeenCalledWith(401), {
-      timeout: 300,
-    })
+    await vi.waitFor(() => expect(c.spies.next).toHaveBeenCalledTimes(1))
   })
 })
 

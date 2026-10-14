@@ -1,5 +1,5 @@
 import { timingSafeEqual } from 'node:crypto'
-import { JWT_EXPIRES_IN, JWT_SECRET } from '../config'
+import { JWT_ALGORITHM, JWT_EXPIRES_IN, JWT_SECRET } from '../config'
 import { User, DisplayUser } from '../types'
 import jwt from 'jsonwebtoken'
 
@@ -28,6 +28,7 @@ export const toDisplayUser = (user: User): DisplayUser => {
  */
 export const generateJWT = (user: User) => {
   return jwt.sign({ sub: user.id }, JWT_SECRET, {
+    algorithm: JWT_ALGORITHM,
     expiresIn: JWT_EXPIRES_IN,
   })
 }
