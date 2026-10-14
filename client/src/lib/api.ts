@@ -42,17 +42,15 @@ export const api = async <T>(
 }
 
 /**
- * Find the time in ms the access token will expire in
+ * Find the time in ms from now until the access token expires
  */
 export const tokenExpireIn = () => {
   if (!accessToken) {
     return
   }
-  const decoded = jwtDecode(accessToken)
-
-  const { iat, exp } = decoded
-  if (iat && exp) {
-    return (exp - iat) * 1000
+  const { exp } = jwtDecode(accessToken)
+  if (exp) {
+    return exp * 1000 - Date.now()
   }
   return
 }
