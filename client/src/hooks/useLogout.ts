@@ -10,12 +10,13 @@ export const useLogout = () => {
   const [timer, setTimer] = useState<number | undefined>()
   const qc = useQueryClient()
 
-  const logout = useMutation({
+  const { mutate } = useMutation({
     mutationFn: () => api('/logout', { method: 'POST' }),
     onSettled: () => {
-      // wipe all user data
+      // wipe all user data & clear the auto logout timer
       setAccessToken('')
       setCsrf('')
+      setTimer(undefined)
       qc.setQueryData(['user'], null)
       qc.clear()
     },
@@ -26,15 +27,13 @@ export const useLogout = () => {
       return
     }
 
-    const id = setTimeout(() => {
-      logout.mutate()
-    }, timer)
+    const id = setTimeout(() => mutate(), timer)
 
     return () => clearTimeout(id)
-  }, [timer, logout])
+  }, [timer, mutate])
 
   return {
     setTimer,
-    logout: () => logout.mutate(),
+    logout: () => mutate(),
   }
 }
