@@ -15,7 +15,6 @@ export const app: Express = express()
 
 /**
  * Configure CORS to trust for client
- * credentials is true so client can sends cookies, authorization headers, or credentials
  */
 app.use(
   cors({

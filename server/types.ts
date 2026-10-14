@@ -9,10 +9,15 @@ declare global {
     }
   }
 }
-export type Session = {
-  userId: string
-  created: number
-  pinNonce?: { value: string; exp: number }
+export type UserSessionData = {
+  accessToken: string
+  csrfToken: string
+  nonce:
+    | {
+        value: string
+        exp: number
+      }
+    | undefined
 }
 export type DisplayUser = {
   id: string

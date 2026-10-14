@@ -26,7 +26,7 @@ export const CardName = () => {
 
   const setCardName = useMutation({
     mutationFn: (v: CardName) => {
-      return api<User>('/card/name', { method: 'PUT', body: v })
+      return api('/card/name', { method: 'PUT', body: v })
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
   })

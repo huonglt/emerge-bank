@@ -17,7 +17,7 @@ export const toDisplayUser = (user: User): DisplayUser => {
     accountNumber,
     card: {
       name: card?.name,
-      isPINSet: card?.pin !== null,
+      isPINSet: !!card?.pin,
       maskedCardNumber: card.maskedCardNumber,
     },
   }
