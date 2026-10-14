@@ -7,7 +7,7 @@ import { toDisplayUser } from '../lib/util'
  * all sensitive user data are not sent to browser
  */
 export const me = (req: Request, res: Response) => {
-  const userId = req.session.userId as string
+  const userId = res.locals.userId!
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {

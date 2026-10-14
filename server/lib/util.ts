@@ -33,7 +33,7 @@ export const generateJWT = (user: User) => {
 }
 
 /**
- * Checking too token key for equal
+ * Checking two tokens for equal
  */
 export const isEqual = (a: string, b: string) => {
   const x = Buffer.from(a),

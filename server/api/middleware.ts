@@ -5,6 +5,7 @@ import { sessions } from './sessions'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
 import { JWT_SECRET } from '../config'
+import { isEqual } from '../lib/util'
 
 /**
  * Browsers, and proxy dont cache any part of the request or response
@@ -41,7 +42,7 @@ export const errorHandler = (
  */
 export const csrf = (req: Request, res: Response, next: NextFunction) => {
   const reqCSRFToken = Buffer.from(req.headers['x-csrf-token'] as string)
-  const userId = req.session.userId
+  const userId = res.locals.userId
 
   const userSesssion = sessions.get(userId!)
   const serverCSRFToken = Buffer.from(userSesssion?.csrfToken || '')
@@ -68,23 +69,33 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
       return res.status(401).json({ error: 'Token expired or invalid.' })
     }
 
-    req.session.userId = decoded.sub
+    /**
+     * store userid, and accessToken in res.local
+     */
+    res.locals.userId = decoded.sub
+    res.locals.accessToken = token
     next()
   })
 }
 
 /**
  * middleware checking for server session
+ * the access token must be the one issued at the user's latest login,
+ * so older tokens stop working as soon as the user logs in again
  */
 export const sessionCheck = (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const userId = req.session.userId
+  const userId = res.locals.userId
   const userSession = sessions.get(userId!)
   if (!userSession) {
     return res.status(404).json({ error: 'Session user not found' })
+  }
+  const accessToken = res.locals.accessToken ?? ''
+  if (!isEqual(accessToken, userSession.accessToken)) {
+    return res.status(401).json({ error: 'Token expired or invalid.' })
   }
   next()
 }

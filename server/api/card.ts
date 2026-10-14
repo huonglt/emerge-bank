@@ -18,7 +18,7 @@ export const setCardName = (req: Request, res: Response) => {
   }
 
   const { name } = parsed.data
-  const userId = req.session.userId!
+  const userId = res.locals.userId!
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
@@ -36,7 +36,7 @@ export const setCardName = (req: Request, res: Response) => {
  * Step 1 of PIN setup: public key + one time use token to this session.
  */
 export const pinNonce = (req: Request, res: Response) => {
-  const userId = req.session.userId!
+  const userId = res.locals.userId!
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
@@ -66,7 +66,7 @@ export const pinNonce = (req: Request, res: Response) => {
  * Step 2 of PIN setup: setting pin
  */
 export const setCardPIN = (req: Request, res: Response) => {
-  const userId = req.session.userId!
+  const userId = res.locals.userId!
   const user = usersDB.getById(userId)
   // could not find user
   if (!user) {
