@@ -81,7 +81,11 @@ export const LogIn = () => {
           )}
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button className="w-full" type="submit">
+          <Button
+            className="w-full"
+            type="submit"
+            disabled={login.isPending}
+          >
             Login
           </Button>
         </CardFooter>

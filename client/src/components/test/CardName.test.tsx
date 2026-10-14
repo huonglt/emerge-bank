@@ -18,7 +18,8 @@ afterEach(() => {
 
 // The label is not linked to the input (no id), so find the field by its role.
 const nameInput = () => screen.getByRole('textbox') as HTMLInputElement
-const save = () => screen.getByRole('button', { name: 'Save' })
+const save = () =>
+  screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement
 
 describe('CardName: the form', () => {
   it('should explains what it is asking for', () => {
@@ -128,5 +129,33 @@ describe('CardName: saving', () => {
     await waitFor(() =>
       expect(spy).toHaveBeenCalledWith({ queryKey: ['user'] })
     )
+  })
+
+  it('should disables Save while the request is running', async () => {
+    vi.mocked(api).mockReturnValue(new Promise(() => {}))
+    const { user } = renderWithClient(<CardName />)
+    await user.type(nameInput(), 'Everyday')
+    await user.click(save())
+    await waitFor(() => expect(save().disabled).toBe(true))
+  })
+
+  it('should sends only one request when Save is clicked twice', async () => {
+    vi.mocked(api).mockReturnValue(new Promise(() => {}))
+    const { user } = renderWithClient(<CardName />)
+    await user.type(nameInput(), 'Everyday')
+    await user.dblClick(save())
+    await waitFor(() => expect(save().disabled).toBe(true))
+    expect(api).toHaveBeenCalledTimes(1)
+  })
+
+  it('should enables Save again when the request fails', async () => {
+    vi.mocked(api).mockRejectedValue(new Error('Card name is already set'))
+    const { user } = renderWithClient(<CardName />)
+    await user.type(nameInput(), 'Everyday')
+    await user.click(save())
+    expect((await screen.findByRole('alert')).textContent).toBe(
+      'Card name is already set'
+    )
+    expect(save().disabled).toBe(false)
   })
 })
