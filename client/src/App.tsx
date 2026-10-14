@@ -3,20 +3,12 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { LogIn } from '@/components/Login'
 import { useMeQuery } from '@/hooks/useMeQuery'
-import { tokenExpireIn } from './lib/api'
-import { useLogout } from './hooks/useLogout'
+import { useAutoLogout } from './hooks/useLogout'
 
 export const App = () => {
   const me = useMeQuery()
-  const { setTimer } = useLogout()
-
-  /**
-   * set timer to auto logout when token expires
-   */
-  const onLoginSuccess = () => {
-    const timer = tokenExpireIn()
-    setTimer(timer)
-  }
+  // auto logout when the access token expires
+  useAutoLogout(me.data?.id)
 
   const user = me.data
   const showError = me.isError
@@ -33,7 +25,7 @@ export const App = () => {
               Error to fetch user data
             </span>
           )}
-          {showLogin && <LogIn onSuccess={onLoginSuccess} />}
+          {showLogin && <LogIn />}
           {showDashboard && <Dashboard user={user!} />}
         </div>
       </div>

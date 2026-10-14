@@ -1,39 +1,47 @@
-import { api, setAccessToken, setCsrf } from '@/lib/api'
+import { api, setAccessToken, setCsrf, tokenExpireIn } from '@/lib/api'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 
 /**
- * Hook to handler logout
- * Having set timer to logout automatically
+ * Hook to handle logout
  */
 export const useLogout = () => {
-  const [timer, setTimer] = useState<number | undefined>()
   const qc = useQueryClient()
 
   const { mutate } = useMutation({
     mutationFn: () => api('/logout', { method: 'POST' }),
     onSettled: () => {
-      // wipe all user data & clear the auto logout timer
+      // wipe all user data
       setAccessToken('')
       setCsrf('')
-      setTimer(undefined)
       qc.setQueryData(['user'], null)
       qc.clear()
     },
   })
 
+  return { logout: useCallback(() => mutate(), [mutate]) }
+}
+
+/**
+ * Log out automatically when the access token expires
+ * The timer is tied to the signed in user: any logout (manual, auto, 401)
+ * sets the user to null will clears the timer
+ * a new login starts a fresh new timer.
+ */
+export const useAutoLogout = (userId: string | undefined) => {
+  const { logout } = useLogout()
+
   useEffect(() => {
-    if (!timer) {
+    if (!userId) {
+      return
+    }
+    const ms = tokenExpireIn()
+    if (ms === undefined) {
       return
     }
 
-    const id = setTimeout(() => mutate(), timer)
+    const id = setTimeout(logout, ms)
 
     return () => clearTimeout(id)
-  }, [timer, mutate])
-
-  return {
-    setTimer,
-    logout: () => mutate(),
-  }
+  }, [userId, logout])
 }

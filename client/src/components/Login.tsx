@@ -14,10 +14,7 @@ import { UserMedia } from './UserMedia'
 
 type LoginInput = { userName: string; password: string }
 
-type Props = {
-  onSuccess: () => void
-}
-export const LogIn = (props: Props) => {
+export const LogIn = () => {
   const form = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
   const qc = useQueryClient()
   const login = useMutation({
@@ -27,7 +24,6 @@ export const LogIn = (props: Props) => {
       setAccessToken(m.accessToken)
       setCsrf(m.csrfToken)
       qc.setQueryData(['user'], m.user)
-      props.onSuccess()
     },
   })
   const { errors } = form.formState
