@@ -6,7 +6,7 @@ export type User = {
   card: {
     name: string | null
     isPINSet: boolean
-    maskedAccountNumber: string
+    maskedCardNumber: string
   }
 }
 export type Me = {

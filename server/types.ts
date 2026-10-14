@@ -17,7 +17,7 @@ export type DisplayUser = {
   card: {
     name: string | null
     isPINSet: boolean
-    maskedAccountNumber: string
+    maskedCardNumber: string
   }
 }
 

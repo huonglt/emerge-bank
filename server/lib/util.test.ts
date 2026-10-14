@@ -11,7 +11,11 @@ const makeUser = (overrides: Partial<User> = {}): User => ({
   hashedPassword: Buffer.from('hash'),
   accountNumber: '01-1238-1335678-132',
   accountBalance: 150,
-  card: { name: 'Travel Card', pin: { salt: 's', mac: 'm' }, maskedCardNumber: '***.***.***.123' },
+  card: {
+    name: 'Travel Card',
+    pin: { salt: 's', mac: 'm' },
+    maskedCardNumber: '***.***.***.123',
+  },
   ...overrides,
 })
 
@@ -22,24 +26,44 @@ describe('toDisplayUser', () => {
       name: 'helen',
       accountBalance: 150,
       accountNumber: '01-1238-1335678-132',
-      card: { name: 'Travel Card', isPINSet: true, maskedAccountNumber: '***.***.***.123' },
+      card: {
+        name: 'Travel Card',
+        isPINSet: true,
+        maskedCardNumber: '***.***.***.123',
+      },
     })
   })
 
   it('sets isPINSet from whether a PIN record exists', () => {
     expect(toDisplayUser(makeUser()).card.isPINSet).toBe(true)
-    expect(toDisplayUser(makeUser({ card: { name: 'x', pin: null, maskedCardNumber: 'm' } })).card.isPINSet).toBe(false)
+    expect(
+      toDisplayUser(
+        makeUser({ card: { name: 'x', pin: null, maskedCardNumber: 'm' } })
+      ).card.isPINSet
+    ).toBe(false)
   })
 
   it('passes a missing card name through as null', () => {
-    const d = toDisplayUser(makeUser({ card: { name: null, pin: null, maskedCardNumber: 'm' } }))
+    const d = toDisplayUser(
+      makeUser({ card: { name: null, pin: null, maskedCardNumber: 'm' } })
+    )
     expect(d.card.name).toBeNull()
   })
 
   it('exposes only the allowed fields', () => {
     const d = toDisplayUser(makeUser())
-    expect(Object.keys(d).sort()).toEqual(['accountBalance', 'accountNumber', 'card', 'id', 'name'])
-    expect(Object.keys(d.card).sort()).toEqual(['isPINSet', 'maskedAccountNumber', 'name'])
+    expect(Object.keys(d).sort()).toEqual([
+      'accountBalance',
+      'accountNumber',
+      'card',
+      'id',
+      'name',
+    ])
+    expect(Object.keys(d.card).sort()).toEqual([
+      'isPINSet',
+      'maskedCardNumber',
+      'name',
+    ])
   })
 
   it('never exposes the password hash, the salt or the PIN record', () => {
@@ -57,19 +81,27 @@ describe('toDisplayUser', () => {
   // The check is `pin !== null`, so a missing (undefined) PIN counts as "set". This describes the wanted
   // behaviour and passes only because it is marked `fails`. Use `!!card?.pin` and delete the `.fails`.
   it.fails('treats a missing (undefined) PIN as not set', () => {
-    const u = makeUser({ card: { name: 'x', pin: undefined as never, maskedCardNumber: 'm' } })
+    const u = makeUser({
+      card: { name: 'x', pin: undefined as never, maskedCardNumber: 'm' },
+    })
     expect(toDisplayUser(u).card.isPINSet).toBe(false)
   })
 })
 
 describe('generateJWT', () => {
   it('creates a token that verifies with the secret and carries the user id', () => {
-    const decoded = jwt.verify(generateJWT(makeUser()), JWT_SECRET) as jwt.JwtPayload
+    const decoded = jwt.verify(
+      generateJWT(makeUser()),
+      JWT_SECRET
+    ) as jwt.JwtPayload
     expect(decoded.sub).toBe('123-abc-456')
   })
 
   it('contains only the subject and the issue and expiry times', () => {
-    const decoded = jwt.verify(generateJWT(makeUser()), JWT_SECRET) as jwt.JwtPayload
+    const decoded = jwt.verify(
+      generateJWT(makeUser()),
+      JWT_SECRET
+    ) as jwt.JwtPayload
     expect(Object.keys(decoded).sort()).toEqual(['exp', 'iat', 'sub'])
   })
 
@@ -82,11 +114,15 @@ describe('generateJWT', () => {
   it('is rejected once it has expired', () => {
     const token = generateJWT(makeUser())
     const { iat } = jwt.decode(token) as jwt.JwtPayload
-    expect(() => jwt.verify(token, JWT_SECRET, { clockTimestamp: iat! + 301 })).toThrow(/expired/)
+    expect(() =>
+      jwt.verify(token, JWT_SECRET, { clockTimestamp: iat! + 301 })
+    ).toThrow(/expired/)
   })
 
   it('is rejected with any other secret', () => {
-    expect(() => jwt.verify(generateJWT(makeUser()), 'some-other-secret')).toThrow()
+    expect(() =>
+      jwt.verify(generateJWT(makeUser()), 'some-other-secret')
+    ).toThrow()
   })
 
   it('is signed with HS256', () => {
@@ -95,7 +131,9 @@ describe('generateJWT', () => {
   })
 
   it('gives different users different tokens', () => {
-    expect(generateJWT(makeUser({ id: 'a' }))).not.toBe(generateJWT(makeUser({ id: 'b' })))
+    expect(generateJWT(makeUser({ id: 'a' }))).not.toBe(
+      generateJWT(makeUser({ id: 'b' }))
+    )
   })
 })
 

@@ -14,7 +14,7 @@ type Props = {
 }
 export const Card = (props: Props) => {
   const {
-    card: { maskedAccountNumber, name },
+    card: { maskedCardNumber, name },
   } = props.user
 
   return (
@@ -23,7 +23,7 @@ export const Card = (props: Props) => {
       <CardMedia />
       <ItemContent>
         <ItemTitle>{name}</ItemTitle>
-        <ItemDescription>{maskedAccountNumber}</ItemDescription>
+        <ItemDescription>{maskedCardNumber}</ItemDescription>
       </ItemContent>
     </Item>
   )

@@ -138,7 +138,7 @@ describe('PUT /api/card/pin: who and when', () => {
     const c = await loginAs(testUser1)
     const res = await call('put', '/api/card/pin', c).send({})
     expect(res.status).toBe(409)
-    expect(res.body).toEqual({ ok: false, error: 'Name your card first' })
+    expect(res.body).toEqual({ error: 'Name your card first' })
   })
 
   it('refuses to change a PIN that is already set', async () => {
@@ -150,7 +150,7 @@ describe('PUT /api/card/pin: who and when', () => {
       encrypted: 'whatever',
     })
     expect(res.status).toBe(409)
-    expect(res.body).toEqual({ ok: false, error: 'PIN is already set' })
+    expect(res.body).toEqual({ error: 'PIN is already set' })
     expect(user(testUser1.userName).card.pin).toBe(before)
   })
 
