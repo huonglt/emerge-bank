@@ -4,14 +4,15 @@ import { ApiError } from './ApiError'
 
 /**
  * Wipe all user data on the client
- * Setting the user to null first re-renders the app to the login screen;
- * clear() alone removes the query without notifying the components using it
+ * The user query is set to null, not removed: App stays subscribed to it, so it
+ * drop every other cached query, and the mutations (their inputs include the password)
  */
 export const clearSession = (qc: QueryClient) => {
   setAccessToken('')
   setCsrf('')
   qc.setQueryData(['user'], null)
-  qc.clear()
+  qc.removeQueries({ predicate: (q) => q.queryKey[0] !== 'user' })
+  qc.getMutationCache().clear()
 }
 
 /**
