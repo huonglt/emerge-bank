@@ -1,7 +1,6 @@
 import { api, hasAccessToken } from '@/lib/api'
 import type { Me } from '@/types'
 import { useQuery } from '@tanstack/react-query'
-import { ApiError } from '@/lib/ApiError'
 
 /**
  * query user data
@@ -11,13 +10,9 @@ const queryMe = async () => {
   if (!hasAccessToken()) {
     return null
   }
-  try {
-    const m = await api<Me>('/me')
-    return m.user
-  } catch (e) {
-    if (e instanceof ApiError && e.status === 401) return null
-    throw e
-  }
+  // a 401 (token expired or replaced) is handled globally: queryClient signs the user out
+  const m = await api<Me>('/me')
+  return m.user
 }
 
 /**
