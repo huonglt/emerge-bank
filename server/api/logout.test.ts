@@ -8,7 +8,7 @@ beforeEach(resetState)
 
 describe('logout (handler)', () => {
   it("removes the user's session and answers ok", () => {
-    sessions.set('u1', { accessToken: 'a', csrfToken: 'c', nonce: undefined })
+    sessions.set('u1', { accessToken: 'a', csrfToken: 'c', nonce: undefined, exp: Date.now() + 60_000 })
     const { req, res, spies } = ctx({}, { userId: 'u1' })
     logout(req, res)
     expect(sessions.has('u1')).toBe(false)
@@ -16,8 +16,8 @@ describe('logout (handler)', () => {
   })
 
   it("leaves other users' sessions alone", () => {
-    sessions.set('u1', { accessToken: 'a', csrfToken: 'c', nonce: undefined })
-    sessions.set('u2', { accessToken: 'a', csrfToken: 'c', nonce: undefined })
+    sessions.set('u1', { accessToken: 'a', csrfToken: 'c', nonce: undefined, exp: Date.now() + 60_000 })
+    sessions.set('u2', { accessToken: 'a', csrfToken: 'c', nonce: undefined, exp: Date.now() + 60_000 })
     const { req, res } = ctx({}, { userId: 'u1' })
     logout(req, res)
     expect(sessions.has('u2')).toBe(true)

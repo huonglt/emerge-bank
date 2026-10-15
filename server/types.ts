@@ -13,6 +13,7 @@ export type UserSessionData = {
   accessToken: string
   csrfToken: string
   nonce: Nonce | undefined
+  exp: number // ms since epoch: the moment the access token expires
 }
 export type DisplayUser = {
   id: string

@@ -16,8 +16,11 @@ import { ctx } from '../test/mocks'
 const sign = (payload: object = { sub: 'u1' }, opts: jwt.SignOptions = {}) =>
   jwt.sign(payload, JWT_SECRET, opts)
 const b64 = (o: object) => Buffer.from(JSON.stringify(o)).toString('base64url')
-const addSession = (id: string, csrfToken = 'csrf-token') =>
-  sessions.set(id, { accessToken: 'a', csrfToken, nonce: undefined })
+const addSession = (
+  id: string,
+  csrfToken = 'csrf-token',
+  exp = Date.now() + 60_000
+) => sessions.set(id, { accessToken: 'a', csrfToken, nonce: undefined, exp })
 
 beforeEach(() => sessions.clear())
 
@@ -328,5 +331,28 @@ describe('sessionCheck', () => {
       error: 'Token expired or invalid.',
     })
     expect(spies.next).not.toHaveBeenCalled()
+  })
+
+  it('answers 401 and removes the session once it has expired', () => {
+    addSession('u1', 'csrf-token', Date.now() - 1)
+    const spies = run('u1', 'a')
+    expect(spies.status).toHaveBeenCalledWith(401)
+    expect(spies.json).toHaveBeenCalledWith({
+      error: 'Token expired or invalid.',
+    })
+    expect(spies.next).not.toHaveBeenCalled()
+    expect(sessions.has('u1')).toBe(false)
+  })
+
+  it('treats a session as expired from its exp time exactly', () => {
+    vi.useFakeTimers({ now: 1_000_000 })
+    try {
+      addSession('u1', 'csrf-token', 1_000_001)
+      expect(run('u1', 'a').next).toHaveBeenCalledTimes(1)
+      vi.setSystemTime(1_000_001)
+      expect(run('u1', 'a').status).toHaveBeenCalledWith(401)
+    } finally {
+      vi.useRealTimers()
+    }
   })
 })

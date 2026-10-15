@@ -59,6 +59,7 @@ export const ghost = (): Creds => {
     accessToken: token,
     csrfToken: 'csrf-for-ghost',
     nonce: undefined,
+    exp: Date.now() + 60_000,
   })
   return { token, csrf: 'csrf-for-ghost', id: 'ghost' }
 }

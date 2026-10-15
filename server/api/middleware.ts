@@ -2,7 +2,7 @@ import { type NextFunction, type Request, type Response } from 'express'
 
 import { timingSafeEqual } from 'node:crypto'
 import { STATUS_CODES } from 'node:http'
-import { sessions } from './sessions'
+import { isExpired, sessions } from './sessions'
 
 import jwt, { VerifyErrors } from 'jsonwebtoken'
 import { JWT_ALGORITHM, JWT_SECRET } from '../config'
@@ -107,6 +107,7 @@ export const auth = (req: Request, res: Response, next: NextFunction) => {
  * middleware checking for server session
  * the access token must be the one issued at the user's latest login,
  * so older tokens stop working as soon as the user logs in again
+ * an expired session is removed
  */
 export const sessionCheck = (
   req: Request,
@@ -117,6 +118,10 @@ export const sessionCheck = (
   const userSession = sessions.get(userId!)
   if (!userSession) {
     return res.status(401).json({ error: 'Session user not found' })
+  }
+  if (isExpired(userSession)) {
+    sessions.delete(userId!)
+    return res.status(401).json({ error: 'Token expired or invalid.' })
   }
   const accessToken = res.locals.accessToken ?? ''
   if (!isEqual(accessToken, userSession.accessToken)) {

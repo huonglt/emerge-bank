@@ -55,10 +55,12 @@ describe('POST /api/login: success', () => {
 
   it("stores the tokens in the user's session, with no nonce", async () => {
     const res = await post(testUser1)
+    const { exp } = jwt.decode(res.body.accessToken) as jwt.JwtPayload
     expect(sessions.get(user(testUser1.userName).id)).toEqual({
       accessToken: res.body.accessToken,
       csrfToken: res.body.csrfToken,
       nonce: undefined,
+      exp: exp! * 1000, // expires with the access token
     })
   })
 

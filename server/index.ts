@@ -1,4 +1,5 @@
 import { app } from './app'
+import { startSessionCleanup } from './api/sessions'
 import https from 'node:https'
 import fs from 'node:fs'
 
@@ -12,6 +13,9 @@ if (!fs.existsSync(keyFile) || !fs.existsSync(certFile)) {
   console.error('TLS certificate not found. Run: npm run certs')
   process.exit(1)
 }
+// remove expired sessions in the background
+startSessionCleanup()
+
 https
   .createServer(
     {

@@ -1,6 +1,7 @@
 import { type Request, type Response } from 'express'
 import { usersDB } from '../users'
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto'
+import jwt, { type JwtPayload } from 'jsonwebtoken'
 import { generateJWT, toDisplayUser } from '../lib/util'
 import { loginSchema } from '../schema'
 import { sessions } from './sessions'
@@ -29,7 +30,18 @@ export const login = (req: Request, res: Response) => {
 
   const accessToken = generateJWT(user)
   const csrfToken = randomBytes(32).toString('base64url')
-  sessions.set(user.id, { accessToken, csrfToken, nonce: undefined })
+
+  /**
+   * the session expires at the same moment as its access token
+   * exp in seconsd
+   */
+  const { exp } = jwt.decode(accessToken) as JwtPayload
+  sessions.set(user.id, {
+    accessToken,
+    csrfToken,
+    exp: exp! * 1000,
+    nonce: undefined,
+  })
   return res
     .status(200)
     .json({ user: toDisplayUser(user), csrfToken, accessToken })
