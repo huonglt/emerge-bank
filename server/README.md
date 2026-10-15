@@ -22,10 +22,11 @@ Workflows supported by the app:
 
 A chain of middlewares are performed on each request to authenticate & verify user requests:
 
-- auth: check the JWT access token is valid and not expired
-- session: check for server side session existed for that request
+- auth: check the JWT access token valid and not expired
+- session: check the user session on server existed and not expired, and the client accessToken matching the session accessToken
 - csrf: check the csrfToken from the request to match with the csrfToken on the user session
 
+Server also runs an auto clean up of expired sessions in the background.</br>
 csrf middleware is needed for server state change request only.
 
 All HTTP response headers are set via helmet to provide protection. Headers include `CSP`, `Strict-Transport-Security`, and `Cross-Origin-Resource-Policy`
