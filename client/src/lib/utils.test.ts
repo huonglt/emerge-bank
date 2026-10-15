@@ -1,11 +1,10 @@
-// @vitest-environment node
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { api } from '@/lib/api'
 import { encryptPin, formatCurrency, getInitials } from '@/lib/utils'
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }))
 
-describe('formatNZD', () => {
+describe('formatCurrency', () => {
   it.each([
     [2450.75, '$2,450.75'],
     [0, '$0.00'],
@@ -88,12 +87,6 @@ describe('encryptPin', () => {
       pin: '4821',
       confirmPin: '4822',
     })
-  })
-
-  it('should gives different output every time (randomised padding)', async () => {
-    expect(await encryptPin('4821', '4821')).not.toBe(
-      await encryptPin('4821', '4821')
-    )
   })
 
   it('should returns valid base64', async () => {

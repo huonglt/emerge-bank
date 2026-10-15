@@ -1,10 +1,10 @@
-// @vitest-environment jsdom
 import { cleanup, screen, waitFor } from '@testing-library/react'
 import type { UserEvent } from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LogIn } from '@/components/Login'
-import { api } from '@/lib/api'
+import { api, setAccessToken, setCsrf } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
+import { makeUser } from '@/test/fixtures'
 import { renderWithClient } from '@/test/render'
 
 vi.mock('@/lib/api', () => ({
@@ -28,6 +28,46 @@ const fill = async (user: UserEvent) => {
 }
 const login = () =>
   screen.getByRole('button', { name: 'Login' }) as HTMLButtonElement
+
+describe('LogIn: signing in', () => {
+  it('should send the user name and password to /login', async () => {
+    vi.mocked(api).mockReturnValue(new Promise(() => {}))
+    const { user } = renderWithClient(<LogIn />)
+    await fill(user)
+    await user.click(login())
+    await waitFor(() =>
+      expect(api).toHaveBeenCalledWith('/login', {
+        method: 'POST',
+        body: { userName: 'helen', password: 'helen123' },
+      })
+    )
+  })
+
+  it('should keep both tokens and cache the user on success', async () => {
+    const me = makeUser()
+    vi.mocked(api).mockResolvedValue({
+      user: me,
+      accessToken: 'access-1',
+      csrfToken: 'csrf-1',
+    })
+    const { user, qc } = renderWithClient(<LogIn />)
+    await fill(user)
+    await user.click(login())
+    await waitFor(() => expect(qc.getQueryData(['user'])).toEqual(me))
+    expect(setAccessToken).toHaveBeenCalledWith('access-1')
+    expect(setCsrf).toHaveBeenCalledWith('csrf-1')
+  })
+
+  it('should ask for both fields and send nothing when they are empty', async () => {
+    const { user } = renderWithClient(<LogIn />)
+    await user.click(login())
+    const alerts = (await screen.findAllByRole('alert')).map(
+      (a) => a.textContent
+    )
+    expect(alerts).toEqual(['Enter your user name', 'Enter your password'])
+    expect(api).not.toHaveBeenCalled()
+  })
+})
 
 describe('LogIn: submit button', () => {
   it('should disables Login while the request is running', async () => {

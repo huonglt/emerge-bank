@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { SetupCard } from '@/components/SetupCard'
@@ -24,6 +23,15 @@ describe('SetupCard', () => {
     expect(
       screen.getByText('We need to setup your card before you can use it')
     ).toBeTruthy()
+  })
+
+  it('should ask only for the name while the card has no name', () => {
+    render(
+      <SetupCard
+        user={makeUser({ card: makeCard({ name: null, isPINSet: false }) })}
+      />
+    )
+    expect(shown()).toEqual({ name: true, pin: false })
   })
 
   it('should ask only for the PIN once the card is named', () => {

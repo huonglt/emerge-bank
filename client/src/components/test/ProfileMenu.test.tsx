@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { cleanup, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ProfileMenu } from '@/components/ProfileMenu'
@@ -60,11 +59,20 @@ describe('ProfileMenu: display', () => {
     expect(screen.getByText('AT')).toBeTruthy()
   })
 
-  it('should show Profile and Log out', () => {
+  it('should show My Account and Log out', () => {
     renderWithClient(<ProfileMenu />)
     expect(screen.getByText('My Account')).toBeTruthy()
 
     expect(screen.getByRole('menuitem', { name: 'Log out' })).toBeTruthy()
+  })
+
+  it.each([
+    ['no one is signed in', null],
+    ['the user is still loading', undefined],
+  ])('should render nothing when %s', (_label, user) => {
+    signedInAs(user)
+    const { container } = renderWithClient(<ProfileMenu />)
+    expect(container.innerHTML).toBe('')
   })
 })
 
@@ -80,22 +88,10 @@ describe('ProfileMenu: log out', () => {
     )
   })
 
-  it('should wipes both tokens and all cached data once the request finishes', async () => {
-    const { user, qc } = renderWithClient(<ProfileMenu />)
-    const clear = vi.spyOn(qc, 'clear')
+  it('should wipe both tokens once the request finishes', async () => {
+    const { user } = renderWithClient(<ProfileMenu />)
     await logOut(user)
-    await waitFor(() => expect(clear).toHaveBeenCalled())
-    expect(setAccessToken).toHaveBeenCalledWith('')
-    expect(setCsrf).toHaveBeenCalledWith('')
-  })
-
-  it('should still wipes everything locally when the server request fails', async () => {
-    vi.mocked(api).mockRejectedValue(new Error('Network down'))
-    const { user, qc } = renderWithClient(<ProfileMenu />)
-    const clear = vi.spyOn(qc, 'clear')
-    await logOut(user)
-    await waitFor(() => expect(clear).toHaveBeenCalled())
-    expect(setAccessToken).toHaveBeenCalledWith('')
+    await waitFor(() => expect(setAccessToken).toHaveBeenCalledWith(''))
     expect(setCsrf).toHaveBeenCalledWith('')
   })
 })

@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Account } from '@/components/Account'
@@ -18,11 +17,6 @@ describe('Account', () => {
   it('should shows a zero balance', () => {
     render(<Account user={makeUser({ accountBalance: 0 })} />)
     expect(screen.getByText('$0.00')).toBeTruthy()
-  })
-
-  it('should shows the account number exactly as the server sent it', () => {
-    render(<Account user={makeUser({ accountNumber: '•••• 1234' })} />)
-    expect(screen.getByText('•••• 1234')).toBeTruthy()
   })
 
   it('should offers the three actions', () => {

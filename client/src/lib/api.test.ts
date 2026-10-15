@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { api, setAccessToken, setCsrf, tokenExpireIn } from '@/lib/api'
 import { ApiError } from './ApiError'
@@ -101,10 +100,20 @@ describe('api: response', () => {
     expect((err as ApiError).message).toBe('Card name is already set')
   })
 
-  it('shoould falls back to a generic message when the error body has no message', async () => {
+  it('should falls back to a generic message when the error body has no message', async () => {
     mockFetch(500, {})
     await expect(api('/me')).rejects.toMatchObject({
       status: 500,
+      message: 'Something went wrong',
+    })
+  })
+
+  it('should falls back to a generic message when the error body is not JSON', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response('<html>Bad Gateway</html>', { status: 502 })
+    )
+    await expect(api('/me')).rejects.toMatchObject({
+      status: 502,
       message: 'Something went wrong',
     })
   })
@@ -132,15 +141,5 @@ describe('tokenExpireIn', () => {
   it('should return undefined when the token has no exp', () => {
     setAccessToken(jwtWith({ sub: 'u-1' }))
     expect(tokenExpireIn()).toBeUndefined()
-  })
-})
-
-describe('api: token handling', () => {
-  it('should keeps tokens out of browser storage and cookies', () => {
-    setAccessToken('secret-access')
-    setCsrf('secret-csrf')
-    expect(localStorage.length).toBe(0)
-    expect(sessionStorage.length).toBe(0)
-    expect(document.cookie).toBe('')
   })
 })

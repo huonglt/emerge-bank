@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { cleanup, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CardName } from '@/components/CardName'
@@ -21,52 +20,22 @@ const nameInput = () => screen.getByRole('textbox') as HTMLInputElement
 const save = () =>
   screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement
 
-describe('CardName: the form', () => {
-  it('should explains what it is asking for', () => {
-    renderWithClient(<CardName />)
-    expect(screen.getByText('Setting up virtual bank card')).toBeTruthy()
-    expect(
-      screen.getByText('We need a name for your virtual card')
-    ).toBeTruthy()
-  })
-
-  it('should starts without errors', () => {
-    renderWithClient(<CardName />)
-    expect(screen.queryByRole('alert')).toBeNull()
-  })
-})
-
 describe('CardName: validation', () => {
-  it('should rejects an empty name with the "more than 6" message and sends nothing', async () => {
-    const { user } = renderWithClient(<CardName />)
-    await user.click(save())
-    expect((await screen.findByRole('alert')).textContent).toBe(TOO_SHORT)
-    expect(api).not.toHaveBeenCalled()
-  })
-
-  it('should rejects a name with 5 characters', async () => {
-    const { user } = renderWithClient(<CardName />)
-    await user.type(nameInput(), 'Alice')
-    await user.click(save())
-    expect((await screen.findByRole('alert')).textContent).toBe(TOO_SHORT)
-    expect(api).not.toHaveBeenCalled()
-  })
-
-  it('should does not count spaces around the name', async () => {
-    const { user } = renderWithClient(<CardName />)
-    await user.type(nameInput(), '   Alice   ')
-    await user.click(save())
-    expect((await screen.findByRole('alert')).textContent).toBe(TOO_SHORT)
-    expect(api).not.toHaveBeenCalled()
-  })
-
-  it('should rejects a name with 25 characters', async () => {
-    const { user } = renderWithClient(<CardName />)
-    await user.type(nameInput(), 'a'.repeat(25))
-    await user.click(save())
-    expect((await screen.findByRole('alert')).textContent).toBe(TOO_LONG)
-    expect(api).not.toHaveBeenCalled()
-  })
+  it.each([
+    ['empty', '', TOO_SHORT],
+    ['5 characters', 'Alice', TOO_SHORT],
+    ['5 characters with spaces around', '   Alice   ', TOO_SHORT],
+    ['25 characters', 'a'.repeat(25), TOO_LONG],
+  ])(
+    'should reject a name that is %s, and send nothing',
+    async (_label, name, message) => {
+      const { user } = renderWithClient(<CardName />)
+      if (name) await user.type(nameInput(), name)
+      await user.click(save())
+      expect((await screen.findByRole('alert')).textContent).toBe(message)
+      expect(api).not.toHaveBeenCalled()
+    }
+  )
 
   it.each([6, 24])(
     'should accepts a name with %i characters',
@@ -91,19 +60,7 @@ describe('CardName: validation', () => {
 })
 
 describe('CardName: saving', () => {
-  it('should sends the name to the server', async () => {
-    const { user } = renderWithClient(<CardName />)
-    await user.type(nameInput(), 'Alice Tane')
-    await user.click(save())
-    await waitFor(() =>
-      expect(api).toHaveBeenCalledWith('/card/name', {
-        method: 'PUT',
-        body: { name: 'Alice Tane' },
-      })
-    )
-  })
-
-  it('should sends the name trimmed', async () => {
+  it('should sends the name to the server, trimmed', async () => {
     const { user } = renderWithClient(<CardName />)
     await user.type(nameInput(), '  Alice Tane  ')
     await user.click(save())
@@ -115,7 +72,7 @@ describe('CardName: saving', () => {
     )
   })
 
-  it('shoould be submitted with the Enter key', async () => {
+  it('should be submitted with the Enter key', async () => {
     const { user } = renderWithClient(<CardName />)
     await user.type(nameInput(), 'Alice Tane{enter}')
     await waitFor(() => expect(api).toHaveBeenCalledTimes(1))

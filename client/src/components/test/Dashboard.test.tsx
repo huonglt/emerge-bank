@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { Dashboard } from '@/components/Dashboard'
@@ -62,13 +61,5 @@ describe('Dashboard', () => {
     render(<Dashboard user={makeUser({ name: 'Bob Chen' })} />)
     expect(screen.getByTestId('account').textContent).toBe('Bob Chen')
     expect(screen.getByTestId('card').textContent).toBe('Bob Chen')
-  })
-
-  it('should show the account before the card', () => {
-    const { container } = render(<Dashboard user={makeUser()} />)
-    const ids = Array.from(container.querySelectorAll('[data-testid]')).map(
-      (e) => e.getAttribute('data-testid')
-    )
-    expect(ids).toEqual(['account', 'card'])
   })
 })

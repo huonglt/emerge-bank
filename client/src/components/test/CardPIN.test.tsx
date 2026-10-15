@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { cleanup, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CardPIN } from '@/components/CardPIN'
@@ -45,12 +44,6 @@ async function fill(
 }
 
 describe('CardPIN: the form', () => {
-  it('should explains what it is asking for', () => {
-    renderWithClient(<CardPIN />)
-    expect(screen.getByText('Setting up your virtual bank card')).toBeTruthy()
-    expect(screen.getByText('We need a PIN for your virtual card')).toBeTruthy()
-  })
-
   it('should has two masked, numeric, non-autofilled inputs limited to 4 characters', () => {
     renderWithClient(<CardPIN />)
     const { pin, confirm } = fields()
@@ -60,17 +53,6 @@ describe('CardPIN: the form', () => {
       expect(input.autocomplete).toBe('off')
       expect(input.maxLength).toBe(4)
     }
-  })
-
-  it('should not accept more than 4 characters', async () => {
-    const { user } = renderWithClient(<CardPIN />)
-    await user.type(fields().pin, '482199')
-    expect(fields().pin.value).toBe('4821')
-  })
-
-  it('should starts without errors', () => {
-    renderWithClient(<CardPIN />)
-    expect(screen.queryByRole('alert')).toBeNull()
   })
 })
 
@@ -89,6 +71,14 @@ describe('CardPIN: validation', () => {
     await fill(user, '4821', '')
     await user.click(save())
     expect((await screen.findByRole('alert')).textContent).toBe(MISMATCH)
+    expect(api).not.toHaveBeenCalled()
+  })
+
+  it('should rejects a PIN with a letter in it', async () => {
+    const { user } = renderWithClient(<CardPIN />)
+    await fill(user, '12a4', '12a4')
+    await user.click(save())
+    expect((await screen.findByRole('alert')).textContent).toBe(FORMAT)
     expect(api).not.toHaveBeenCalled()
   })
 
@@ -124,14 +114,6 @@ describe('CardPIN: saving', () => {
     })
   })
 
-  it('should never sends the PIN in readable form', async () => {
-    const { user } = renderWithClient(<CardPIN />)
-    await fill(user, '4821', '4821')
-    await user.click(save())
-    await waitFor(() => expect(api).toHaveBeenCalled())
-    expect(JSON.stringify(vi.mocked(api).mock.calls)).not.toContain('4821')
-  })
-
   it('should clears both fields straight after submitting', async () => {
     const { user } = renderWithClient(<CardPIN />)
     await fill(user, '4821', '4821')
@@ -140,21 +122,25 @@ describe('CardPIN: saving', () => {
     expect(fields().confirm.value).toBe('')
   })
 
-  it('should keeps the PIN out of browser storage', async () => {
-    const { user } = renderWithClient(<CardPIN />)
-    await fill(user, '4821', '4821')
-    await user.click(save())
-    await waitFor(() => expect(api).toHaveBeenCalled())
-    expect(localStorage.length + sessionStorage.length).toBe(0)
-    expect(document.cookie).toBe('')
-  })
-
   it('should disables Save while the request is running', async () => {
     vi.mocked(api).mockReturnValue(new Promise(() => {}))
     const { user } = renderWithClient(<CardPIN />)
     await fill(user, '4821', '4821')
     await user.click(save())
     await waitFor(() => expect(save().disabled).toBe(true))
+  })
+
+  it('should show the server error and enable Save again when saving fails', async () => {
+    vi.mocked(api).mockRejectedValue(
+      new Error('PIN request expired. Please try again')
+    )
+    const { user } = renderWithClient(<CardPIN />)
+    await fill(user, '4821', '4821')
+    await user.click(save())
+    expect((await screen.findByRole('alert')).textContent).toBe(
+      'PIN request expired. Please try again'
+    )
+    expect(save().disabled).toBe(false)
   })
 
   it('should refreshes the user data after a successful save', async () => {

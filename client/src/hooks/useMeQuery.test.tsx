@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useMeQuery } from '@/hooks/useMeQuery'
@@ -21,24 +20,13 @@ const setup = () => {
 }
 
 describe('useMeQuery', () => {
-  it('should returns the user from /me', async () => {
-    const user = makeUser()
-    vi.mocked(api).mockResolvedValue({
-      user,
-      accessToken: 'a',
-      csrfToken: 'c',
-    } as never)
-    const { result } = setup()
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data).toEqual(user)
-    expect(api).toHaveBeenCalledWith('/me')
-  })
-
-  it('should caches the user under the "user" key', async () => {
+  it('should return the user from /me, cached under the "user" key', async () => {
     const user = makeUser()
     vi.mocked(api).mockResolvedValue({ user } as never)
     const { qc, result } = setup()
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data).toEqual(user)
+    expect(api).toHaveBeenCalledWith('/me')
     expect(qc.getQueryData(['user'])).toEqual(user)
   })
 
@@ -48,6 +36,13 @@ describe('useMeQuery', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
     expect(result.current.data).toBeNull()
     expect(result.current.isError).toBe(false)
+  })
+
+  it('should report other failures as an error', async () => {
+    vi.mocked(api).mockRejectedValue(new ApiError(500, 'Something went wrong'))
+    const { result } = setup()
+    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect(result.current.error?.message).toBe('Something went wrong')
   })
 
   it('should starts in a loading state', () => {
