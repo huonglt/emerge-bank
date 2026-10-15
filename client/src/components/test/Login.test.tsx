@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LogIn } from '@/components/Login'
 import { api, setAccessToken, setCsrf } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
-import { makeUser } from '@/test/fixtures'
+import { testUser, makeUser } from '@/test/fixtures'
 import { renderWithClient } from '@/test/render'
 
 vi.mock('@/lib/api', () => ({
@@ -20,10 +20,10 @@ afterEach(() => {
 
 // The labels are not linked to the inputs (no id), so find the fields directly.
 const fill = async (user: UserEvent) => {
-  await user.type(screen.getByRole('textbox'), 'helen')
+  await user.type(screen.getByRole('textbox'), testUser.userName)
   await user.type(
     document.querySelector('input[type="password"]') as HTMLInputElement,
-    'helen123'
+    testUser.password
   )
 }
 const login = () =>
@@ -38,7 +38,7 @@ describe('LogIn: signing in', () => {
     await waitFor(() =>
       expect(api).toHaveBeenCalledWith('/login', {
         method: 'POST',
-        body: { userName: 'helen', password: 'helen123' },
+        body: testUser,
       })
     )
   })

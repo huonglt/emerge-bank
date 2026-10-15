@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setAccessToken, setCsrf } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { clearSession, isUnauthorized } from '@/lib/session'
-import { makeUser } from '@/test/fixtures'
+import { testUser, makeUser } from '@/test/fixtures'
 import { makeClient } from '@/test/render'
 
 vi.mock('@/lib/api', async (importOriginal) => ({
@@ -21,7 +21,7 @@ const signedInClient = async () => {
   await qc
     .getMutationCache()
     .build(qc, { mutationFn: async () => ({ ok: true }) })
-    .execute({ userName: 'helen', password: 'helen123' })
+    .execute(testUser)
   return qc
 }
 
@@ -43,15 +43,18 @@ describe('clearSession', () => {
     const qc = await signedInClient()
     clearSession(qc)
     expect(qc.getQueryData(['transactions'])).toBeUndefined()
-    expect(qc.getQueryCache().getAll().map((q) => q.queryKey)).toEqual([
-      ['user'],
-    ])
+    expect(
+      qc
+        .getQueryCache()
+        .getAll()
+        .map((q) => q.queryKey)
+    ).toEqual([['user']])
   })
 
   it('should drop the stored mutations, whose inputs include the password', async () => {
     const qc = await signedInClient()
     expect(JSON.stringify(qc.getMutationCache().getAll()[0].state)).toContain(
-      'helen123'
+      testUser.password
     )
     clearSession(qc)
     expect(qc.getMutationCache().getAll()).toEqual([])

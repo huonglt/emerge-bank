@@ -4,7 +4,7 @@ import { App } from '@/App'
 import { api, hasAccessToken, setAccessToken } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { createQueryClient } from '@/lib/queryClient'
-import { makeUser } from '@/test/fixtures'
+import { testUser, makeUser } from '@/test/fixtures'
 import { renderWithClient } from '@/test/render'
 
 vi.mock('@/lib/api', async (importOriginal) => ({
@@ -37,11 +37,11 @@ describe('App', () => {
     // so the next, successful login never left the login screen
     vi.mocked(api).mockImplementation(async (_path, options) => {
       const { password } = options?.body as { password: string }
-      if (password !== 'helen123') {
+      if (password !== testUser.password) {
         throw new ApiError(401, 'Username or password is incorrect')
       }
       return {
-        user: makeUser({ name: 'helen' }),
+        user: makeUser(),
         accessToken: validToken(),
         csrfToken: 'csrf-1',
       }
@@ -53,7 +53,7 @@ describe('App', () => {
         'input[type="password"]'
       ) as HTMLInputElement
       await user.clear(name)
-      await user.type(name, 'helen')
+      await user.type(name, testUser.userName)
       await user.clear(secret)
       await user.type(secret, password)
       await user.click(screen.getByRole('button', { name: 'Login' }))
@@ -64,7 +64,7 @@ describe('App', () => {
       await screen.findByText('Username or password is incorrect')
     ).toBeTruthy()
 
-    await login('helen123')
+    await login(testUser.password)
     expect(await screen.findByText('Your account')).toBeTruthy()
     expect(loginShown()).toBe(false)
   })

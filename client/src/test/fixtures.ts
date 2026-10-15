@@ -9,6 +9,9 @@ export const makeCard = (
   ...overrides,
 })
 
+// login details for the fixture user; client tests mock the server, so any values work
+export const testUser = { userName: 'alice', password: 'alice-password' }
+
 export const makeUser = (overrides: Partial<User> = {}): User => ({
   id: 'u-1',
   name: 'Alice Tane',
