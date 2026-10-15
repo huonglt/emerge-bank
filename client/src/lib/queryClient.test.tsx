@@ -2,7 +2,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { setAccessToken, setCsrf } from '@/lib/api'
+import { hasAccessToken, setAccessToken, setCsrf } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { createQueryClient } from '@/lib/queryClient'
 import { makeUser } from '@/test/fixtures'
@@ -13,6 +13,7 @@ vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),
   setAccessToken: vi.fn(),
   setCsrf: vi.fn(),
+  hasAccessToken: vi.fn(),
 }))
 
 afterEach(() => vi.resetAllMocks())
@@ -21,7 +22,9 @@ afterEach(() => vi.resetAllMocks())
  * Mirrors the app: a component reading the signed in user (like App),
  * plus a mutation and a query that can fail
  */
-const setup = () => {
+// signed in (has a token) by default
+const setup = (signedIn = true) => {
+  vi.mocked(hasAccessToken).mockReturnValue(signedIn)
   const qc = createQueryClient()
   qc.setQueryData(['user'], makeUser())
 
@@ -47,6 +50,20 @@ const expectSignedOut = () => {
 }
 
 describe('createQueryClient', () => {
+  it('should not sign out on a 401 when no one is signed in (a wrong password on login)', async () => {
+    const { qc, result } = setup(false)
+    qc.setQueryData(['user'], null)
+
+    act(() =>
+      result.current.save.mutate(
+        new ApiError(401, 'Username or password is incorrect')
+      )
+    )
+
+    await waitFor(() => expect(result.current.save.isError).toBe(true))
+    expect(setAccessToken).not.toHaveBeenCalled()
+  })
+
   it('should sign out when a mutation answers 401', async () => {
     const { result } = setup()
 

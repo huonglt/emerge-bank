@@ -42,12 +42,11 @@ describe('useMeQuery', () => {
     expect(api).not.toHaveBeenCalled()
   })
 
-  it('should treats 401 as signed out: null data, no error', async () => {
-    vi.mocked(api).mockRejectedValue(new ApiError(401, 'Please sign in again'))
+  it('should report a rejected token (401) as an error, for the app to sign the user out', async () => {
+    vi.mocked(api).mockRejectedValue(new ApiError(401, 'Token expired or invalid.'))
     const { result } = setup()
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
-    expect(result.current.data).toBeNull()
-    expect(result.current.isError).toBe(false)
+    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect((result.current.error as ApiError).status).toBe(401)
   })
 
   it('should report other failures as an error', async () => {
