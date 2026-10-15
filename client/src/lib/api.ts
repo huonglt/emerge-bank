@@ -10,6 +10,7 @@ let accessToken = ''
 let csrfToken = ''
 export const setAccessToken = (t: string) => (accessToken = t)
 export const setCsrf = (t: string) => (csrfToken = t)
+export const hasAccessToken = () => accessToken !== ''
 
 /**
  * Generic method for calling api

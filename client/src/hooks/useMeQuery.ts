@@ -1,4 +1,4 @@
-import { api } from '@/lib/api'
+import { api, hasAccessToken } from '@/lib/api'
 import type { Me } from '@/types'
 import { useQuery } from '@tanstack/react-query'
 import { ApiError } from '@/lib/ApiError'
@@ -7,6 +7,10 @@ import { ApiError } from '@/lib/ApiError'
  * query user data
  */
 const queryMe = async () => {
+  // exit when no token (fresh page load, or after logout)
+  if (!hasAccessToken()) {
+    return null
+  }
   try {
     const m = await api<Me>('/me')
     return m.user
