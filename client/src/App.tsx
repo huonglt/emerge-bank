@@ -11,6 +11,7 @@ export const App = () => {
   useAutoLogout(me.data?.id)
 
   const user = me.data
+  const showError = me.isError
   const showLogin = !me.isError && !user
   const showDashboard = !me.isError && user
 
@@ -19,6 +20,11 @@ export const App = () => {
       <Header />
       <div className="main">
         <div className="content">
+          {showError && (
+            <span role="alert" className="text-red-700 ">
+              Error to fetch user data
+            </span>
+          )}
           {showLogin && <LogIn />}
           {showDashboard && <Dashboard user={user!} />}
         </div>
