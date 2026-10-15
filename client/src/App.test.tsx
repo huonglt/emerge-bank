@@ -1,7 +1,7 @@
 import { cleanup, screen } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App } from '@/App'
-import { api } from '@/lib/api'
+import { api, setAccessToken } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { makeUser } from '@/test/fixtures'
 import { renderWithClient } from '@/test/render'
@@ -20,22 +20,38 @@ vi.mock('@/components/Dashboard', () => ({
 vi.mock('@/components/Header', () => ({ Header: () => null }))
 vi.mock('@/components/Footer', () => ({ Footer: () => null }))
 
+// a decodable access token: App reads only its expiry, to schedule the auto logout
+const signIn = () => {
+  const exp = Math.floor(Date.now() / 1000) + 300
+  setAccessToken(`x.${btoa(JSON.stringify({ exp }))}.x`)
+}
+
 afterEach(() => {
   cleanup()
   vi.resetAllMocks()
+  setAccessToken('')
 })
 
 describe('App', () => {
-  it('should show the login screen when no one is signed in', async () => {
-    vi.mocked(api).mockRejectedValue(
-      new ApiError(401, 'Access token required.')
-    )
+  it('should show the login screen, without asking the server, when there is no access token', async () => {
     renderWithClient(<App />)
     expect(await screen.findByText('login screen')).toBeTruthy()
     expect(screen.queryByText(/dashboard/)).toBeNull()
+    expect(api).not.toHaveBeenCalled()
+  })
+
+  it('should show the login screen when the server rejects the access token', async () => {
+    signIn() // a token the server no longer accepts
+    vi.mocked(api).mockRejectedValue(
+      new ApiError(401, 'Token expired or invalid.')
+    )
+    renderWithClient(<App />)
+    expect(await screen.findByText('login screen')).toBeTruthy()
+    expect(api).toHaveBeenCalledWith('/me')
   })
 
   it('should show the dashboard for the signed-in user', async () => {
+    signIn()
     vi.mocked(api).mockResolvedValue({ user: makeUser({ name: 'Bob Chen' }) })
     renderWithClient(<App />)
     expect(await screen.findByText('dashboard for Bob Chen')).toBeTruthy()
@@ -43,6 +59,7 @@ describe('App', () => {
   })
 
   it('should show an error, and neither screen, when the user data cannot be loaded', async () => {
+    signIn()
     vi.mocked(api).mockRejectedValue(new ApiError(500, 'Something went wrong'))
     renderWithClient(<App />)
     expect((await screen.findByRole('alert')).textContent).toBe(

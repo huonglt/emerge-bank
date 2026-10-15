@@ -1,7 +1,7 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useMeQuery } from '@/hooks/useMeQuery'
-import { api } from '@/lib/api'
+import { api, setAccessToken } from '@/lib/api'
 import { makeUser } from '@/test/fixtures'
 import { makeClient, wrapperFor } from '@/test/render'
 import { ApiError } from '@/lib/ApiError'
@@ -11,9 +11,14 @@ vi.mock('@/lib/api', async (importOriginal) => ({
   api: vi.fn(),
 }))
 
-afterEach(() => vi.resetAllMocks())
+afterEach(() => {
+  vi.resetAllMocks()
+  setAccessToken('')
+})
 
-const setup = () => {
+// signed in by default: '' means no access token
+const setup = (token = 'access-token') => {
+  setAccessToken(token)
   const qc = makeClient()
   const hook = renderHook(() => useMeQuery(), { wrapper: wrapperFor(qc) })
   return { qc, ...hook }
@@ -28,6 +33,13 @@ describe('useMeQuery', () => {
     expect(result.current.data).toEqual(user)
     expect(api).toHaveBeenCalledWith('/me')
     expect(qc.getQueryData(['user'])).toEqual(user)
+  })
+
+  it('should return null without calling the server when there is no access token', async () => {
+    const { result } = setup('')
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(result.current.data).toBeNull()
+    expect(api).not.toHaveBeenCalled()
   })
 
   it('should treats 401 as signed out: null data, no error', async () => {
