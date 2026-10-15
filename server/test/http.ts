@@ -6,6 +6,7 @@ import { app } from '../app'
 import { JWT_SECRET } from '../config'
 import { publicKeyJwk } from '../lib/pin'
 import { usersDB } from '../users'
+import { testUser1, testUser2 } from './users'
 
 export type Creds = { token: string; csrf: string; id: string }
 type Method = 'get' | 'post' | 'put'
@@ -14,9 +15,10 @@ type Method = 'get' | 'post' | 'put'
 export const resetState = () => {
   sessions.clear()
 
-  for (const u of usersDB.users) {
+  for (const seed of [testUser1, testUser2]) {
+    const u = usersDB.getById(seed.id)!
     u.card.pin = null
-    u.card.name = null
+    u.card.name = seed.cardName
   }
 }
 

@@ -1,64 +1,42 @@
 import { vi } from 'vitest'
-import { User } from './types'
-//import { scryptSync } from 'node:crypto'
+import type { User } from './types'
 
-const { randomBytes, scryptSync } = vi.hoisted(() => {
-  return {
-    randomBytes: vi
-      .fn()
-      .mockReturnValue(Buffer.from('mocked-random-bytes-buffer')),
-    scryptSync: vi.fn().mockReturnValue(Buffer.from('hoisted-mock-hash')),
-  }
-})
+/**
+ * Replace the demo users with two known test users
+ * Real crypto: a wrong password must fail, and tokens, nonces and salts must be random
+ */
+vi.mock('./users', async () => {
+  const { randomBytes, scryptSync } = await import('node:crypto')
+  const { testUser1, testUser2 } = await import('./test/users')
 
-// 2. Mock the node:crypto module using your hoisted function
-vi.mock('node:crypto', async (importOriginal) => {
-  const original = await importOriginal<typeof import('node:crypto')>()
-  return {
-    ...original,
-    randomBytes,
-    scryptSync,
-  }
-})
-const { users } = vi.hoisted(() => {
-  const salt = randomBytes(16)
-  class UsersDB {
-    users: User[]
-    constructor(users: User[]) {
-      this.users = users
-    }
-    getByName(name: string) {
-      const user = this.users.find((u) => u.name === name)
-      return user
-    }
-    getById(id: string) {
-      const user = this.users.find((u) => u.id === id)
-      return user
+  const testUser = ({
+    id,
+    userName: name,
+    password,
+    cardName,
+  }: typeof testUser1 | typeof testUser2): User => {
+    const salt = randomBytes(16)
+    return {
+      id,
+      name,
+      salt,
+      hashedPassword: scryptSync(password, salt, 32),
+      accountNumber: `acc-${id}`,
+      accountBalance: 100,
+      card: { name: cardName, pin: null, maskedCardNumber: `***${id}` },
     }
   }
 
-  const testUser1: User = {
-    id: '1',
-    name: 'testUser1',
-    salt,
-    hashedPassword: scryptSync('password1', salt, 32),
-    accountNumber: '123',
-    accountBalance: 100,
-    card: { name: null, pin: null, maskedCardNumber: '123' },
-  }
-  const testUser2: User = {
-    id: '2',
-    name: 'testUser2',
-    salt,
-    hashedPassword: scryptSync('password2', salt, 32),
-    accountNumber: '345',
-    accountBalance: 200,
-    card: { name: 'Everyday', pin: null, maskedCardNumber: '345' },
-  }
+  const users = [
+    testUser(testUser1),
+    testUser(testUser2),
+  ]
+
   return {
-    users: new UsersDB([testUser1, testUser2]),
+    usersDB: {
+      users,
+      getByName: (name: string) => users.find((u) => u.name === name),
+      getById: (id: string) => users.find((u) => u.id === id),
+    },
   }
 })
-vi.mock('./users', () => ({
-  usersDB: users,
-}))
