@@ -20,9 +20,11 @@ export const LogIn = () => {
   const login = useMutation({
     mutationFn: (v: LoginInput) =>
       api<Me>('/login', { method: 'POST', body: v }),
-    onSuccess: (m) => {
+    onSuccess: async (m) => {
       setAccessToken(m.accessToken)
       setCsrf(m.csrfToken)
+      // a /me request still in flight from before login must not overwrite the new user
+      await qc.cancelQueries({ queryKey: ['user'] })
       qc.setQueryData(['user'], m.user)
     },
   })
@@ -81,11 +83,7 @@ export const LogIn = () => {
           )}
         </CardContent>
         <CardFooter className="flex-col gap-2">
-          <Button
-            className="w-full"
-            type="submit"
-            disabled={login.isPending}
-          >
+          <Button className="w-full" type="submit" disabled={login.isPending}>
             Login
           </Button>
         </CardFooter>
