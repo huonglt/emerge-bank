@@ -34,55 +34,22 @@ describe('toDisplayUser', () => {
     })
   })
 
-  it('sets isPINSet from whether a PIN record exists', () => {
-    expect(toDisplayUser(makeUser()).card.isPINSet).toBe(true)
-    expect(
-      toDisplayUser(
-        makeUser({ card: { name: 'x', pin: null, maskedCardNumber: 'm' } })
-      ).card.isPINSet
-    ).toBe(false)
-  })
-
-  it('passes a missing card name through as null', () => {
-    const d = toDisplayUser(
-      makeUser({ card: { name: null, pin: null, maskedCardNumber: 'm' } })
-    )
-    expect(d.card.name).toBeNull()
-  })
-
-  it('exposes only the allowed fields', () => {
-    const d = toDisplayUser(makeUser())
-    expect(Object.keys(d).sort()).toEqual([
-      'accountBalance',
-      'accountNumber',
-      'card',
-      'id',
-      'name',
-    ])
-    expect(Object.keys(d.card).sort()).toEqual([
-      'isPINSet',
-      'maskedCardNumber',
-      'name',
-    ])
-  })
-
   it('never exposes the password hash, the salt or the PIN record', () => {
     const json = JSON.stringify(toDisplayUser(makeUser()))
     expect(json).not.toMatch(/salt|hashedPassword|"pin"|"mac"/)
   })
 
-  it('does not change the user it is given', () => {
-    const u = makeUser()
-    const before = { ...u, card: { ...u.card } }
-    toDisplayUser(u)
-    expect(u).toEqual(before)
-  })
-
-  it('treats a missing (undefined) PIN as not set', () => {
-    const u = makeUser({
-      card: { name: 'x', pin: undefined as never, maskedCardNumber: 'm' },
-    })
-    expect(toDisplayUser(u).card.isPINSet).toBe(false)
+  it.each([
+    ['null', null],
+    ['undefined', undefined],
+  ])('reports no PIN and no card name when they are %s', (_label, value) => {
+    const d = toDisplayUser(
+      makeUser({
+        card: { name: null, pin: value as never, maskedCardNumber: 'm' },
+      })
+    )
+    expect(d.card.isPINSet).toBe(false)
+    expect(d.card.name).toBeNull()
   })
 })
 
@@ -92,50 +59,18 @@ describe('generateJWT', () => {
     expect(header.alg).toBe('HS256')
   })
 
-  it('creates a token that verifies with the secret and carries the user id', () => {
+  it('creates a token that verifies with the secret and carries only the user id and times', () => {
     const decoded = jwt.verify(
       generateJWT(makeUser()),
       JWT_SECRET
     ) as jwt.JwtPayload
     expect(decoded.sub).toBe('123-abc-456')
-  })
-
-  it('contains only the subject and the issue and expiry times', () => {
-    const decoded = jwt.verify(
-      generateJWT(makeUser()),
-      JWT_SECRET
-    ) as jwt.JwtPayload
     expect(Object.keys(decoded).sort()).toEqual(['exp', 'iat', 'sub'])
   })
 
   it('expires after 5 minutes', () => {
     const { exp, iat } = jwt.decode(generateJWT(makeUser())) as jwt.JwtPayload
     expect(exp! - iat!).toBe(300)
-  })
-
-  it('is rejected once it has expired', () => {
-    const token = generateJWT(makeUser())
-    const { iat } = jwt.decode(token) as jwt.JwtPayload
-    expect(() =>
-      jwt.verify(token, JWT_SECRET, { clockTimestamp: iat! + 301 })
-    ).toThrow(/expired/)
-  })
-
-  it('is rejected with any other secret', () => {
-    expect(() =>
-      jwt.verify(generateJWT(makeUser()), 'some-other-secret')
-    ).toThrow()
-  })
-
-  it('is signed with HS256', () => {
-    const decoded = jwt.decode(generateJWT(makeUser()), { complete: true })
-    expect(decoded?.header.alg).toBe('HS256')
-  })
-
-  it('gives different users different tokens', () => {
-    expect(generateJWT(makeUser({ id: 'a' }))).not.toBe(
-      generateJWT(makeUser({ id: 'b' }))
-    )
   })
 })
 

@@ -100,14 +100,6 @@ describe('errorHandler', () => {
     expect(spies.json).toHaveBeenCalledWith({ error: 'Something went wrong' })
   })
 
-  it('never sends the error message to the client', () => {
-    vi.spyOn(console, 'error').mockImplementation(() => {})
-    const spies = handle(new Error('internal detail'))
-    expect(JSON.stringify(spies.json.mock.calls)).not.toContain(
-      'internal detail'
-    )
-  })
-
   it('hands over to Express when the response has already started', () => {
     const err = new Error('late failure')
     const spies = handle(err, true)
@@ -223,13 +215,6 @@ describe('auth', () => {
       )
     }
   )
-
-  it('accepts a token signed with HS256', async () => {
-    const c = run({
-      authorization: `Bearer ${sign({ sub: 'u1' }, { algorithm: 'HS256', expiresIn: '5m' })}`,
-    })
-    await vi.waitFor(() => expect(c.spies.next).toHaveBeenCalledTimes(1))
-  })
 })
 
 describe('csrf', () => {

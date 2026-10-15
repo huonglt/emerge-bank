@@ -8,18 +8,11 @@ import {
   resetState,
   user,
 } from '../test/http'
+import { testUser1, testUser2 } from '../test/users'
 
 beforeEach(resetState)
 
 describe('GET /api/me', () => {
-  const testUser1 = {
-    userName: 'testUser1',
-    password: 'password1',
-  }
-  const testUser2 = {
-    userName: 'testUser2',
-    password: 'password2',
-  }
   it('returns the signed-in user', async () => {
     const c = await loginAs(testUser1)
     const res = await call('get', '/api/me', c)
@@ -35,14 +28,6 @@ describe('GET /api/me', () => {
     )
     expect((await call('get', '/api/me', u2)).body.user.name).toBe(
       testUser2.userName
-    )
-  })
-
-  it('never returns the password hash, the salt or the PIN record', async () => {
-    const c = await loginAs(testUser1)
-    const res = await call('get', '/api/me', c)
-    expect(JSON.stringify(res.body)).not.toMatch(
-      /salt|hashedPassword|"pin"|"mac"/
     )
   })
 
@@ -96,7 +81,7 @@ describe('GET /api/me', () => {
 
   it('answers 401 when the token is valid but the user never logged in', async () => {
     const res = await call('get', '/api/me', {
-      token: forgeToken(user('helen')?.id),
+      token: forgeToken(user(testUser1.userName).id), // testUser1 has not logged in
       csrf: '',
       id: '',
     })
