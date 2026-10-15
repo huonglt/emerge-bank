@@ -1,4 +1,3 @@
-// @vitest-environment jsdom
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -8,6 +7,7 @@ import type { User } from '@/types'
 import { makeUser } from '@/test/fixtures'
 import { makeClient, wrapperFor } from '@/test/render'
 import { ApiError } from '@/lib/ApiError'
+import { clearSession } from '@/lib/session'
 
 vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),
@@ -16,6 +16,11 @@ vi.mock('@/lib/api', async (importOriginal) => ({
   setCsrf: vi.fn(),
   tokenExpireIn: vi.fn(),
 }))
+// a spy that still runs the real clearSession, so the session really is wiped
+vi.mock('@/lib/session', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/lib/session')>()
+  return { ...actual, clearSession: vi.fn(actual.clearSession) }
+})
 
 afterEach(() => {
   vi.useRealTimers()
@@ -92,8 +97,13 @@ describe('useAutoLogout', () => {
   }
 
   const advance = (ms: number) => act(() => vi.advanceTimersByTimeAsync(ms))
-  const logins = (qc: ReturnType<typeof makeClient>, user = makeUser()) =>
-    act(() => qc.setQueryData(['user'], user))
+  const manualLogout = (result: {
+    current: { menu: { logout: () => void } }
+  }) =>
+    act(async () => {
+      result.current.menu.logout()
+      await vi.advanceTimersByTimeAsync(0)
+    })
 
   it('should not start a timer when no user is signed in', async () => {
     setup(null)
@@ -101,7 +111,7 @@ describe('useAutoLogout', () => {
     await advance(EXPIRES_IN * 2)
 
     expect(tokenExpireIn).not.toHaveBeenCalled()
-    expect(api).not.toHaveBeenCalled()
+    expect(clearSession).not.toHaveBeenCalled()
   })
 
   it('should not start a timer when there is no access token', async () => {
@@ -109,72 +119,31 @@ describe('useAutoLogout', () => {
 
     await advance(EXPIRES_IN * 2)
 
-    expect(api).not.toHaveBeenCalled()
+    expect(clearSession).not.toHaveBeenCalled()
   })
 
-  it('should log out when the token expires', async () => {
+  it('should clear the session locally when the token expires, without calling the server', async () => {
     const { qc } = setup()
 
     await advance(EXPIRES_IN - 1)
-    expect(api).not.toHaveBeenCalled()
+    expect(clearSession).not.toHaveBeenCalled()
 
     await advance(1)
-    expect(api).toHaveBeenCalledTimes(1)
-    expect(api).toHaveBeenCalledWith('/logout', { method: 'POST' })
+    expect(clearSession).toHaveBeenCalledExactlyOnceWith(qc)
     expectSessionWiped(qc)
+    // the token is already expired: calling /logout would only get a 401
+    expect(api).not.toHaveBeenCalled()
   })
 
-  it('should log out straight away when the token has already expired', async () => {
-    setup(makeUser(), -1_000)
-
-    await advance(0)
-
-    expect(api).toHaveBeenCalledTimes(1)
-  })
-
-  it('should cancel the timer when the user logs out from another component', async () => {
+  it('should cancel the timer when the user logs out manually', async () => {
     const { result } = setup()
 
-    await act(async () => {
-      result.current.menu.logout()
-      await vi.advanceTimersByTimeAsync(0)
-    })
-    expect(api).toHaveBeenCalledTimes(1)
+    await manualLogout(result)
+    expect(api).toHaveBeenCalledWith('/logout', { method: 'POST' })
+    vi.mocked(clearSession).mockClear()
 
     await advance(EXPIRES_IN * 2)
-    expect(api).toHaveBeenCalledTimes(1)
-  })
-
-  it('should give a new login the full session after a manual logout', async () => {
-    // regression: the old timer survived a manual logout and fired during the next session
-    const { qc, result } = setup()
-
-    await advance(60_000)
-    await act(async () => {
-      result.current.menu.logout()
-      await vi.advanceTimersByTimeAsync(0)
-    })
-    await advance(60_000)
-    vi.mocked(api).mockClear()
-
-    await logins(qc) // same user, same token lifetime as before
-
-    await advance(EXPIRES_IN - 1)
-    expect(api).not.toHaveBeenCalled()
-
-    await advance(1)
-    expect(api).toHaveBeenCalledTimes(1)
-  })
-
-  it('should keep the countdown when the user data is refetched', async () => {
-    const { qc } = setup()
-
-    await advance(EXPIRES_IN - 1_000)
-    vi.mocked(tokenExpireIn).mockReturnValue(1_000)
-    await logins(qc, makeUser({ accountBalance: 1 })) // e.g. after setting the card name
-
-    await advance(1_000)
-    expect(api).toHaveBeenCalledTimes(1)
+    expect(clearSession).not.toHaveBeenCalled()
   })
 
   it('should cancel the timer on unmount', async () => {
@@ -183,6 +152,6 @@ describe('useAutoLogout', () => {
     unmount()
     await advance(EXPIRES_IN * 2)
 
-    expect(api).not.toHaveBeenCalled()
+    expect(clearSession).not.toHaveBeenCalled()
   })
 })

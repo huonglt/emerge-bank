@@ -25,7 +25,7 @@ export const useLogout = () => {
  * a new login starts a fresh new timer.
  */
 export const useAutoLogout = (userId: string | undefined) => {
-  const { logout } = useLogout()
+  const qc = useQueryClient()
 
   useEffect(() => {
     if (!userId) {
@@ -36,8 +36,13 @@ export const useAutoLogout = (userId: string | undefined) => {
       return
     }
 
-    const id = setTimeout(logout, ms)
+    /**
+     * the token will be expired on the server when this timer run
+     * so no need to invoke /logout on server to avoid 401 error on auth
+     * clear the session locally instead
+     */
+    const id = setTimeout(() => clearSession(qc), ms)
 
     return () => clearTimeout(id)
-  }, [userId, logout])
+  }, [userId, qc])
 }
