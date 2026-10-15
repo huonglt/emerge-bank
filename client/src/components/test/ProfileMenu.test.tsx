@@ -12,35 +12,6 @@ vi.mock('@/lib/api', () => ({
   setCsrf: vi.fn(),
 }))
 vi.mock('@/hooks/useMeQuery', () => ({ useMeQuery: vi.fn() }))
-// The real dropdown opens in a popup that is awkward in jsdom, so use a flat stand-in.
-vi.mock('@/components/ui/dropdown-menu', () => ({
-  DropdownMenu: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  DropdownMenuTrigger: ({ render }: { render: React.ReactNode }) => render,
-  DropdownMenuContent: ({ children }: { children: React.ReactNode }) => (
-    <div role="menu">{children}</div>
-  ),
-  DropdownMenuGroup: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  DropdownMenuLabel: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  DropdownMenuSeparator: () => <hr />,
-  DropdownMenuItem: ({
-    children,
-    onClick,
-  }: {
-    children: React.ReactNode
-    onClick?: () => void
-  }) => (
-    <button role="menuitem" onClick={onClick}>
-      {children}
-    </button>
-  ),
-}))
-
 const signedInAs = (user: unknown) =>
   vi.mocked(useMeQuery).mockReturnValue({ data: user } as never)
 
@@ -53,32 +24,37 @@ afterEach(() => {
   vi.resetAllMocks()
 })
 
+type UserEvent = ReturnType<typeof renderWithClient>['user']
+// the menu opens from the avatar button, like a user clicking it
+const openMenu = async (user: UserEvent) => {
+  await user.click(screen.getByRole('button', { name: 'AT' }))
+  return screen.findByRole('menu')
+}
+
 describe('ProfileMenu: display', () => {
   it('should show the initials of the signed-in user', () => {
     renderWithClient(<ProfileMenu />)
     expect(screen.getByText('AT')).toBeTruthy()
   })
 
-  it('should show My Account and Log out', () => {
+  it('should keep the menu closed until the avatar is clicked', () => {
     renderWithClient(<ProfileMenu />)
-    expect(screen.getByText('My Account')).toBeTruthy()
-
-    expect(screen.getByRole('menuitem', { name: 'Log out' })).toBeTruthy()
+    expect(screen.queryByRole('menu')).toBeNull()
   })
 
-  it.each([
-    ['no one is signed in', null],
-    ['the user is still loading', undefined],
-  ])('should render nothing when %s', (_label, user) => {
-    signedInAs(user)
-    const { container } = renderWithClient(<ProfileMenu />)
-    expect(container.innerHTML).toBe('')
+  it('should show My Account and Log out once opened', async () => {
+    const { user } = renderWithClient(<ProfileMenu />)
+    await openMenu(user)
+    expect(screen.getByText('My Account')).toBeTruthy()
+    expect(screen.getByRole('menuitem', { name: 'Log out' })).toBeTruthy()
   })
 })
 
 describe('ProfileMenu: log out', () => {
-  const logOut = async (user: ReturnType<typeof renderWithClient>['user']) =>
-    user.click(screen.getByRole('menuitem', { name: 'Log out' }))
+  const logOut = async (user: UserEvent) => {
+    await openMenu(user)
+    await user.click(screen.getByRole('menuitem', { name: 'Log out' }))
+  }
 
   it('should send logout request to server', async () => {
     const { user } = renderWithClient(<ProfileMenu />)

@@ -1,43 +1,50 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it } from 'vitest'
 import { SetupCard } from '@/components/SetupCard'
 import { makeCard, makeUser } from '@/test/fixtures'
-
-vi.mock('@/components/CardName', () => ({
-  CardName: () => <div data-testid="card-name" />,
-}))
-vi.mock('@/components/CardPIN', () => ({
-  CardPIN: () => <div data-testid="card-pin" />,
-}))
+import { renderWithClient } from '@/test/render'
 
 afterEach(cleanup)
 
-const shown = () => ({
-  name: !!screen.queryByTestId('card-name'),
-  pin: !!screen.queryByTestId('card-pin'),
-})
-
 describe('SetupCard', () => {
   it('should show why setup is needed', () => {
-    render(<SetupCard user={makeUser({ card: makeCard({ name: null }) })} />)
+    renderWithClient(
+      <SetupCard user={makeUser({ card: makeCard({ name: null }) })} />
+    )
     expect(
       screen.getByText('We need to setup your card before you can use it')
     ).toBeTruthy()
   })
 
-  it('should ask only for the name while the card has no name', () => {
-    render(
+  it('should ask for the card name when the card has no name yet', () => {
+    renderWithClient(
       <SetupCard
         user={makeUser({ card: makeCard({ name: null, isPINSet: false }) })}
       />
     )
-    expect(shown()).toEqual({ name: true, pin: false })
+    expect(screen.getByText('Setting up virtual bank card')).toBeTruthy()
+    expect(
+      screen.getByText('We need a name for your virtual card')
+    ).toBeTruthy()
+    expect(screen.getByText('Name')).toBeTruthy()
+    // the PIN step comes only after the card is named
+    expect(screen.queryByText('We need a PIN for your virtual card')).toBeNull()
   })
 
-  it('should ask only for the PIN once the card is named', () => {
-    render(
+  it('should ask for the PIN once the card is named', () => {
+    const { container } = renderWithClient(
       <SetupCard user={makeUser({ card: makeCard({ isPINSet: false }) })} />
     )
-    expect(shown()).toEqual({ name: false, pin: true })
+    expect(screen.getByText('Setting up your virtual bank card')).toBeTruthy()
+    expect(screen.getByText('We need a PIN for your virtual card')).toBeTruthy()
+    expect(screen.getByText('PIN')).toBeTruthy()
+    expect(screen.getByText('Confirmed PIN')).toBeTruthy()
+    // password inputs have no role: find the two masked fields by type
+    expect(container.querySelectorAll('input[type="password"]')).toHaveLength(2)
+    expect(screen.getByRole('button', { name: 'Save' })).toBeTruthy()
+    // the name step is already done
+    expect(
+      screen.queryByText('We need a name for your virtual card')
+    ).toBeNull()
   })
 })

@@ -1,65 +1,64 @@
-import { cleanup, render, screen } from '@testing-library/react'
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { cleanup, screen } from '@testing-library/react'
+import { afterEach, describe, expect, it } from 'vitest'
 import { Dashboard } from '@/components/Dashboard'
-import { makeCard, makeUser, makeUserWithoutCard } from '@/test/fixtures'
-
-vi.mock('@/components/SetupCard', () => ({
-  SetupCard: ({ user }: { user: { name: string } }) => (
-    <div data-testid="setup">{user.name}</div>
-  ),
-}))
-vi.mock('@/components/Account', () => ({
-  Account: ({ user }: { user: { name: string } }) => (
-    <div data-testid="account">{user.name}</div>
-  ),
-}))
-vi.mock('@/components/Card', () => ({
-  Card: ({ user }: { user: { name: string } }) => (
-    <div data-testid="card">{user.name}</div>
-  ),
-}))
+import { makeCard, makeUser } from '@/test/fixtures'
+import { renderWithClient } from '@/test/render'
 
 afterEach(cleanup)
 
-describe('Dashboard', () => {
-  it.each([
-    ['there is no card object', makeUserWithoutCard()],
-    [
-      'the card name is not set (null)',
-      makeUser({ card: makeCard({ name: null }) }),
-    ],
-    [
-      'the card name is an empty string',
-      makeUser({ card: makeCard({ name: '' }) }),
-    ],
-    [
-      'the card is named but has no PIN',
-      makeUser({ card: makeCard({ isPINSet: false }) }),
-    ],
-    [
-      'the card has neither a name nor a PIN',
-      makeUser({ card: makeCard({ name: null, isPINSet: false }) }),
-    ],
-  ])(
-    'should show card setup, and hides account and card, when %s',
-    (_label, user) => {
-      render(<Dashboard user={user} />)
-      expect(screen.getByTestId('setup')).toBeTruthy()
-      expect(screen.queryByTestId('account')).toBeNull()
-      expect(screen.queryByTestId('card')).toBeNull()
-    }
-  )
+const SETUP = 'We need to setup your card before you can use it'
 
-  it('should show the account and the card, and no setup, when the card is fully set up', () => {
-    render(<Dashboard user={makeUser()} />)
-    expect(screen.getByTestId('account')).toBeTruthy()
-    expect(screen.getByTestId('card')).toBeTruthy()
-    expect(screen.queryByTestId('setup')).toBeNull()
+describe('Dashboard', () => {
+  it('should ask for the card name when the card has no name yet', () => {
+    renderWithClient(
+      <Dashboard
+        user={makeUser({ card: makeCard({ name: null, isPINSet: false }) })}
+      />
+    )
+    expect(screen.getByText('Setting up virtual bank card')).toBeTruthy()
+    expect(
+      screen.getByText('We need a name for your virtual card')
+    ).toBeTruthy()
+    expect(screen.getByText('Name')).toBeTruthy()
+    // the PIN step comes only after the card is named
+    expect(screen.queryByText('We need a PIN for your virtual card')).toBeNull()
   })
 
-  it('should pass the same user down', () => {
-    render(<Dashboard user={makeUser({ name: 'Bob Chen' })} />)
-    expect(screen.getByTestId('account').textContent).toBe('Bob Chen')
-    expect(screen.getByTestId('card').textContent).toBe('Bob Chen')
+  it('should ask for the PIN once the card is named', () => {
+    const { container } = renderWithClient(
+      <Dashboard user={makeUser({ card: makeCard({ isPINSet: false }) })} />
+    )
+    expect(screen.getByText('Setting up your virtual bank card')).toBeTruthy()
+    expect(screen.getByText('We need a PIN for your virtual card')).toBeTruthy()
+    expect(screen.getByText('PIN')).toBeTruthy()
+    expect(screen.getByText('Confirmed PIN')).toBeTruthy()
+    // password inputs have no role: find the two masked fields by type
+    expect(container.querySelectorAll('input[type="password"]')).toHaveLength(2)
+    expect(screen.getByRole('button', { name: 'Save' })).toBeTruthy()
+    // the name step is already done
+    expect(
+      screen.queryByText('We need a name for your virtual card')
+    ).toBeNull()
+  })
+
+  it('should show the account and the card, and no setup, when the card is fully set up', () => {
+    renderWithClient(<Dashboard user={makeUser()} />)
+    expect(screen.getByText('Your account')).toBeTruthy()
+    expect(screen.getByText('Your card')).toBeTruthy()
+    expect(screen.queryByText(SETUP)).toBeNull()
+  })
+
+  it("should show the user's account and card details", () => {
+    renderWithClient(
+      <Dashboard
+        user={makeUser({
+          name: 'Bob Chen',
+          card: makeCard({ name: 'BOB CARD', maskedCardNumber: '***.123' }),
+        })}
+      />
+    )
+    expect(screen.getByText('Bob Chen')).toBeTruthy()
+    expect(screen.getByText('BOB CARD')).toBeTruthy()
+    expect(screen.getByText('***.123')).toBeTruthy()
   })
 })
