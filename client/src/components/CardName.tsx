@@ -15,6 +15,7 @@ import {
   ItemTitle,
 } from '@/components/ui/item'
 import { CardMedia } from './CardMedia'
+import { ErrorMessage } from './ErrorMessage'
 import { cardNameSchema } from '@/schema/schema'
 
 type CardName = { name: string }
@@ -60,22 +61,10 @@ export const CardName = () => {
                 {...form.register('name')}
                 aria-invalid={!!errors.name}
               />
-              {errors.name && (
-                <div className="gid text-left">
-                  <span role="alert" className="text-red-700 ">
-                    {errors.name.message}
-                  </span>
-                </div>
-              )}
+              <ErrorMessage message={errors.name?.message} />
             </div>
           </div>
-          {setCardName.error && (
-            <div className="gid pb-2 text-left">
-              <span role="alert" className="text-red-700 ">
-                {setCardName.error.message}
-              </span>
-            </div>
-          )}
+          <ErrorMessage message={setCardName.error?.message} className="pb-2" />
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button

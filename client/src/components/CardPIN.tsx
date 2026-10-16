@@ -13,6 +13,7 @@ import { useQueryClient, useMutation } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
 import { CardMedia } from './CardMedia'
+import { ErrorMessage } from './ErrorMessage'
 
 import { encryptPin } from '@/lib/utils'
 import { Input } from './ui/input'
@@ -42,7 +43,6 @@ export const CardPIN = () => {
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
   })
   const { errors } = form.formState
-  const errMessage = setCardPIN.error?.message
 
   return (
     <Card className="w-full max-w-sm">
@@ -70,7 +70,6 @@ export const CardPIN = () => {
           <div className="flex flex-col gap-4 pt-2">
             <div className="grid gap-2">
               <Label htmlFor="pin">PIN</Label>
-
               <Input
                 id="pin"
                 type="password"
@@ -80,15 +79,8 @@ export const CardPIN = () => {
                 {...form.register('pin')}
                 aria-invalid={!!errors.pin}
               />
-              {errors.pin && (
-                <div className="gid text-left">
-                  <span role="alert" className="text-red-700 ">
-                    {errors.pin.message}
-                  </span>
-                </div>
-              )}
+              <ErrorMessage message={errors.pin?.message} />
             </div>
-
             <div className="grid gap-2 pb-4">
               <Label htmlFor="confirmPin">Confirmed PIN</Label>
               <Input
@@ -100,23 +92,11 @@ export const CardPIN = () => {
                 {...form.register('confirmPin')}
                 aria-invalid={!!errors.confirmPin}
               />
-              {errors.confirmPin && (
-                <div className="gid text-left">
-                  <span role="alert" className="text-red-700 ">
-                    {errors.confirmPin.message}
-                  </span>
-                </div>
-              )}
+              <ErrorMessage message={errors.confirmPin?.message} />
             </div>
           </div>
 
-          {errMessage && (
-            <div className="gid pb-2 text-left">
-              <span role="alert" className="text-red-700 ">
-                {errMessage}
-              </span>
-            </div>
-          )}
+          <ErrorMessage message={setCardPIN.error?.message} className="pb-2" />
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button

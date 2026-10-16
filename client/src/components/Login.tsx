@@ -11,6 +11,7 @@ import type { Me } from '@/types'
 import { loginSchema } from '@/schema/schema'
 import { Item, ItemContent, ItemTitle } from './ui/item'
 import { UserMedia } from './UserMedia'
+import { ErrorMessage } from './ErrorMessage'
 
 type LoginInput = { userName: string; password: string }
 
@@ -57,13 +58,7 @@ export const LogIn = () => {
                 {...form.register('userName')}
                 aria-invalid={!!errors.userName || !!login.error}
               />
-              {errors.userName && (
-                <div className="gid text-left">
-                  <span role="alert" className="text-red-700 ">
-                    {errors.userName.message}
-                  </span>
-                </div>
-              )}
+              <ErrorMessage message={errors.userName?.message} />
             </div>
 
             <div className="grid gap-2 pb-4">
@@ -75,22 +70,10 @@ export const LogIn = () => {
                 {...form.register('password')}
                 aria-invalid={!!errors.password || !!login.error}
               />
-              {errors.password && (
-                <div className="gid text-left">
-                  <span role="alert" className="text-red-700 ">
-                    {errors.password.message}
-                  </span>
-                </div>
-              )}
+              <ErrorMessage message={errors.password?.message} />
             </div>
           </div>
-          {login.error && (
-            <div className="gid pb-2 text-left">
-              <span role="alert" className="text-red-700 ">
-                {login.error.message}
-              </span>
-            </div>
-          )}
+          <ErrorMessage message={login.error?.message} className="pb-2" />
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button className="w-full" type="submit" disabled={login.isPending}>
