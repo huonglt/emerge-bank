@@ -32,8 +32,8 @@ const EXPIRES_IN = 300_000 // 5 min token
 const expectSessionWiped = (qc: ReturnType<typeof makeClient>) => {
   expect(setAccessToken).toHaveBeenCalledWith('')
   expect(setCsrf).toHaveBeenCalledWith('')
-  // kept as null, not removed: the app stays subscribed to the user query
-  expect(qc.getQueryData(['user'])).toBeNull()
+  // clearSession empties the whole cache, the user included
+  expect(qc.getQueryData(['user'])).toBeUndefined()
 }
 
 describe('useLogout', () => {

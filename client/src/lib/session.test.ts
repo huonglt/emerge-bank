@@ -1,3 +1,4 @@
+import { QueryObserver } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { setAccessToken, setCsrf } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
@@ -32,23 +33,25 @@ describe('clearSession', () => {
     expect(setCsrf).toHaveBeenCalledWith('')
   })
 
-  it('should keep the user query, set to null, so the app stays subscribed to it', async () => {
+  it('should tell anything watching the user that it is now null, before clearing', async () => {
     const qc = await signedInClient()
+    const seen: unknown[] = []
+    // like App: a component subscribed to the user query
+    const unsubscribe = new QueryObserver(qc, {
+      queryKey: ['user'],
+      enabled: false,
+    }).subscribe((result) => seen.push(result.data))
     clearSession(qc)
-    expect(qc.getQueryCache().find({ queryKey: ['user'] })).toBeDefined()
-    expect(qc.getQueryData(['user'])).toBeNull()
+    unsubscribe()
+    await vi.waitFor(() => expect(seen).toContain(null))
   })
 
-  it('should remove every other cached query', async () => {
+  it('should remove every cached query, the user included', async () => {
     const qc = await signedInClient()
     clearSession(qc)
+    expect(qc.getQueryCache().getAll()).toEqual([])
+    expect(qc.getQueryData(['user'])).toBeUndefined()
     expect(qc.getQueryData(['transactions'])).toBeUndefined()
-    expect(
-      qc
-        .getQueryCache()
-        .getAll()
-        .map((q) => q.queryKey)
-    ).toEqual([['user']])
   })
 
   it('should drop the stored mutations, whose inputs include the password', async () => {
