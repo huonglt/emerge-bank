@@ -5,7 +5,7 @@ export const UserMedia = () => {
   return (
     <ItemMedia>
       <Avatar size="sm">
-        <img src="./user.svg" />
+        <img src="./user.svg" alt="user icon" />
       </Avatar>
     </ItemMedia>
   )

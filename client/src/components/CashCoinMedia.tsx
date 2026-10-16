@@ -5,7 +5,7 @@ export const CashCoinMedia = () => {
   return (
     <ItemMedia>
       <Avatar size="lg">
-        <img src="./cash-coin.svg" />
+        <img src="./cash-coin.svg" alt="coin icon" />
       </Avatar>
     </ItemMedia>
   )

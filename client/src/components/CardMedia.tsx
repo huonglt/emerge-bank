@@ -5,7 +5,7 @@ export const CardMedia = () => {
   return (
     <ItemMedia>
       <Avatar size="lg">
-        <img src="./card.png" />
+        <img src="./card.png" alt="card icon" />
       </Avatar>
     </ItemMedia>
   )
