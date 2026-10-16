@@ -51,6 +51,7 @@ export const LogIn = () => {
             <div className="grid gap-2">
               <Label htmlFor="userName">Name</Label>
               <Input
+                id="userName"
                 type="text"
                 required
                 {...form.register('userName')}
@@ -68,6 +69,7 @@ export const LogIn = () => {
             <div className="grid gap-2 pb-4">
               <Label htmlFor="password">Password</Label>
               <Input
+                id="password"
                 type="password"
                 required
                 {...form.register('password')}

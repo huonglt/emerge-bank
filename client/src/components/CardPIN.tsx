@@ -72,6 +72,7 @@ export const CardPIN = () => {
               <Label htmlFor="pin">PIN</Label>
 
               <Input
+                id="pin"
                 type="password"
                 inputMode="numeric"
                 autoComplete="off"
@@ -89,8 +90,9 @@ export const CardPIN = () => {
             </div>
 
             <div className="grid gap-2 pb-4">
-              <Label htmlFor="confirmedPin">Confirmed PIN</Label>
+              <Label htmlFor="confirmPin">Confirmed PIN</Label>
               <Input
+                id="confirmPin"
                 type="password"
                 inputMode="numeric"
                 autoComplete="off"

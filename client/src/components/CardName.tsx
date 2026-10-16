@@ -54,6 +54,7 @@ export const CardName = () => {
             <div className="grid gap-2 pb-4">
               <Label htmlFor="name">Name</Label>
               <Input
+                id="name"
                 type="text"
                 required
                 {...form.register('name')}
