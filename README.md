@@ -9,7 +9,7 @@ It focuces on:
 
 The client is a `React` + `Typescript` + `shadcn` + `tailwindcss` app. It is fully responsive and support accessibility. Read the [README](client/README.md)<br/>
 
-The server is a `NodeJs`, `ExpressJs` app. Read the [README](server/README.md)
+The server is a `NodeJs` + `ExpressJs` + `Typescript` app. Read the [README](server/README.md)
 
 ### To start
 
