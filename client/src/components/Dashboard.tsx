@@ -15,9 +15,9 @@ export const Dashboard = (props: Props) => {
   }
 
   return (
-    <>
+    <div className="flex w-full flex-col gap-4">
       <Account user={user} />
       <Card user={user} />
-    </>
+    </div>
   )
 }
