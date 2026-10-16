@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
-import { api, setAccessToken, setCsrf } from '@/lib/api'
+import { api, setAccessToken, setCsrfToken } from '@/lib/api'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import type { Me } from '@/types'
@@ -23,7 +23,7 @@ export const LogIn = () => {
       api<Me>('/login', { method: 'POST', body: v }),
     onSuccess: async (m) => {
       setAccessToken(m.accessToken)
-      setCsrf(m.csrfToken)
+      setCsrfToken(m.csrfToken)
       // a /me request still in flight from before login must not overwrite the new user
       await qc.cancelQueries({ queryKey: ['user'] })
       qc.setQueryData(['user'], m.user)

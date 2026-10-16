@@ -2,7 +2,7 @@ import { cleanup, screen, waitFor } from '@testing-library/react'
 import type { UserEvent } from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LogIn } from '@/components/Login'
-import { api, setAccessToken, setCsrf } from '@/lib/api'
+import { api, setAccessToken, setCsrfToken } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { testUser, makeUser } from '@/test/fixtures'
 import { renderWithClient } from '@/test/render'
@@ -10,7 +10,7 @@ import { renderWithClient } from '@/test/render'
 vi.mock('@/lib/api', () => ({
   api: vi.fn(),
   setAccessToken: vi.fn(),
-  setCsrf: vi.fn(),
+  setCsrfToken: vi.fn(),
 }))
 
 afterEach(() => {
@@ -51,7 +51,7 @@ describe('LogIn: signing in', () => {
     await user.click(login())
     await waitFor(() => expect(qc.getQueryData(['user'])).toEqual(me))
     expect(setAccessToken).toHaveBeenCalledWith('access-1')
-    expect(setCsrf).toHaveBeenCalledWith('csrf-1')
+    expect(setCsrfToken).toHaveBeenCalledWith('csrf-1')
   })
 
   it('should ask for both fields and send nothing when they are empty', async () => {

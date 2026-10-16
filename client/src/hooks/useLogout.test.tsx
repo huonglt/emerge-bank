@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from '@testing-library/react'
 import { useQuery } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { useAutoLogout, useLogout } from '@/hooks/useLogout'
-import { api, setAccessToken, setCsrf, tokenExpireIn } from '@/lib/api'
+import { api, setAccessToken, setCsrfToken, tokenExpireIn } from '@/lib/api'
 import type { User } from '@/types'
 import { makeUser } from '@/test/fixtures'
 import { makeClient, wrapperFor } from '@/test/render'
@@ -13,7 +13,7 @@ vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),
   api: vi.fn(),
   setAccessToken: vi.fn(),
-  setCsrf: vi.fn(),
+  setCsrfToken: vi.fn(),
   tokenExpireIn: vi.fn(),
 }))
 // a spy that still runs the real clearSession, so the session really is wiped
@@ -31,7 +31,7 @@ const EXPIRES_IN = 300_000 // 5 min token
 
 const expectSessionWiped = (qc: ReturnType<typeof makeClient>) => {
   expect(setAccessToken).toHaveBeenCalledWith('')
-  expect(setCsrf).toHaveBeenCalledWith('')
+  expect(setCsrfToken).toHaveBeenCalledWith('')
   // clearSession empties the whole cache, the user included
   expect(qc.getQueryData(['user'])).toBeUndefined()
 }

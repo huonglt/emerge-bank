@@ -1,6 +1,6 @@
 import { QueryObserver } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { setAccessToken, setCsrf } from '@/lib/api'
+import { setAccessToken, setCsrfToken } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { clearSession, isUnauthorized } from '@/lib/session'
 import { testUser, makeUser } from '@/test/fixtures'
@@ -9,7 +9,7 @@ import { makeClient } from '@/test/render'
 vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),
   setAccessToken: vi.fn(),
-  setCsrf: vi.fn(),
+  setCsrfToken: vi.fn(),
 }))
 
 afterEach(() => vi.resetAllMocks())
@@ -30,7 +30,7 @@ describe('clearSession', () => {
   it('should wipe both tokens', async () => {
     clearSession(await signedInClient())
     expect(setAccessToken).toHaveBeenCalledWith('')
-    expect(setCsrf).toHaveBeenCalledWith('')
+    expect(setCsrfToken).toHaveBeenCalledWith('')
   })
 
   it('should tell anything watching the user that it is now null, before clearing', async () => {

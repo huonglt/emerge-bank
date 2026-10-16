@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { api, setAccessToken, setCsrf, tokenExpireIn } from '@/lib/api'
+import { api, setAccessToken, setCsrfToken, tokenExpireIn } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 
 const json = (status: number, body: unknown) =>
@@ -22,7 +22,7 @@ const sent = (spy: ReturnType<typeof mockFetch>) => {
 afterEach(() => {
   vi.restoreAllMocks()
   setAccessToken('')
-  setCsrf('')
+  setCsrfToken('')
 })
 
 describe('api: request', () => {
@@ -61,7 +61,7 @@ describe('api: request', () => {
 
   it('should not send the CSRF header on GET', async () => {
     const spy = mockFetch(200, {})
-    setCsrf('csrf-1')
+    setCsrfToken('csrf-1')
     await api('/profile')
     expect(sent(spy).headers.get('X-CSRF-Token')).toBeNull()
   })
@@ -70,7 +70,7 @@ describe('api: request', () => {
     'should sends the CSRF header for %s',
     async (method) => {
       const spy = mockFetch(200, {})
-      setCsrf('csrf-1')
+      setCsrfToken('csrf-1')
       await api('/card/name', { method })
       expect(sent(spy).headers.get('X-CSRF-Token')).toBe('csrf-1')
     }

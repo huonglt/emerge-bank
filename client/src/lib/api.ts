@@ -3,13 +3,13 @@ import { serverUrl } from '@/lib/config'
 import { ApiError } from '@/lib/ApiError'
 
 /**
- * accessToken and csrf token lives in memory only
+ * accessToken and csrfToken lives in memory only
  * they are not stored in browser storage, or in cookie that javascript can read
  */
 let accessToken = ''
 let csrfToken = ''
 export const setAccessToken = (t: string) => (accessToken = t)
-export const setCsrf = (t: string) => (csrfToken = t)
+export const setCsrfToken = (t: string) => (csrfToken = t)
 export const hasAccessToken = () => accessToken !== ''
 
 /**

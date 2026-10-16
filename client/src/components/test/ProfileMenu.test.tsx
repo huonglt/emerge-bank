@@ -2,14 +2,14 @@ import { cleanup, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ProfileMenu } from '@/components/ProfileMenu'
 import { useMeQuery } from '@/hooks/useMeQuery'
-import { api, setAccessToken, setCsrf } from '@/lib/api'
+import { api, setAccessToken, setCsrfToken } from '@/lib/api'
 import { makeUser } from '@/test/fixtures'
 import { renderWithClient } from '@/test/render'
 
 vi.mock('@/lib/api', () => ({
   api: vi.fn(),
   setAccessToken: vi.fn(),
-  setCsrf: vi.fn(),
+  setCsrfToken: vi.fn(),
 }))
 vi.mock('@/hooks/useMeQuery', () => ({ useMeQuery: vi.fn() }))
 const signedInAs = (user: unknown) =>
@@ -68,6 +68,6 @@ describe('ProfileMenu: log out', () => {
     const { user } = renderWithClient(<ProfileMenu />)
     await logOut(user)
     await waitFor(() => expect(setAccessToken).toHaveBeenCalledWith(''))
-    expect(setCsrf).toHaveBeenCalledWith('')
+    expect(setCsrfToken).toHaveBeenCalledWith('')
   })
 })

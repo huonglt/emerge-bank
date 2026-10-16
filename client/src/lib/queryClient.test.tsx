@@ -2,7 +2,7 @@
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { hasAccessToken, setAccessToken, setCsrf } from '@/lib/api'
+import { hasAccessToken, setAccessToken, setCsrfToken } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { createQueryClient } from '@/lib/queryClient'
 import { makeUser } from '@/test/fixtures'
@@ -12,7 +12,7 @@ import type { User } from '@/types'
 vi.mock('@/lib/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/lib/api')>()),
   setAccessToken: vi.fn(),
-  setCsrf: vi.fn(),
+  setCsrfToken: vi.fn(),
   hasAccessToken: vi.fn(),
 }))
 
@@ -46,7 +46,7 @@ const setup = (signedIn = true) => {
 
 const expectSignedOut = () => {
   expect(setAccessToken).toHaveBeenCalledWith('')
-  expect(setCsrf).toHaveBeenCalledWith('')
+  expect(setCsrfToken).toHaveBeenCalledWith('')
 }
 
 describe('createQueryClient', () => {
@@ -102,6 +102,6 @@ describe('createQueryClient', () => {
     await waitFor(() => expect(result.current.save.isError).toBe(true))
     expect(result.current.user).toEqual(makeUser())
     expect(setAccessToken).not.toHaveBeenCalled()
-    expect(setCsrf).not.toHaveBeenCalled()
+    expect(setCsrfToken).not.toHaveBeenCalled()
   })
 })
