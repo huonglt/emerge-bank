@@ -1,35 +1,35 @@
 import { z } from 'zod'
 
 /**
- * login shema for validation
- * name & password both from 4 to 24 characters
+ * login schema for validation
+ * user name & password both from 4 to 24 characters
  */
 export const loginSchema = z.object({
   userName: z
     .string()
     .trim()
-    .min(4, 'User name should be more than 4 characters')
-    .max(24),
+    .min(4, 'User name must be at least 4 characters')
+    .max(24, 'User name must be no more than 24 characters'),
   password: z
     .string()
-    .min(4, 'Password should be more than 4 characters')
-    .max(24),
+    .min(4, 'Password must be at least 4 characters')
+    .max(24, 'Password must be no more than 24 characters'),
 })
 
 /**
- * card name shema for validation
+ * card name schema for validation
  * must be from 6 to 24 characters
  */
 export const cardNameSchema = z.object({
   name: z
     .string()
     .trim()
-    .min(6, 'Card name should be more than 6 characters')
-    .max(24, 'Card name should be no more than 24 characters'),
+    .min(6, 'Card name must be at least 6 characters')
+    .max(24, 'Card name must be no more than 24 characters'),
 })
 
 /**
- * card PIN shema for validation
+ * card PIN schema for validation
  * PIN and confirm PIN must each be a 4 digit number, and confirm PIN must match PIN
  * format errors come before the mismatch
  */
