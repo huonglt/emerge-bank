@@ -47,7 +47,11 @@ export const CardPIN = () => {
   return (
     <Card className="w-full max-w-sm">
       <form
-        onSubmit={form.handleSubmit((v) => setCardPIN.mutate(v))}
+        onSubmit={form.handleSubmit((v) => {
+          setCardPIN.mutate(v)
+          // clear the PIN straight away: from the inputs and the form'
+          form.reset({ pin: '', confirmPin: '' })
+        })}
         noValidate
         autoComplete="off"
       >
