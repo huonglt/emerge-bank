@@ -61,8 +61,33 @@ describe('LogIn: signing in', () => {
       (a) => a.textContent
     )
     expect(alerts).toEqual([
-      'User name should be more than 4 characters',
-      'Password should be more than 4 characters',
+      'User name must be at least 4 characters',
+      'Password must be at least 4 characters',
+    ])
+    expect(api).not.toHaveBeenCalled()
+  })
+
+  it('should accept a user name and password of exactly 4 characters', async () => {
+    vi.mocked(api).mockReturnValue(new Promise(() => {}))
+    const { user } = renderWithClient(<LogIn />)
+    await user.type(screen.getByLabelText('Name'), 'abcd')
+    await user.type(screen.getByLabelText('Password'), 'wxyz')
+    await user.click(login())
+    await waitFor(() => expect(api).toHaveBeenCalledTimes(1))
+    expect(screen.queryByRole('alert')).toBeNull()
+  })
+
+  it('should reject a user name and password longer than 24 characters', async () => {
+    const { user } = renderWithClient(<LogIn />)
+    await user.type(screen.getByLabelText('Name'), 'a'.repeat(25))
+    await user.type(screen.getByLabelText('Password'), 'b'.repeat(25))
+    await user.click(login())
+    const alerts = (await screen.findAllByRole('alert')).map(
+      (a) => a.textContent
+    )
+    expect(alerts).toEqual([
+      'User name must be no more than 24 characters',
+      'Password must be no more than 24 characters',
     ])
     expect(api).not.toHaveBeenCalled()
   })

@@ -43,7 +43,7 @@ export const CardName = () => {
           <Item className="pr-0 pl-0">
             <CardMedia />
             <ItemContent>
-              <ItemTitle>Setting up virtual bank card</ItemTitle>
+              <ItemTitle>Setting up your virtual bank card</ItemTitle>
               <ItemDescription>
                 We need a name for your virtual card
               </ItemDescription>

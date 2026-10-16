@@ -15,7 +15,7 @@ describe('Dashboard', () => {
         user={makeUser({ card: makeCard({ name: null, isPINSet: false }) })}
       />
     )
-    expect(screen.getByText('Setting up virtual bank card')).toBeTruthy()
+    expect(screen.getByText('Setting up your virtual bank card')).toBeTruthy()
     expect(
       screen.getByText('We need a name for your virtual card')
     ).toBeTruthy()

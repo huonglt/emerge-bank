@@ -6,8 +6,8 @@ import { renderWithClient } from '@/test/render'
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }))
 
-const TOO_SHORT = 'Card name should be more than 6 characters'
-const TOO_LONG = 'Card name should be no more than 24 characters'
+const TOO_SHORT = 'Card name must be at least 6 characters'
+const TOO_LONG = 'Card name must be no more than 24 characters'
 
 beforeEach(() => vi.mocked(api).mockResolvedValue({ ok: true }))
 afterEach(() => {
