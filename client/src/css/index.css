@@ -5,6 +5,9 @@
 @import './typeset.css';
 @custom-variant dark (&:is(.dark *));
 :root {
+  /* brand: the navy of the header, footer and profile button; white text on it */
+  --brand: #010b3b;
+  --brand-foreground: #fff;
   --text: #6b6375;
   --text-h: #08060d;
   --bg: #fff;
@@ -119,7 +122,6 @@
 #root {
   max-width: 100%;
   margin: 0 auto;
-  text-align: center;
   border-inline: 1px solid var(--border);
   min-height: 100svh;
   display: flex;
@@ -203,6 +205,8 @@ code {
   --color-secondary: var(--secondary);
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-brand: var(--brand);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -289,8 +293,8 @@ body {
   display: flex;
   align-items: center;
   padding: 8px 16px;
-  background: #010b3b;
-  color: #fff;
+  background-color: var(--color-brand);
+  color: var(--color-brand-foreground);
 }
 
 .main {
@@ -310,8 +314,4 @@ body {
   align-items: center;
   flex-direction: column;
   gap: 16px;
-}
-
-.buttonProfile {
-  background-color: #010b3b;
 }

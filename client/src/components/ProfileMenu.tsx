@@ -27,8 +27,8 @@ export const ProfileMenu = () => {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <Button className={'buttonProfile'}>
-            <Avatar className={'buttonProfile'}>
+          <Button className="bg-brand">
+            <Avatar className="bg-brand">
               <AvatarFallback>{getInitials(userName)}</AvatarFallback>
             </Avatar>
           </Button>
