@@ -276,10 +276,6 @@ body {
   margin: 0;
 }
 .app {
-  /*width: 100vw;
-  display: flex;
-  height: 100vh;
-  overflow: scroll;*/
   display: flex;
   flex-direction: column; /* header, main, footer stack top to bottom */
   width: 100%; /* the width of the device (not 100vw: that would include the scrollbar) */
@@ -289,10 +285,10 @@ body {
 
 .header,
 .footer {
-  height: 50px;
+  min-height: 50px;
   display: flex;
   align-items: center;
-  padding: 0 16px;
+  padding: 8px 16px;
   background: #010b3b;
   color: #fff;
 }
