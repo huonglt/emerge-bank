@@ -12,7 +12,11 @@ vi.mock('@/lib/utils', async (importOriginal) => ({
 }))
 
 const FORMAT = 'PIN must be exactly 4 digits'
+const CONFIRM_FORMAT = 'Confirm PIN must be exactly 4 digits'
 const MISMATCH = 'PINs do not match'
+// each field shows its own error under it
+const alerts = async () =>
+  (await screen.findAllByRole('alert')).map((a) => a.textContent)
 
 beforeEach(() => {
   vi.mocked(api).mockResolvedValue({ ok: true })
@@ -66,27 +70,27 @@ describe('CardPIN: validation', () => {
     expect(api).not.toHaveBeenCalled()
   })
 
-  it('should treats a missing confirmation as a mismatch', async () => {
+  it('should ask for the confirmation when it is missing', async () => {
     const { user } = renderWithClient(<CardPIN />)
     await fill(user, '4821', '')
     await user.click(save())
-    expect((await screen.findByRole('alert')).textContent).toBe(MISMATCH)
+    expect(await alerts()).toEqual([CONFIRM_FORMAT])
     expect(api).not.toHaveBeenCalled()
   })
 
-  it('should rejects a PIN with a letter in it', async () => {
+  it('should rejects a PIN and confirmation with a letter in them', async () => {
     const { user } = renderWithClient(<CardPIN />)
     await fill(user, '12a4', '12a4')
     await user.click(save())
-    expect((await screen.findByRole('alert')).textContent).toBe(FORMAT)
+    expect(await alerts()).toEqual([FORMAT, CONFIRM_FORMAT])
     expect(api).not.toHaveBeenCalled()
   })
 
-  it('should checks the format before checking the match', async () => {
+  it('should show the format error, not the mismatch, when the confirmation is not 4 digits', async () => {
     const { user } = renderWithClient(<CardPIN />)
     await fill(user, '12', '13')
     await user.click(save())
-    expect((await screen.findByRole('alert')).textContent).toBe(FORMAT)
+    expect(await alerts()).toEqual([FORMAT, CONFIRM_FORMAT])
   })
 
   it('should clears an earlier error on the next valid submit', async () => {

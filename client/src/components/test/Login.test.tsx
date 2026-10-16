@@ -64,7 +64,10 @@ describe('LogIn: signing in', () => {
     const alerts = (await screen.findAllByRole('alert')).map(
       (a) => a.textContent
     )
-    expect(alerts).toEqual(['Enter your user name', 'Enter your password'])
+    expect(alerts).toEqual([
+      'User name should be more than 4 characters',
+      'Password should be more than 4 characters',
+    ])
     expect(api).not.toHaveBeenCalled()
   })
 })

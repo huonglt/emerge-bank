@@ -38,7 +38,7 @@ export const pinSchema = z
     pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
     confirmPin: z
       .string()
-      .regex(/^\d{4}$/, 'Confim PIN must be exactly 4 digits'),
+      .regex(/^\d{4}$/, 'Confirm PIN must be exactly 4 digits'),
   })
   .refine((data) => data.pin === data.confirmPin, {
     message: 'PINs do not match',
