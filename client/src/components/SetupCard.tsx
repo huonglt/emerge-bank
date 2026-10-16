@@ -12,7 +12,7 @@ export const SetupCard = (props: Props) => {
 
   return (
     <div className="content">
-      <div className="text-left w-full">
+      <div className="w-full">
         We need to setup your card before you can use it
       </div>
       {needCardName && <CardName />}

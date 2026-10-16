@@ -58,7 +58,7 @@ export const CardPIN = () => {
         <CardHeader>
           <Item className="pr-0 pl-0">
             <CardMedia />
-            <ItemContent className="text-left">
+            <ItemContent>
               <ItemTitle>Setting up your virtual bank card</ItemTitle>
               <ItemDescription>
                 We need a PIN for your virtual card
