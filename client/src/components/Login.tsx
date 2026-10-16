@@ -41,7 +41,7 @@ export const LogIn = () => {
         <CardHeader>
           <Item className="pr-0 pl-0">
             <UserMedia />
-            <ItemContent>
+            <ItemContent className="text-left">
               <ItemTitle>Login to your account</ItemTitle>
             </ItemContent>
           </Item>
