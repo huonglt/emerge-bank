@@ -5,8 +5,15 @@ import { z } from 'zod'
  * name & password both from 4 to 24 characters
  */
 export const loginSchema = z.object({
-  userName: z.string().trim().min(4, 'Enter your user name').max(24),
-  password: z.string().min(4, 'Enter your password').max(24),
+  userName: z
+    .string()
+    .trim()
+    .min(4, 'User name should be more than 4 characters')
+    .max(24),
+  password: z
+    .string()
+    .min(4, 'Password should be more than 4 characters')
+    .max(24),
 })
 
 /**
@@ -23,8 +30,17 @@ export const cardNameSchema = z.object({
 
 /**
  * card PIN shema for validation
- * must be 4 digit number
+ * PIN and confirm PIN must each be a 4 digit number, and confirm PIN must match PIN
+ * format errors come before the mismatch
  */
 export const pinSchema = z
-  .string()
-  .regex(/^\d{4}$/, 'PIN must be exactly 4 digits')
+  .object({
+    pin: z.string().regex(/^\d{4}$/, 'PIN must be exactly 4 digits'),
+    confirmPin: z
+      .string()
+      .regex(/^\d{4}$/, 'Confim PIN must be exactly 4 digits'),
+  })
+  .refine((data) => data.pin === data.confirmPin, {
+    message: 'PINs do not match',
+    path: ['confirmPin'],
+  })

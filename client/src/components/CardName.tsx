@@ -50,26 +50,29 @@ export const CardName = () => {
           </Item>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-2">
-            <div className="grid gap-2">
+          <div className="flex flex-col gap-4 pt-2">
+            <div className="grid gap-2 pb-4">
               <Label htmlFor="name">Name</Label>
-              <Input type="text" required {...form.register('name')} />
-            </div>
-            <div className="gid pb-2 text-left">
+              <Input
+                type="text"
+                required
+                {...form.register('name')}
+                aria-invalid={!!errors.name}
+              />
               {errors.name && (
-                <span role="alert" className="text-red-700 ">
-                  {errors.name.message}
-                </span>
+                <div className="gid text-left">
+                  <span role="alert" className="text-red-700 ">
+                    {errors.name.message}
+                  </span>
+                </div>
               )}
             </div>
           </div>
           {setCardName.error && (
-            <div className="grid gap-2 pb-2">
-              <div className="gid pb-2 text-left">
-                <span role="alert" className="text-red-700 ">
-                  {setCardName.error.message}
-                </span>
-              </div>
+            <div className="gid pb-2 text-left">
+              <span role="alert" className="text-red-700 ">
+                {setCardName.error.message}
+              </span>
             </div>
           )}
         </CardContent>

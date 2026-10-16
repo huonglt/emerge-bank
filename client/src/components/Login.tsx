@@ -47,24 +47,34 @@ export const LogIn = () => {
         </CardHeader>
 
         <CardContent>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4 pt-2">
             <div className="grid gap-2">
               <Label htmlFor="userName">Name</Label>
-              <Input type="text" required {...form.register('userName')} />
-            </div>
-            <div className="gid pb-2 text-left">
+              <Input
+                type="text"
+                required
+                {...form.register('userName')}
+                aria-invalid={!!errors.userName || !!login.error}
+              />
               {errors.userName && (
-                <span role="alert" className="text-red-700 ">
-                  {errors.userName.message}
-                </span>
+                <div className="gid text-left">
+                  <span role="alert" className="text-red-700 ">
+                    {errors.userName.message}
+                  </span>
+                </div>
               )}
             </div>
-            <div className="grid gap-2 pb-2">
-              <Label htmlFor="password">Password</Label>
 
-              <Input type="password" required {...form.register('password')} />
+            <div className="grid gap-2 pb-4">
+              <Label htmlFor="password">Password</Label>
+              <Input
+                type="password"
+                required
+                {...form.register('password')}
+                aria-invalid={!!errors.password || !!login.error}
+              />
               {errors.password && (
-                <div className="gid pb-2 text-left">
+                <div className="gid text-left">
                   <span role="alert" className="text-red-700 ">
                     {errors.password.message}
                   </span>
@@ -73,12 +83,10 @@ export const LogIn = () => {
             </div>
           </div>
           {login.error && (
-            <div className="grid gap-2 pb-2">
-              <div className="gid pb-2 text-left">
-                <span role="alert" className="text-red-700 ">
-                  {login.error.message}
-                </span>
-              </div>
+            <div className="gid pb-2 text-left">
+              <span role="alert" className="text-red-700 ">
+                {login.error.message}
+              </span>
             </div>
           )}
         </CardContent>

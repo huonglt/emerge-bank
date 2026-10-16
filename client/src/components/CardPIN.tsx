@@ -13,55 +13,44 @@ import { useQueryClient, useMutation } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
 import { CardMedia } from './CardMedia'
-import { useRef, useState } from 'react'
+
 import { encryptPin } from '@/lib/utils'
 import { Input } from './ui/input'
 import { pinSchema } from '@/schema/schema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm } from 'react-hook-form'
 
-type CardPIN = { pin: string }
+type CardPIN = { pin: string; confirmPin: string }
 
 export const CardPIN = () => {
-  const qc = useQueryClient()
   /**
-   * The PIN lives only in uncontrolled inputs: never in React state, or the query cache, or browser storage
-   * It is read at submit time and cleared straight away.
+   * react-hook-form keeps inputs uncontrolled
+   * so the PIN is never put in React state
    */
-  const pinRef = useRef<HTMLInputElement>(null)
-  const confirmRef = useRef<HTMLInputElement>(null)
+  const form = useForm<CardPIN>({ resolver: zodResolver(pinSchema) })
+  const qc = useQueryClient()
 
-  const [error, setError] = useState<string | null>(null)
   const setCardPIN = useMutation({
-    mutationFn: async (v: { pin: string; confirm: string }) =>
+    mutationFn: async (v: CardPIN) =>
       api('/card/pin', {
         method: 'PUT',
         /**
          * encryp the pin & confirm pin using server s public key (RSA-OAEP) and a single-use nonce
          */
-        body: { encrypted: await encryptPin(v.pin, v.confirm) },
+        body: { encrypted: await encryptPin(v.pin, v.confirmPin) },
       }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
   })
-
-  const handleFormSubmit = (e: React.SyntheticEvent) => {
-    e.preventDefault()
-    const pin = pinRef.current!.value
-    const confirm = confirmRef.current!.value
-    const parsed = pinSchema.safeParse(pin)
-    if (!parsed.success) return setError(parsed.error.issues[0].message)
-    if (pin !== confirm) return setError('PINs do not match')
-    setError(null)
-    setCardPIN.mutate({ pin, confirm })
-    /**
-     * clear the PIN and confirm PIN after submit
-     */
-    pinRef.current!.value = ''
-    confirmRef.current!.value = ''
-  }
-  const errMessage = error ?? setCardPIN.error?.message
+  const { errors } = form.formState
+  const errMessage = setCardPIN.error?.message
 
   return (
     <Card className="w-full max-w-sm">
-      <form onSubmit={handleFormSubmit} noValidate autoComplete="off">
+      <form
+        onSubmit={form.handleSubmit((v) => setCardPIN.mutate(v))}
+        noValidate
+        autoComplete="off"
+      >
         <CardHeader>
           <Item className="pr-0 pl-0">
             <CardMedia />
@@ -74,7 +63,7 @@ export const CardPIN = () => {
           </Item>
         </CardHeader>
         <CardContent>
-          <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-4 pt-2">
             <div className="grid gap-2">
               <Label htmlFor="pin">PIN</Label>
 
@@ -83,28 +72,45 @@ export const CardPIN = () => {
                 inputMode="numeric"
                 autoComplete="off"
                 maxLength={4}
-                ref={pinRef}
+                {...form.register('pin')}
+                aria-invalid={!!errors.pin}
               />
+              {errors.pin && (
+                <div className="gid text-left">
+                  <span role="alert" className="text-red-700 ">
+                    {errors.pin.message}
+                  </span>
+                </div>
+              )}
             </div>
 
-            <div className="grid gap-2">
+            <div className="grid gap-2 pb-4">
               <Label htmlFor="confirmedPin">Confirmed PIN</Label>
               <Input
                 type="password"
                 inputMode="numeric"
                 autoComplete="off"
                 maxLength={4}
-                ref={confirmRef}
+                {...form.register('confirmPin')}
+                aria-invalid={!!errors.confirmPin}
               />
+              {errors.confirmPin && (
+                <div className="gid text-left">
+                  <span role="alert" className="text-red-700 ">
+                    {errors.confirmPin.message}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
-          <div className="gid pb-2 pt-2 text-left">
-            {errMessage && (
+
+          {errMessage && (
+            <div className="gid pb-2 text-left">
               <span role="alert" className="text-red-700 ">
                 {errMessage}
               </span>
-            )}
-          </div>
+            </div>
+          )}
         </CardContent>
         <CardFooter className="flex-col gap-2">
           <Button
