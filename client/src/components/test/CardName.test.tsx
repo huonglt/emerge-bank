@@ -15,8 +15,7 @@ afterEach(() => {
   vi.resetAllMocks()
 })
 
-// The label is not linked to the input (no id), so find the field by its role.
-const nameInput = () => screen.getByRole('textbox') as HTMLInputElement
+const nameInput = () => screen.getByLabelText('Name') as HTMLInputElement
 const save = () =>
   screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement
 

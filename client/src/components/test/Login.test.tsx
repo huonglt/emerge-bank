@@ -18,13 +18,9 @@ afterEach(() => {
   vi.resetAllMocks()
 })
 
-// The labels are not linked to the inputs (no id), so find the fields directly.
 const fill = async (user: UserEvent) => {
-  await user.type(screen.getByRole('textbox'), testUser.userName)
-  await user.type(
-    document.querySelector('input[type="password"]') as HTMLInputElement,
-    testUser.password
-  )
+  await user.type(screen.getByLabelText('Name'), testUser.userName)
+  await user.type(screen.getByLabelText('Password'), testUser.password)
 }
 const login = () =>
   screen.getByRole('button', { name: 'Login' }) as HTMLButtonElement

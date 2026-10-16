@@ -26,21 +26,19 @@ describe('SetupCard', () => {
     expect(
       screen.getByText('We need a name for your virtual card')
     ).toBeTruthy()
-    expect(screen.getByText('Name')).toBeTruthy()
+    expect(screen.getByLabelText('Name')).toBeTruthy()
     // the PIN step comes only after the card is named
     expect(screen.queryByText('We need a PIN for your virtual card')).toBeNull()
   })
 
   it('should ask for the PIN once the card is named', () => {
-    const { container } = renderWithClient(
+    renderWithClient(
       <SetupCard user={makeUser({ card: makeCard({ isPINSet: false }) })} />
     )
     expect(screen.getByText('Setting up your virtual bank card')).toBeTruthy()
     expect(screen.getByText('We need a PIN for your virtual card')).toBeTruthy()
-    expect(screen.getByText('PIN')).toBeTruthy()
-    expect(screen.getByText('Confirmed PIN')).toBeTruthy()
-    // password inputs have no role: find the two masked fields by type
-    expect(container.querySelectorAll('input[type="password"]')).toHaveLength(2)
+    expect(screen.getByLabelText('PIN')).toBeTruthy()
+    expect(screen.getByLabelText('Confirmed PIN')).toBeTruthy()
     expect(screen.getByRole('button', { name: 'Save' })).toBeTruthy()
     // the name step is already done
     expect(

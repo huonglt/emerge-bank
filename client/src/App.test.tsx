@@ -48,10 +48,8 @@ describe('App', () => {
     })
     const { user } = renderWithClient(<App />, createQueryClient())
     const login = async (password: string) => {
-      const name = screen.getByRole('textbox')
-      const secret = document.querySelector(
-        'input[type="password"]'
-      ) as HTMLInputElement
+      const name = screen.getByLabelText('Name')
+      const secret = screen.getByLabelText('Password')
       await user.clear(name)
       await user.type(name, testUser.userName)
       await user.clear(secret)

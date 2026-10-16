@@ -27,13 +27,10 @@ afterEach(() => {
   vi.resetAllMocks()
 })
 
-// The labels are not linked to the inputs (no id), so find the fields by type.
-const fields = () => {
-  const [pin, confirm] = Array.from(
-    document.querySelectorAll<HTMLInputElement>('input[type="password"]')
-  )
-  return { pin, confirm }
-}
+const fields = () => ({
+  pin: screen.getByLabelText('PIN') as HTMLInputElement,
+  confirm: screen.getByLabelText('Confirmed PIN') as HTMLInputElement,
+})
 const save = () =>
   screen.getByRole('button', { name: 'Save' }) as HTMLButtonElement
 
