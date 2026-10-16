@@ -78,6 +78,12 @@ Start the client:
 - preview prod: `npm run preview`
 - linting: `npm run lint`
 
+## Responsiveness & Accessibility
+
+- This app is fully responsiveness & support accessibility.
+- It uses shadcn/ui that support accessibility out of the box
+- accessibility check is included in lint task with recommended config using eslint-plugin-jsx-a11y
+
 ## Limitations
 
 Due to time constraints, this app for demo purposes only, not for production use.<br/>
