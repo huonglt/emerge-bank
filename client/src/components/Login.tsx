@@ -9,9 +9,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 
 import type { Me } from '@/types'
 import { loginSchema } from '@/schema/schema'
-import { Item, ItemContent, ItemTitle } from './ui/item'
-import { UserMedia } from './UserMedia'
-import { ErrorMessage } from './ErrorMessage'
+import { Item, ItemContent, ItemTitle } from '@/components/ui/item'
+import { UserMedia } from '@/components/UserMedia'
+import { ErrorMessage } from '@/components/ErrorMessage'
 
 type LoginInput = { userName: string; password: string }
 

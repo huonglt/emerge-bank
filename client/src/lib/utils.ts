@@ -1,4 +1,4 @@
-import { api } from './api'
+import { api } from '@/lib/api'
 
 /**
  * Encrypts the PIN in the browser with the server's public key (RSA-OAEP) and a  single-use nonce

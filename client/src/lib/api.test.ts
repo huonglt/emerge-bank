@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { api, setAccessToken, setCsrf, tokenExpireIn } from '@/lib/api'
-import { ApiError } from './ApiError'
+import { ApiError } from '@/lib/ApiError'
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {

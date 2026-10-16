@@ -1,5 +1,5 @@
 import { Landmark } from 'lucide-react'
-import { ProfileMenu } from './ProfileMenu'
+import { ProfileMenu } from '@/components/ProfileMenu'
 
 export const Header = () => {
   return (

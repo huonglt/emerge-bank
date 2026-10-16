@@ -1,6 +1,6 @@
 import type { QueryClient } from '@tanstack/react-query'
-import { setAccessToken, setCsrf } from './api'
-import { ApiError } from './ApiError'
+import { setAccessToken, setCsrf } from '@/lib/api'
+import { ApiError } from '@/lib/ApiError'
 
 /**
  * Wipe all user data on the client

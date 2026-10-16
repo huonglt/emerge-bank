@@ -1,6 +1,6 @@
-import { CardName } from './CardName'
-import type { User } from '../types'
-import { CardPIN } from './CardPIN'
+import { CardName } from '@/components/CardName'
+import type { User } from '@/types'
+import { CardPIN } from '@/components/CardPIN'
 
 type Props = {
   user: User

@@ -1,6 +1,6 @@
 import { jwtDecode } from 'jwt-decode'
-import { serverUrl } from './config'
-import { ApiError } from './ApiError'
+import { serverUrl } from '@/lib/config'
+import { ApiError } from '@/lib/ApiError'
 
 /**
  * accessToken and csrf token lives in memory only

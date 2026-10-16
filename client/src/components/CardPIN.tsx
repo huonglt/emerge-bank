@@ -12,11 +12,11 @@ import {
 import { useQueryClient, useMutation } from '@tanstack/react-query'
 
 import { api } from '@/lib/api'
-import { CardMedia } from './CardMedia'
-import { ErrorMessage } from './ErrorMessage'
+import { CardMedia } from '@/components/CardMedia'
+import { ErrorMessage } from '@/components/ErrorMessage'
 
 import { encryptPin } from '@/lib/utils'
-import { Input } from './ui/input'
+import { Input } from '@/components/ui/input'
 import { pinSchema } from '@/schema/schema'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'

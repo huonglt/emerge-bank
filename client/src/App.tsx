@@ -3,8 +3,8 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { LogIn } from '@/components/Login'
 import { useMeQuery } from '@/hooks/useMeQuery'
-import { useAutoLogout } from './hooks/useLogout'
-import { ErrorMessage } from './components/ErrorMessage'
+import { useAutoLogout } from '@/hooks/useLogout'
+import { ErrorMessage } from '@/components/ErrorMessage'
 
 export const App = () => {
   const me = useMeQuery()
@@ -16,7 +16,6 @@ export const App = () => {
   const showLogin = !me.isError && !user
   const showDashboard = !me.isError && user
 
-  console.log(`me = ${JSON.stringify(me)}`)
   return (
     <div className="app">
       <Header />

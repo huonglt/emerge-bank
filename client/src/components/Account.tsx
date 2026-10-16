@@ -8,9 +8,9 @@ import {
   ItemHeader,
   ItemActions,
 } from '@/components/ui/item'
-import { CashCoinMedia } from './CashCoinMedia'
-import type { User } from '../types'
-import { Todo } from './Todo'
+import { CashCoinMedia } from '@/components/CashCoinMedia'
+import type { User } from '@/types'
+import { Todo } from '@/components/Todo'
 import { formatCurrency } from '@/lib/utils'
 type Props = {
   user: User

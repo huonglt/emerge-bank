@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { getInitials } from '../lib/utils'
+import { getInitials } from '@/lib/utils'
 import { useMeQuery } from '@/hooks/useMeQuery'
 import { useLogout } from '@/hooks/useLogout'
 import { UserIcon } from 'lucide-react'

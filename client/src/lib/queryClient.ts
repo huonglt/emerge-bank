@@ -1,6 +1,6 @@
 import { MutationCache, QueryCache, QueryClient } from '@tanstack/react-query'
-import { hasAccessToken } from './api'
-import { clearSession, isUnauthorized } from './session'
+import { hasAccessToken } from '@/lib/api'
+import { clearSession, isUnauthorized } from '@/lib/session'
 
 /**
  * App query client

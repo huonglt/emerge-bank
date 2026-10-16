@@ -5,7 +5,7 @@ import {
   DialogTitle,
   DialogTrigger,
   Dialog,
-} from './ui/dialog'
+} from '@/components/ui/dialog'
 
 type Props = {
   trigger: React.ReactElement

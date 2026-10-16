@@ -1,7 +1,7 @@
-import { SetupCard } from './SetupCard'
-import type { User } from '../types'
-import { Account } from './Account'
-import { Card } from './Card'
+import { SetupCard } from '@/components/SetupCard'
+import type { User } from '@/types'
+import { Account } from '@/components/Account'
+import { Card } from '@/components/Card'
 type Props = {
   user: User
 }

@@ -5,7 +5,7 @@ import {
   ItemHeader,
   ItemDescription,
 } from '@/components/ui/item'
-import { CardMedia } from './CardMedia'
+import { CardMedia } from '@/components/CardMedia'
 
 import type { User } from '@/types'
 

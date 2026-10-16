@@ -14,8 +14,8 @@ import {
   ItemDescription,
   ItemTitle,
 } from '@/components/ui/item'
-import { CardMedia } from './CardMedia'
-import { ErrorMessage } from './ErrorMessage'
+import { CardMedia } from '@/components/CardMedia'
+import { ErrorMessage } from '@/components/ErrorMessage'
 import { cardNameSchema } from '@/schema/schema'
 
 type CardName = { name: string }
