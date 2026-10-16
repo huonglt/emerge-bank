@@ -22,8 +22,10 @@ type CardPIN = { pin: string }
 
 export const CardPIN = () => {
   const qc = useQueryClient()
-  // The PIN lives only in uncontrolled inputs: never in React state, the query cache,
-  // a form library, the URL or storage. It is read at submit time and cleared straight away.
+  /**
+   * The PIN lives only in uncontrolled inputs: never in React state, or the query cache, or browser storage
+   * It is read at submit time and cleared straight away.
+   */
   const pinRef = useRef<HTMLInputElement>(null)
   const confirmRef = useRef<HTMLInputElement>(null)
 
@@ -32,6 +34,9 @@ export const CardPIN = () => {
     mutationFn: async (v: { pin: string; confirm: string }) =>
       api('/card/pin', {
         method: 'PUT',
+        /**
+         * encryp the pin & confirm pin using server s public key (RSA-OAEP) and a single-use nonce
+         */
         body: { encrypted: await encryptPin(v.pin, v.confirm) },
       }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
@@ -46,6 +51,9 @@ export const CardPIN = () => {
     if (pin !== confirm) return setError('PINs do not match')
     setError(null)
     setCardPIN.mutate({ pin, confirm })
+    /**
+     * clear the PIN and confirm PIN after submit
+     */
     pinRef.current!.value = ''
     confirmRef.current!.value = ''
   }
