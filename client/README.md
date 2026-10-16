@@ -81,7 +81,7 @@ Start the client:
 ## Responsiveness & Accessibility
 
 - This app is fully responsiveness & support accessibility.
-- It uses shadcn/ui that support accessibility out of the box
+- It uses shadcn/ui that support responsiveness and accessibility out of the box
 - accessibility check is included in lint task with recommended config using eslint-plugin-jsx-a11y
 
 ## Limitations
