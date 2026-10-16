@@ -29,7 +29,7 @@ export const Account = (props: Props) => {
         <ItemDescription>{accountNumber}</ItemDescription>
         <ItemDescription>{formatCurrency(accountBalance)}</ItemDescription>
       </ItemContent>
-      <ItemActions>
+      <ItemActions className="flex-wrap">
         <Todo trigger={<Button variant="outline">Add money</Button>} />
         <Todo trigger={<Button variant="outline">Transfer</Button>} />
         <Todo trigger={<Button variant="outline">Pay</Button>} />
