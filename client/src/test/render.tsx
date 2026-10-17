@@ -20,3 +20,12 @@ export function renderWithClient(ui: ReactElement, qc = makeClient()) {
   const user = userEvent.setup()
   return { user, qc, ...render(ui, { wrapper: wrapperFor(qc) }) }
 }
+
+// everything the mutation cache still holds as mutation inputs, as text
+export const storedMutationInputs = (qc: QueryClient) =>
+  JSON.stringify(
+    qc
+      .getMutationCache()
+      .getAll()
+      .map((m) => m.state.variables)
+  )
