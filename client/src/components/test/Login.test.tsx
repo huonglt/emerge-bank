@@ -5,7 +5,7 @@ import { LogIn } from '@/components/Login'
 import { api, setAccessToken, setCsrfToken } from '@/lib/api'
 import { ApiError } from '@/lib/ApiError'
 import { testUser, makeUser } from '@/test/fixtures'
-import { renderWithClient } from '@/test/render'
+import { renderWithClient, storedMutationInputs } from '@/test/render'
 
 vi.mock('@/lib/api', () => ({
   api: vi.fn(),
@@ -122,5 +122,55 @@ describe('LogIn: submit button', () => {
       'Username or password is incorrect'
     )
     expect(login().disabled).toBe(false)
+  })
+})
+
+describe('LogIn: the password in memory', () => {
+  it.each([
+    [
+      'the login succeeds',
+      () =>
+        vi.mocked(api).mockResolvedValue({
+          user: makeUser(),
+          accessToken: 'access-1',
+          csrfToken: 'csrf-1',
+        }),
+    ],
+    [
+      'the login fails',
+      () =>
+        vi
+          .mocked(api)
+          .mockRejectedValue(
+            new ApiError(401, 'Username or password is incorrect')
+          ),
+    ],
+  ])('should not keep the plain password once %s', async (_label, answer) => {
+    answer()
+    const { user, qc } = renderWithClient(<LogIn />)
+    await fill(user)
+    await user.click(login())
+    await waitFor(() => expect(api).toHaveBeenCalledTimes(1))
+    await waitFor(() =>
+      expect(storedMutationInputs(qc)).not.toContain(testUser.password)
+    )
+    // the user name is not secret and stays
+    expect(storedMutationInputs(qc)).toContain(testUser.userName)
+  })
+
+  it('should keep the password in the form after a failed login, to retry', async () => {
+    // record each body as it is sent, like fetch does (the app blanks the password afterwards)
+    const sent: unknown[] = []
+    vi.mocked(api).mockImplementation(async (_path, options) => {
+      sent.push(JSON.parse(JSON.stringify(options?.body)))
+      throw new ApiError(401, 'Username or password is incorrect')
+    })
+    const { user } = renderWithClient(<LogIn />)
+    await fill(user)
+    await user.click(login())
+    await screen.findByText('Username or password is incorrect')
+    await user.click(login())
+    await waitFor(() => expect(sent).toHaveLength(2))
+    expect(sent).toEqual([testUser, testUser])
   })
 })

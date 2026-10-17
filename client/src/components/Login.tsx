@@ -19,8 +19,14 @@ export const LogIn = () => {
   const form = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
   const qc = useQueryClient()
   const login = useMutation({
-    mutationFn: (formData: LoginInput) =>
-      api<Me>('/login', { method: 'POST', body: formData }),
+    mutationFn: async (formData: LoginInput) => {
+      try {
+        return await api<Me>('/login', { method: 'POST', body: formData })
+      } finally {
+        // clear the plain password right after submission
+        formData.password = ''
+      }
+    },
     onSuccess: async (m) => {
       setAccessToken(m.accessToken)
       setCsrfToken(m.csrfToken)
