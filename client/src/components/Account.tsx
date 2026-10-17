@@ -4,7 +4,6 @@ import {
   Item,
   ItemContent,
   ItemDescription,
-  ItemTitle,
   ItemHeader,
   ItemActions,
 } from '@/components/ui/item'
