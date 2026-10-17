@@ -25,7 +25,7 @@ export const Account = (props: Props) => {
       <ItemHeader className="font-semibold">Your account</ItemHeader>
       <CashCoinMedia />
       <ItemContent>
-        <ItemTitle>{name}</ItemTitle>
+        <ItemDescription>{name}</ItemDescription>
         <ItemDescription>{accountNumber}</ItemDescription>
         <ItemDescription>{formatCurrency(accountBalance)}</ItemDescription>
       </ItemContent>
