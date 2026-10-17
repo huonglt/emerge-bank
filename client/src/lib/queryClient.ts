@@ -14,8 +14,16 @@ export const createQueryClient = () => {
     }
   }
 
+  /**
+   * setup query client
+   * cache query for 1m (short cache)
+   * clear the mutation including its stored values from inputs when it finishes
+   */
   const qc: QueryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false, gcTime: 60_000 } }, // short cache for sensitive data
+    defaultOptions: {
+      queries: { retry: false, gcTime: 60_000 },
+      mutations: { gcTime: 0 },
+    },
     queryCache: new QueryCache({ onError }),
     mutationCache: new MutationCache({ onError }),
   })
