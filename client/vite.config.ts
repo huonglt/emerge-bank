@@ -12,6 +12,26 @@ export default defineConfig({
       '@': path.resolve(import.meta.dirname, './src'),
     },
   },
+  build: {
+    rolldownOptions: {
+      output: {
+        codeSplitting: {
+          /**
+           * react chunk include react|react-dom|scheduler. react-dom depends on scheduler so include it here
+           * vendor chunk includes rest of other packages from node_modules
+           */
+          groups: [
+            {
+              name: 'react',
+              test: /node_modules[\\/](react|react-dom|scheduler)[\\/]/,
+              priority: 2,
+            },
+            { name: 'vendor', test: /node_modules/, priority: 1 },
+          ],
+        },
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
   },
