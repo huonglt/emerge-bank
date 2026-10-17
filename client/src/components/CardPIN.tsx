@@ -35,16 +35,20 @@ export const CardPIN = () => {
   const qc = useQueryClient()
 
   const setCardPIN = useMutation({
-    mutationFn: async (formData: CardPIN) =>
-      api('/card/pin', {
-        method: 'PUT',
-        /**
-         * encrypt the pin & confirm pin using server's public key (RSA-OAEP) and a single-use nonce
-         */
-        body: {
-          encrypted: await encryptPin(formData.pin, formData.confirmPin),
-        },
-      }),
+    mutationFn: async (formData: CardPIN) => {
+      let encrypted: string
+      /**
+       * encrypt the pin & confirm pin using server's public key (RSA-OAEP) and a single-use nonce
+       * clear the plain PINs right after encryption
+       */
+      try {
+        encrypted = await encryptPin(formData.pin, formData.confirmPin)
+      } finally {
+        formData.pin = ''
+        formData.confirmPin = ''
+      }
+      return api('/card/pin', { method: 'PUT', body: { encrypted } })
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
   })
   const { errors } = form.formState
@@ -52,7 +56,7 @@ export const CardPIN = () => {
   /**
    * submit form
    * call /card/pin api
-   * then clear the PINs straight away from the inputs
+   * reset the entire form after submission including input values
    */
   const onSubmit = (formData: CardPIN) => {
     setCardPIN.mutate(formData)

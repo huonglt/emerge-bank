@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { CardPIN } from '@/components/CardPIN'
 import { api } from '@/lib/api'
 import { encryptPin } from '@/lib/utils'
-import { renderWithClient } from '@/test/render'
+import { renderWithClient, storedMutationInputs } from '@/test/render'
 
 vi.mock('@/lib/api', () => ({ api: vi.fn() }))
 vi.mock('@/lib/utils', async (importOriginal) => ({
@@ -152,5 +152,27 @@ describe('CardPIN: saving', () => {
     await waitFor(() =>
       expect(spy).toHaveBeenCalledWith({ queryKey: ['user'] })
     )
+  })
+})
+
+describe('CardPIN: the PIN in memory', () => {
+  it('should drop the plain PIN once it is encrypted, while the request is still running', async () => {
+    vi.mocked(api).mockReturnValue(new Promise(() => {}))
+    const { user, qc } = renderWithClient(<CardPIN />)
+    await fill(user, '4821', '4821')
+    await user.click(save())
+    await waitFor(() => expect(api).toHaveBeenCalled())
+    expect(storedMutationInputs(qc)).not.toContain('4821')
+  })
+
+  it('should drop the plain PIN when the encryption fails', async () => {
+    vi.mocked(encryptPin).mockRejectedValue(
+      new Error('PIN cannot be set right now')
+    )
+    const { user, qc } = renderWithClient(<CardPIN />)
+    await fill(user, '4821', '4821')
+    await user.click(save())
+    await screen.findByText('PIN cannot be set right now')
+    expect(storedMutationInputs(qc)).not.toContain('4821')
   })
 })

@@ -104,4 +104,16 @@ describe('createQueryClient', () => {
     expect(setAccessToken).not.toHaveBeenCalled()
     expect(setCsrfToken).not.toHaveBeenCalled()
   })
+
+  it('should drop a finished mutation as soon as nothing uses it', async () => {
+    const qc = createQueryClient()
+    const { result, unmount } = renderHook(
+      () => useMutation({ mutationFn: async (v: { password: string }) => v }),
+      { wrapper: wrapperFor(qc) }
+    )
+    await act(() => result.current.mutateAsync({ password: 'secret' }))
+    expect(qc.getMutationCache().getAll()).toHaveLength(1)
+    unmount()
+    await waitFor(() => expect(qc.getMutationCache().getAll()).toEqual([]))
+  })
 })
