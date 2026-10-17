@@ -29,6 +29,7 @@ First, all communications between client & server is on `HTTPS`, with LTS, so it
 - csrfToken will be attached to api requests that modify server state like `POST`, `PUT`, `DELETE`
 - JWT access token will be used for authentication on the server
 - csrfToken will be validated on server for added extra security
+- user plain password is cleared right after form submission
 
 ### Set bank card name:
 
@@ -39,7 +40,7 @@ First, all communications between client & server is on `HTTPS`, with LTS, so it
 
 - PIN is very senstive. A PIN authorizes payments so a leaked PIN is high impact
 - On the UI, the PIN lives only in uncontrolled inputs, not in React state, the query cache, or browser storage.
-- PIN is read at submit time and cleared straight away.
+- Plain PIN and confirm PIN are read at submit time and cleared straight away.
 - Prior to PIN submission, server sends a public key (RSA-OAEP) and a single-use token (nonce)
 - On submit, PIN is encrypted with the server public key and the nonce
 - Encrypted PIN is sent to server over HTTPS
