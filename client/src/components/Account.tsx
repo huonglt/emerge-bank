@@ -22,7 +22,7 @@ export const Account = (props: Props) => {
 
   return (
     <Item variant={'outline'}>
-      <ItemHeader>Your account</ItemHeader>
+      <ItemHeader className="font-semibold">Your account</ItemHeader>
       <CashCoinMedia />
       <ItemContent>
         <ItemTitle>{name}</ItemTitle>

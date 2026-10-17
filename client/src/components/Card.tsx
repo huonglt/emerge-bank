@@ -19,7 +19,7 @@ export const Card = (props: Props) => {
 
   return (
     <Item variant={'outline'}>
-      <ItemHeader>Your card</ItemHeader>
+      <ItemHeader className="font-semibold">Your card</ItemHeader>
       <CardMedia />
       <ItemContent>
         <ItemTitle>{name}</ItemTitle>
