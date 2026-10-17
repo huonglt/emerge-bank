@@ -35,7 +35,16 @@ export const LogIn = () => {
       qc.setQueryData(['user'], m.user)
     },
   })
-  const onSubmit = (formData: LoginInput) => login.mutate(formData)
+
+  /**
+   *  submit form
+   * call /login api
+   * clear the plain password right after submission
+   */
+  const onSubmit = (formData: LoginInput) => {
+    login.mutate(formData)
+    form.resetField('password')
+  }
 
   const { errors } = form.formState
 
