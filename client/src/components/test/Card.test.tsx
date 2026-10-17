@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, render, screen } from '@testing-library/react'
+import { cleanup, render, screen, within } from '@testing-library/react'
 import { afterEach, describe, expect, it } from 'vitest'
 import { Card } from '@/components/Card'
 import { makeUser } from '@/test/fixtures'
@@ -19,10 +19,10 @@ describe('Card', () => {
     expect(screen.getByText('•••• •••• •••• 4242')).toBeTruthy()
   })
 
-  it('should shows the card image', () => {
-    const { container } = render(<Card user={makeUser()} />)
-    expect(container.querySelector('img')?.getAttribute('src')).toBe(
-      './card.png'
-    )
+  it('should show the card name and number on the virtual card', () => {
+    render(<Card user={makeUser()} />)
+    const card = screen.getByRole('region', { name: 'Virtual card' })
+    expect(within(card).getByText('ALICE TANE')).toBeTruthy()
+    expect(within(card).getByText('•••• •••• •••• 4242')).toBeTruthy()
   })
 })
