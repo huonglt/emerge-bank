@@ -6,7 +6,7 @@
 @custom-variant dark (&:is(.dark *));
 :root {
   /* brand: the navy of the header, footer and profile button; white text on it */
-  --brand: #010b3b;
+  --brand: #162456; /* Tailwind blue-950 */
   --brand-foreground: #fff;
   --text: #6b6375;
   --text-h: #08060d;
@@ -50,9 +50,9 @@
 
   --popover-foreground: oklch(0.145 0 0);
 
-  --primary: oklch(0.205 0 0);
+  --primary: var(--brand); /* buttons use the brand navy */
 
-  --primary-foreground: oklch(0.985 0 0);
+  --primary-foreground: var(--brand-foreground);
 
   --secondary: oklch(0.97 0 0);
 
