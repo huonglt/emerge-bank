@@ -28,30 +28,41 @@ export const CardPIN = () => {
    * react-hook-form keeps inputs uncontrolled
    * so the PIN is never put in React state
    */
-  const form = useForm<CardPIN>({ resolver: zodResolver(pinSchema) })
+  const form = useForm<CardPIN>({
+    resolver: zodResolver(pinSchema),
+    defaultValues: { pin: '', confirmPin: '' },
+  })
   const qc = useQueryClient()
 
   const setCardPIN = useMutation({
-    mutationFn: async (v: CardPIN) =>
+    mutationFn: async (formData: CardPIN) =>
       api('/card/pin', {
         method: 'PUT',
         /**
-         * encryp the pin & confirm pin using server s public key (RSA-OAEP) and a single-use nonce
+         * encrypt the pin & confirm pin using server's public key (RSA-OAEP) and a single-use nonce
          */
-        body: { encrypted: await encryptPin(v.pin, v.confirmPin) },
+        body: {
+          encrypted: await encryptPin(formData.pin, formData.confirmPin),
+        },
       }),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
   })
   const { errors } = form.formState
 
+  /**
+   * submit form
+   * call /card/pin api
+   * then clear the PINs straight away from the inputs
+   */
+  const onSubmit = (formData: CardPIN) => {
+    setCardPIN.mutate(formData)
+    form.reset()
+  }
+
   return (
     <Card className="w-full max-w-sm">
       <form
-        onSubmit={form.handleSubmit((v) => {
-          setCardPIN.mutate(v)
-          // clear the PIN straight away: from the inputs and the form'
-          form.reset({ pin: '', confirmPin: '' })
-        })}
+        onSubmit={form.handleSubmit(onSubmit)}
         noValidate
         autoComplete="off"
       >

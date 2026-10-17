@@ -25,17 +25,19 @@ export const CardName = () => {
   const qc = useQueryClient()
 
   const setCardName = useMutation({
-    mutationFn: (v: CardName) => {
-      return api('/card/name', { method: 'PUT', body: v })
+    mutationFn: (formData: CardName) => {
+      return api('/card/name', { method: 'PUT', body: formData })
     },
     onSuccess: () => qc.invalidateQueries({ queryKey: ['user'] }),
   })
   const { errors } = form.formState
 
+  const onSubmit = (formData: CardName) => setCardName.mutate(formData)
+
   return (
     <Card className="w-full max-w-sm">
       <form
-        onSubmit={form.handleSubmit((v) => setCardName.mutate(v))}
+        onSubmit={form.handleSubmit(onSubmit)}
         noValidate
         autoComplete="off"
       >

@@ -19,8 +19,8 @@ export const LogIn = () => {
   const form = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
   const qc = useQueryClient()
   const login = useMutation({
-    mutationFn: (v: LoginInput) =>
-      api<Me>('/login', { method: 'POST', body: v }),
+    mutationFn: (formData: LoginInput) =>
+      api<Me>('/login', { method: 'POST', body: formData }),
     onSuccess: async (m) => {
       setAccessToken(m.accessToken)
       setCsrfToken(m.csrfToken)
@@ -29,12 +29,14 @@ export const LogIn = () => {
       qc.setQueryData(['user'], m.user)
     },
   })
+  const onSubmit = (formData: LoginInput) => login.mutate(formData)
+
   const { errors } = form.formState
 
   return (
     <Card className="w-full max-w-sm">
       <form
-        onSubmit={form.handleSubmit((v) => login.mutate(v))}
+        onSubmit={form.handleSubmit(onSubmit)}
         noValidate
         autoComplete="off"
       >
