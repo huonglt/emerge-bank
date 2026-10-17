@@ -37,4 +37,4 @@ If you need to change server url, change in `server/config.ts`<br/>
 
 ### Screenshots
 
-Click here to view the [screenshots](client/screenshots/screenshots.jpg)
+Click here to view the [screenshots](client/screenshots/screenshots.png)
