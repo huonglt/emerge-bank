@@ -142,4 +142,14 @@ describe('tokenExpireIn', () => {
     setAccessToken(jwtWith({ sub: 'u-1' }))
     expect(tokenExpireIn()).toBeUndefined()
   })
+
+  it.each([
+    ['not a JWT at all', 'not-a-token'],
+    ['a payload that is not base64', 'e30.!!!.sig'],
+    ['a payload that is not JSON', `e30.${btoa('not json')}.sig`],
+  ])('should return undefined, without throwing, for %s', (_label, token) => {
+    setAccessToken(token)
+    expect(() => tokenExpireIn()).not.toThrow()
+    expect(tokenExpireIn()).toBeUndefined()
+  })
 })

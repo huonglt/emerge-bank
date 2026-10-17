@@ -48,9 +48,13 @@ export const tokenExpireIn = () => {
   if (!accessToken) {
     return
   }
-  const { exp } = jwtDecode(accessToken)
-  if (exp) {
-    return exp * 1000 - Date.now()
+  try {
+    const { exp } = jwtDecode(accessToken)
+    if (exp) {
+      return exp * 1000 - Date.now()
+    }
+  } catch {
+    // not a readable JWT: no expiry to schedule (the server still rejects the token)
   }
   return
 }
