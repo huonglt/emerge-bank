@@ -158,19 +158,34 @@ describe('LogIn: the password in memory', () => {
     expect(storedMutationInputs(qc)).toContain(testUser.userName)
   })
 
-  it('should keep the password in the form after a failed login, to retry', async () => {
-    // record each body as it is sent, like fetch does (the app blanks the password afterwards)
-    const sent: unknown[] = []
-    vi.mocked(api).mockImplementation(async (_path, options) => {
-      sent.push(JSON.parse(JSON.stringify(options?.body)))
-      throw new ApiError(401, 'Username or password is incorrect')
-    })
+  it('should clear the password after submitting, and keep the user name', async () => {
+    vi.mocked(api).mockRejectedValue(
+      new ApiError(401, 'Username or password is incorrect')
+    )
+    const { user } = renderWithClient(<LogIn />)
+    await fill(user)
+    await user.click(login())
+    await screen.findByText('Username or password is incorrect')
+    expect((screen.getByLabelText('Password') as HTMLInputElement).value).toBe(
+      ''
+    )
+    expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe(
+      testUser.userName
+    )
+  })
+
+  it('should ask for the password again after a failed login, and send nothing', async () => {
+    vi.mocked(api).mockRejectedValue(
+      new ApiError(401, 'Username or password is incorrect')
+    )
     const { user } = renderWithClient(<LogIn />)
     await fill(user)
     await user.click(login())
     await screen.findByText('Username or password is incorrect')
     await user.click(login())
-    await waitFor(() => expect(sent).toHaveLength(2))
-    expect(sent).toEqual([testUser, testUser])
+    expect(
+      await screen.findByText('Password must be at least 4 characters')
+    ).toBeTruthy()
+    expect(api).toHaveBeenCalledTimes(1)
   })
 })

@@ -16,7 +16,10 @@ import { ErrorMessage } from '@/components/ErrorMessage'
 type LoginInput = { userName: string; password: string }
 
 export const LogIn = () => {
-  const form = useForm<LoginInput>({ resolver: zodResolver(loginSchema) })
+  const form = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { userName: '', password: '' },
+  })
   const qc = useQueryClient()
   const login = useMutation({
     mutationFn: async (formData: LoginInput) => {
